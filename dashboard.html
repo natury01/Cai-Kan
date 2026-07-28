@@ -2204,13 +2204,10 @@ function clsShowStart(){
       '<input class="cls-in" id="cls-tname" type="text" placeholder="ชื่อครู (เช่น ครูอาคม)" style="width:80%;margin-bottom:12px;text-align:center">'+
       '<button class="btn-primary" id="cls-start" style="width:80%;background:#1d4ed8;font-size:16px" onclick="clsStart()">🚀 เริ่มใช้งาน (ไม่ต้องสมัคร)</button>'+
       '<div class="err" id="cls-start-err" style="margin-top:10px"></div>'+
-      '<div style="border-top:1px dashed var(--line);margin:18px 0 12px"></div>'+
-      '<div style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:6px">เคยสร้างห้องเรียนไว้แล้ว? กู้คืนด้วยโค้ดครู</div>'+
-      '<input class="cls-in" id="cls-reccode" type="text" placeholder="เช่น KRU-XXXX-XXXX" style="width:80%;margin-bottom:8px;text-align:center;text-transform:uppercase">'+
-      '<button class="btn-ghost" id="cls-recover" style="width:80%" onclick="clsRecover()">🔑 กู้คืนห้องเรียนของฉัน</button>'+
-      '<div class="err" id="cls-rec-err" style="margin-top:8px"></div>'+
+      '<div class="muted" style="font-size:12px;margin-top:6px">เริ่มแล้วอย่าลืมกด "ผูกบัญชี Google" เพื่อให้เข้าจากเครื่องไหนก็ได้</div>'+
       '<div style="border-top:1px dashed var(--line);margin:16px 0 12px"></div>'+
-      '<button class="btn-ghost" style="width:80%;border-color:#93c5fd;color:#1d4ed8" onclick="clsGoogleSignIn()">🔵 เข้าสู่ระบบด้วย Google (ครูที่ผูกบัญชีแล้ว)</button>'+
+      '<div style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:6px">เคยใช้งานอยู่แล้ว?</div>'+
+      '<button class="btn-ghost" style="width:80%;border-color:#93c5fd;color:#1d4ed8" onclick="clsGoogleSignIn()">🔵 เข้าสู่ระบบด้วย Google</button>'+
       '<div class="err" id="cls-g-err" style="margin-top:8px"></div>'+
     '</div>');
 }
@@ -2255,22 +2252,8 @@ function clsStart(){
     if(err) err.textContent='เริ่มไม่สำเร็จ: '+m;
   });
 }
-/* กู้คืนห้องเรียนด้วยโค้ดครู — ย้ายความเป็นเจ้าของห้องทั้งหมดมายังตัวตนปัจจุบัน (ใช้ได้ทุกเครื่อง/หลัง session หลุด) */
-function clsRecover(){
-  var err=$('cls-rec-err'); if(err)err.textContent='';
-  var code=(($('cls-reccode')&&$('cls-reccode').value)||'').trim().toUpperCase();
-  if(!code){ if(err)err.textContent='ใส่โค้ดกู้คืน (KRU-XXXX-XXXX) ก่อนนะครับ'; return; }
-  var btn=$('cls-recover'); if(btn){btn.disabled=true; btn.textContent='กำลังกู้คืน...';}
-  sbEnsure().then(function(ok){ return ok?true:sbAnonSignup(); })
-  .then(function(){ return sbFetch('/rest/v1/rpc/rpc_recover_teacher',{method:'POST',body:JSON.stringify({p_code:code})}); })
-  .then(function(res){ try{ localStorage.setItem('cls_recovery',code); }catch(e){} return clsAfterAuth(); })
-  .catch(function(e){
-    if(btn){btn.disabled=false; btn.textContent='🔑 กู้คืนห้องเรียนของฉัน';}
-    var m=String(e&&e.message||'');
-    if(/schema cache|does not exist|PGRST202/.test(m)) m='ระบบกู้คืนยังไม่ถูกติดตั้ง — รันไฟล์ supabase_patch_recover.sql ใน SQL Editor ก่อน';
-    if(err)err.textContent='กู้คืนไม่สำเร็จ: '+m;
-  });
-}
+/* [เลิกใช้ตามคำขอ] ระบบกู้คืนด้วยโค้ด KRU ถูกถอดออกจาก UI — ครูใช้ "ผูกบัญชี Google" แทน
+   (โค้ดกู้คืนยังถูกสร้างเก็บไว้เงียบ ๆ ในฐานข้อมูลเป็นตาข่ายนิรภัยชั้นหลัง แต่ไม่แสดง/ไม่ต้องใช้) */
 function clsAfterAuth(){
   return Promise.all([
     sbFetch('/rest/v1/teachers?id=eq.'+cls.sess.user_id+'&select=*'),
@@ -2311,16 +2294,15 @@ function clsLoadCounts(){
 /* ---------- เรนเดอร์หลัก ---------- */
 function clsJoinKeyGen(){ var A='ABCDEFGHJKMNPQRSTUVWXYZ23456789',k=''; for(var i=0;i<6;i++)k+=A[Math.floor(Math.random()*A.length)]; return k; }
 function clsRender(){
-  var rec=(cls.teacher&&cls.teacher.recovery_code)||''; try{ if(!rec) rec=localStorage.getItem('cls_recovery')||''; }catch(e){}
   clsStatus(
     '<div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px">'+
       '<span style="font-size:20px">👩‍🏫</span>'+
       '<b>'+esc((cls.teacher&&cls.teacher.display_name)||'ครู')+'</b>'+
       (cls.teacher&&cls.teacher.is_anonymous===false
-        ?'<span class="cls-chip" style="background:#dcfce7;color:#166534">✔ ผูกบัญชีแล้ว'+(cls.teacher.email?' · '+esc(cls.teacher.email):'')+'</span>'
-        :'<button class="btn-ghost" style="padding:4px 10px;font-size:12px;background:#eff6ff;border-color:#93c5fd;color:#1d4ed8" onclick="clsLinkGoogle()">🔗 ผูกบัญชี Google</button>')+
+        ?'<span class="cls-chip" style="background:#dcfce7;color:#166534">✔ ผูกบัญชี Google แล้ว'+(cls.teacher.email?' · '+esc(cls.teacher.email):'')+'</span>'
+        :'<span class="cls-chip" style="background:#fef3c7;color:#92400e">ยังไม่ผูกบัญชี — ผูกไว้เพื่อเข้าจากเครื่องไหนก็ได้</span>'+
+         '<button class="btn-ghost" style="padding:4px 10px;font-size:12px;background:#eff6ff;border-color:#93c5fd;color:#1d4ed8" onclick="clsLinkGoogle()">🔗 ผูกบัญชี Google</button>')+
       '<span class="muted" style="font-size:12px;flex:1">ห้องเรียนของครู: '+cls.rooms.length+' ห้อง</span>'+
-      (rec?'<span style="font-size:12px;color:#334155">🔑 โค้ดกู้คืน (จดเก็บไว้ ใช้เข้าจากเครื่องอื่น): <b style="font-family:ui-monospace,monospace;user-select:all;background:#fef9c3;border:1px dashed #eab308;border-radius:7px;padding:2px 8px">'+esc(rec)+'</b></span>':'')+
     '</div>');
   var h='';
   // ฟอร์มสร้างห้องใหม่

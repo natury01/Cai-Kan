@@ -2439,7 +2439,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
    ตัวอย่าง: ไฟล์ CAI_KAN_NEW2_72.html ออกวันที่ 22/07/2569 → V.7.2 + 2569 07 22 = "V.7.225690722"
    เหตุที่ท้ายเรียง ปี-เดือน-วัน: ตัวเลขจะโตตามเวลาเสมอ เทียบได้ทันทีว่าเครื่องไหนรุ่นใหม่กว่า (มาตรฐาน build number)
    ทุกครั้งที่แก้ไฟล์ออกรุ่นใหม่ ให้ขยับเลขรุ่น+วันที่นี้พร้อมเลขท้ายชื่อไฟล์เสมอ จะได้ตรวจจากหน้าจอได้ไม่ต้องเดา */
-const GAME_VERSION = 'V.7.50-IX2050-2569.26'; /* [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
+const GAME_VERSION = 'V.7.51-IX2050-2569.27'; /* [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
 /* [รอบ 49 Capstone] รหัสประจำ "รอบการเปิดเกม" (Session) — ใช้ผูกข้อมูลวิจัยทุกชีต (Progress/QuestionLog/BossResults/CapstoneResults)
    อยู่ใน sessionStorage: เปิดแท็บใหม่/รีเฟรช = ได้ session ใหม่, สลับหน้าในแท็บเดิม = session เดิม (ไม่ใช่ข้อมูลระบุตัวตน) */
 const SESSION_ID = (() => {
@@ -26449,13 +26449,10 @@ function clsShowStart(){
       '<input class="cls-in" id="cls-tname" type="text" placeholder="ชื่อครู (เช่น ครูอาคม)" style="width:80%;margin-bottom:12px;text-align:center">'+
       '<button class="btn-primary" id="cls-start" style="width:80%;background:#1d4ed8;font-size:16px" onclick="clsStart()">🚀 เริ่มใช้งาน (ไม่ต้องสมัคร)</button>'+
       '<div class="err" id="cls-start-err" style="margin-top:10px"></div>'+
-      '<div style="border-top:1px dashed var(--line);margin:18px 0 12px"></div>'+
-      '<div style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:6px">เคยสร้างห้องเรียนไว้แล้ว? กู้คืนด้วยโค้ดครู</div>'+
-      '<input class="cls-in" id="cls-reccode" type="text" placeholder="เช่น KRU-XXXX-XXXX" style="width:80%;margin-bottom:8px;text-align:center;text-transform:uppercase">'+
-      '<button class="btn-ghost" id="cls-recover" style="width:80%" onclick="clsRecover()">🔑 กู้คืนห้องเรียนของฉัน</button>'+
-      '<div class="err" id="cls-rec-err" style="margin-top:8px"></div>'+
+      '<div class="muted" style="font-size:12px;margin-top:6px">เริ่มแล้วอย่าลืมกด "ผูกบัญชี Google" เพื่อให้เข้าจากเครื่องไหนก็ได้</div>'+
       '<div style="border-top:1px dashed var(--line);margin:16px 0 12px"></div>'+
-      '<button class="btn-ghost" style="width:80%;border-color:#93c5fd;color:#1d4ed8" onclick="clsGoogleSignIn()">🔵 เข้าสู่ระบบด้วย Google (ครูที่ผูกบัญชีแล้ว)</button>'+
+      '<div style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:6px">เคยใช้งานอยู่แล้ว?</div>'+
+      '<button class="btn-ghost" style="width:80%;border-color:#93c5fd;color:#1d4ed8" onclick="clsGoogleSignIn()">🔵 เข้าสู่ระบบด้วย Google</button>'+
       '<div class="err" id="cls-g-err" style="margin-top:8px"></div>'+
     '</div>');
 }
@@ -26500,22 +26497,8 @@ function clsStart(){
     if(err) err.textContent='เริ่มไม่สำเร็จ: '+m;
   });
 }
-/* กู้คืนห้องเรียนด้วยโค้ดครู — ย้ายความเป็นเจ้าของห้องทั้งหมดมายังตัวตนปัจจุบัน (ใช้ได้ทุกเครื่อง/หลัง session หลุด) */
-function clsRecover(){
-  var err=$('cls-rec-err'); if(err)err.textContent='';
-  var code=(($('cls-reccode')&&$('cls-reccode').value)||'').trim().toUpperCase();
-  if(!code){ if(err)err.textContent='ใส่โค้ดกู้คืน (KRU-XXXX-XXXX) ก่อนนะครับ'; return; }
-  var btn=$('cls-recover'); if(btn){btn.disabled=true; btn.textContent='กำลังกู้คืน...';}
-  sbEnsure().then(function(ok){ return ok?true:sbAnonSignup(); })
-  .then(function(){ return sbFetch('/rest/v1/rpc/rpc_recover_teacher',{method:'POST',body:JSON.stringify({p_code:code})}); })
-  .then(function(res){ try{ localStorage.setItem('cls_recovery',code); }catch(e){} return clsAfterAuth(); })
-  .catch(function(e){
-    if(btn){btn.disabled=false; btn.textContent='🔑 กู้คืนห้องเรียนของฉัน';}
-    var m=String(e&&e.message||'');
-    if(/schema cache|does not exist|PGRST202/.test(m)) m='ระบบกู้คืนยังไม่ถูกติดตั้ง — รันไฟล์ supabase_patch_recover.sql ใน SQL Editor ก่อน';
-    if(err)err.textContent='กู้คืนไม่สำเร็จ: '+m;
-  });
-}
+/* [เลิกใช้ตามคำขอ] ระบบกู้คืนด้วยโค้ด KRU ถูกถอดออกจาก UI — ครูใช้ "ผูกบัญชี Google" แทน
+   (โค้ดกู้คืนยังถูกสร้างเก็บไว้เงียบ ๆ ในฐานข้อมูลเป็นตาข่ายนิรภัยชั้นหลัง แต่ไม่แสดง/ไม่ต้องใช้) */
 function clsAfterAuth(){
   return Promise.all([
     sbFetch('/rest/v1/teachers?id=eq.'+cls.sess.user_id+'&select=*'),
@@ -26556,16 +26539,15 @@ function clsLoadCounts(){
 /* ---------- เรนเดอร์หลัก ---------- */
 function clsJoinKeyGen(){ var A='ABCDEFGHJKMNPQRSTUVWXYZ23456789',k=''; for(var i=0;i<6;i++)k+=A[Math.floor(Math.random()*A.length)]; return k; }
 function clsRender(){
-  var rec=(cls.teacher&&cls.teacher.recovery_code)||''; try{ if(!rec) rec=localStorage.getItem('cls_recovery')||''; }catch(e){}
   clsStatus(
     '<div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px">'+
       '<span style="font-size:20px">👩‍🏫</span>'+
       '<b>'+esc((cls.teacher&&cls.teacher.display_name)||'ครู')+'</b>'+
       (cls.teacher&&cls.teacher.is_anonymous===false
-        ?'<span class="cls-chip" style="background:#dcfce7;color:#166534">✔ ผูกบัญชีแล้ว'+(cls.teacher.email?' · '+esc(cls.teacher.email):'')+'</span>'
-        :'<button class="btn-ghost" style="padding:4px 10px;font-size:12px;background:#eff6ff;border-color:#93c5fd;color:#1d4ed8" onclick="clsLinkGoogle()">🔗 ผูกบัญชี Google</button>')+
+        ?'<span class="cls-chip" style="background:#dcfce7;color:#166534">✔ ผูกบัญชี Google แล้ว'+(cls.teacher.email?' · '+esc(cls.teacher.email):'')+'</span>'
+        :'<span class="cls-chip" style="background:#fef3c7;color:#92400e">ยังไม่ผูกบัญชี — ผูกไว้เพื่อเข้าจากเครื่องไหนก็ได้</span>'+
+         '<button class="btn-ghost" style="padding:4px 10px;font-size:12px;background:#eff6ff;border-color:#93c5fd;color:#1d4ed8" onclick="clsLinkGoogle()">🔗 ผูกบัญชี Google</button>')+
       '<span class="muted" style="font-size:12px;flex:1">ห้องเรียนของครู: '+cls.rooms.length+' ห้อง</span>'+
-      (rec?'<span style="font-size:12px;color:#334155">🔑 โค้ดกู้คืน (จดเก็บไว้ ใช้เข้าจากเครื่องอื่น): <b style="font-family:ui-monospace,monospace;user-select:all;background:#fef9c3;border:1px dashed #eab308;border-radius:7px;padding:2px 8px">'+esc(rec)+'</b></span>':'')+
     '</div>');
   var h='';
   // ฟอร์มสร้างห้องใหม่
