@@ -1547,7 +1547,17 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
           <div id="auth-form-classroom" class="auth-form">
             <label class="form-label">โค้ดเข้าห้อง 6 ตัว (ถามคุณครูได้เลย)</label>
             <input id="join-key-inline" class="form-input" type="text" maxlength="6" autocomplete="off" placeholder="เช่น G5AWKW" style="text-transform:uppercase;text-align:center;font-weight:800;letter-spacing:calc(var(--vw)*0.55);font-size:calc(var(--vw)*1.5)">
-            <div class="form-hint">ใส่โค้ดจากครู → แตะชื่อตัวเอง → เข้าเล่นได้เลย ไม่ต้องสมัครสมาชิก</div>
+            <!-- [เฟส 2.2] หรือเลือกจากรายชื่อโรงเรียน → ห้องเรียน (ไม่ต้องรู้โค้ด) -->
+            <div class="form-hint" style="text-align:center;opacity:.8">— หรือเลือกจากรายชื่อ —</div>
+            <div class="form-row">
+              <div class="form-col">
+                <select id="join-school" class="form-input"><option value="">โรงเรียน...</option></select>
+              </div>
+              <div class="form-col">
+                <select id="join-room" class="form-input" disabled><option value="">ห้องเรียน...</option></select>
+              </div>
+            </div>
+            <div class="form-hint">ใส่โค้ดหรือเลือกห้อง → แตะชื่อตัวเอง → เข้าเล่นได้เลย ไม่ต้องสมัครสมาชิก</div>
             <div id="join-error" class="form-error hidden"></div>
             <button id="btn-join-submit" class="btn btn-primary auth-submit">🏫 เข้าห้องเรียน</button>
           </div>
@@ -2429,7 +2439,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
    ตัวอย่าง: ไฟล์ CAI_KAN_NEW2_72.html ออกวันที่ 22/07/2569 → V.7.2 + 2569 07 22 = "V.7.225690722"
    เหตุที่ท้ายเรียง ปี-เดือน-วัน: ตัวเลขจะโตตามเวลาเสมอ เทียบได้ทันทีว่าเครื่องไหนรุ่นใหม่กว่า (มาตรฐาน build number)
    ทุกครั้งที่แก้ไฟล์ออกรุ่นใหม่ ให้ขยับเลขรุ่น+วันที่นี้พร้อมเลขท้ายชื่อไฟล์เสมอ จะได้ตรวจจากหน้าจอได้ไม่ต้องเดา */
-const GAME_VERSION = 'V.7.48-IX2050-2569.24'; /* [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
+const GAME_VERSION = 'V.7.50-IX2050-2569.26'; /* [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
 /* [รอบ 49 Capstone] รหัสประจำ "รอบการเปิดเกม" (Session) — ใช้ผูกข้อมูลวิจัยทุกชีต (Progress/QuestionLog/BossResults/CapstoneResults)
    อยู่ใน sessionStorage: เปิดแท็บใหม่/รีเฟรช = ได้ session ใหม่, สลับหน้าในแท็บเดิม = session เดิม (ไม่ใช่ข้อมูลระบุตัวตน) */
 const SESSION_ID = (() => {
@@ -24178,11 +24188,44 @@ function clsjOpenWithKey(k){ clsjOpen(); var ki=document.getElementById('clsj-ke
     try{ ji.value=localStorage.getItem('cls_last_key')||''; }catch(e){}
     ji.addEventListener('keydown',function(ev){ if(ev.key==='Enter'){ ev.preventDefault(); if(jb) jb.click(); } });
   }
+  /* [เฟส 2.2] เลือกจากรายชื่อ โรงเรียน → ห้องเรียน (ไม่ต้องรู้โค้ด) */
+  var js=document.getElementById('join-school'), jr=document.getElementById('join-room');
+  window._clsjSchoolsLoaded=false;
+  window.clsjLoadSchools=function(){
+    if(window._clsjSchoolsLoaded||!js) return;
+    window._clsjSchoolsLoaded=true;
+    clsjRpc('rpc_list_schools',{}).then(function(rows){
+      if(!rows||!rows.length){ js.innerHTML='<option value="">(ยังไม่มีโรงเรียนในระบบ)</option>'; return; }
+      js.innerHTML='<option value="">โรงเรียน...</option>'+rows.map(function(s){ return '<option value="'+_satEsc(s.school_id)+'">'+_satEsc(s.name)+'</option>'; }).join('');
+    }).catch(function(){ window._clsjSchoolsLoaded=false; js.innerHTML='<option value="">โหลดไม่สำเร็จ — แตะเพื่อลองใหม่</option>'; });
+  };
+  if(js){
+    js.addEventListener('focus',function(){ window.clsjLoadSchools(); });
+    js.addEventListener('change',function(){
+      if(!jr) return;
+      if(!js.value){ jr.disabled=true; jr.innerHTML='<option value="">ห้องเรียน...</option>'; return; }
+      jr.disabled=true; jr.innerHTML='<option value="">กำลังโหลด...</option>';
+      clsjRpc('rpc_list_classrooms',{p_school:js.value}).then(function(rows){
+        jr.innerHTML='<option value="">ห้องเรียน...</option>'+(rows||[]).map(function(r){ return '<option value="'+_satEsc(r.join_key)+'">'+_satEsc(r.name)+'</option>'; }).join('');
+        jr.disabled=false;
+      }).catch(function(){ jr.innerHTML='<option value="">โหลดไม่สำเร็จ</option>'; jr.disabled=false; });
+    });
+  }
+  if(jr){ jr.addEventListener('change',function(){ if(jr.value){ try{ if(typeof AUDIO!=='undefined'&&AUDIO.playSFX)AUDIO.playSFX('click'); }catch(e){} clsjOpenWithKey(jr.value); } }); }
+  setTimeout(function(){ try{ window.clsjLoadSchools(); }catch(e){} },1500); // โหลดล่วงหน้า (แท็บห้องเรียนเป็นค่าเริ่มต้น)
 })();
 
 /* ---- เปิด Dashboard ที่ฝังในไฟล์เกมนี้ (blob แท็บใหม่ + ส่งลิงก์ backend ให้อัตโนมัติ) ---- */
 function openEmbeddedDashboard(mode){
   try{
+    // [เฟส 3] บนเว็บจริง (https) → เปิด dashboard.html เป็นหน้าเว็บจริง (จำเป็นสำหรับ Google login + session เสถียร)
+    if(/^https?:$/.test(location.protocol)){
+      var hash2=(typeof GOOGLE_SHEET_URL!=='undefined'&&GOOGLE_SHEET_URL)?('#url='+encodeURIComponent(GOOGLE_SHEET_URL)):'#';
+      if(mode==='cls') hash2+=(hash2==='#'?'':'&')+'page=cls';
+      var w2=window.open('dashboard.html'+hash2,'_blank');
+      if(!w2){ alert('เบราว์เซอร์บล็อกการเปิดแท็บใหม่ — โปรดอนุญาต popup แล้วกดอีกครั้ง'); }
+      return;
+    }
     var node=document.getElementById('embedded-dashboard-html');
     if(!node){ alert('ไม่พบ Dashboard ที่ฝังในไฟล์'); return; }
     var html=node.textContent.replace(/<\\\/script>/g,'<\/script>'); // คืนแท็กปิดสคริปต์ที่ถูก escape ไว้ตอนฝัง
@@ -24810,7 +24853,15 @@ function apiPost(body){
 
 /* ============ LOGIN ============ */
 // เปิดจากเกม (ฝังในไฟล์เดียว) จะส่งลิงก์ backend มาทาง #url=... ใช้อัตโนมัติ (ไม่โชว์ลิงก์ให้ผู้ใช้เห็น เพื่อความปลอดภัย)
-(function(){ try{ var m=(location.hash||'').match(/url=([^&]+)/); if(m){ state._hashUrl=decodeURIComponent(m[1]); } state._openCls=/(?:^|[#&])page=cls(?:&|$)/.test(location.hash||''); }catch(e){} })();
+(function(){ try{ var m=(location.hash||'').match(/url=([^&]+)/); if(m){ state._hashUrl=decodeURIComponent(m[1]); } state._openCls=/(?:^|[#&])page=cls(?:&|$)/.test(location.hash||'');
+  // [เฟส 3] กลับมาจากหน้า Google (OAuth) — Supabase ส่ง token มาทาง hash → เก็บไว้ให้ระบบห้องเรียนใช้ แล้วล้าง hash
+  var ta=(location.hash||'').match(/access_token=([^&]+)/);
+  if(ta){ var tr=((location.hash||'').match(/refresh_token=([^&]+)/)||[])[1]||'';
+    state._oauthTokens={at:decodeURIComponent(ta[1]),rt:decodeURIComponent(tr)};
+    state._openCls=true;
+    try{ history.replaceState(null,'',location.pathname+'#page=cls'); }catch(e2){}
+  }
+}catch(e){} })();
 $('in-url').value = state._hashUrl || loadUrl();
 $('in-user').value = loadUserName() || 'admin';
 $('btn-login').onclick = doLogin;
@@ -26360,11 +26411,18 @@ function clsErrBox(t){ return '<div class="card"><div class="err" style="display
 function clsInit(){
   clsStatus('<div class="card" style="padding:14px 16px"><span class="loading" style="border-color:#2563eb;border-top-color:transparent"></span> กำลังตรวจการเชื่อมต่อระบบห้องเรียน...</div>');
   clsMain('');
+  // [เฟส 3] เพิ่งกลับมาจาก Google (OAuth) → ใช้ token ที่จับไว้เป็น session ปัจจุบัน
+  if(state._oauthTokens){
+    var t=state._oauthTokens; state._oauthTokens=null;
+    var uid=''; try{ uid=JSON.parse(atob(t.at.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).sub||''; }catch(e){}
+    cls.sess={access_token:t.at,refresh_token:t.rt,user_id:uid,expires_at:Date.now()+3300000};
+    clsSaveSess();
+  }
   // 1) ตรวจ schema (อ่านตาราง games ด้วย anon key)
   sbFetch('/rest/v1/games?select=code&limit=1').then(function(rows){
     cls.schemaOk=true;
-    // 2) มี session เดิมไหม
-    clsLoadSess();
+    // 2) มี session เดิมไหม (ถ้าเพิ่งได้จาก Google ใช้ตัวนั้นก่อน)
+    if(!cls.sess) clsLoadSess();
     return sbEnsure().then(function(ok){
       if(ok) return clsAfterAuth();
       clsShowStart();
@@ -26396,7 +26454,31 @@ function clsShowStart(){
       '<input class="cls-in" id="cls-reccode" type="text" placeholder="เช่น KRU-XXXX-XXXX" style="width:80%;margin-bottom:8px;text-align:center;text-transform:uppercase">'+
       '<button class="btn-ghost" id="cls-recover" style="width:80%" onclick="clsRecover()">🔑 กู้คืนห้องเรียนของฉัน</button>'+
       '<div class="err" id="cls-rec-err" style="margin-top:8px"></div>'+
+      '<div style="border-top:1px dashed var(--line);margin:16px 0 12px"></div>'+
+      '<button class="btn-ghost" style="width:80%;border-color:#93c5fd;color:#1d4ed8" onclick="clsGoogleSignIn()">🔵 เข้าสู่ระบบด้วย Google (ครูที่ผูกบัญชีแล้ว)</button>'+
+      '<div class="err" id="cls-g-err" style="margin-top:8px"></div>'+
     '</div>');
+}
+/* [เฟส 3] Google OAuth — ผูกบัญชีถาวร + เข้าสู่ระบบจากเครื่องไหนก็ได้ (ต้องเปิด Google Provider + Manual linking ใน Supabase ก่อน) */
+function clsJwtClaims(){ try{ return JSON.parse(atob(cls.sess.access_token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))||{}; }catch(e){ return {}; } }
+function clsIsRealUrl(){ return /^https?:$/.test(location.protocol); }
+function clsGoogleSignIn(){
+  var err=$('cls-g-err'); if(err)err.textContent='';
+  if(!clsIsRealUrl()){ if(err)err.textContent='ใช้ได้เมื่อเปิด Dashboard จากเว็บจริง (เปิดเกมที่ cai-kan.pages.dev แล้วกดปุ่ม 🏫)'; return; }
+  location.href=SB_URL+'/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(location.origin+location.pathname);
+}
+function clsLinkGoogle(){
+  if(!clsIsRealUrl()){ toast('การผูกบัญชี Google ใช้ได้เมื่อเปิด Dashboard จากเว็บจริง (cai-kan.pages.dev)'); return; }
+  sbEnsure().then(function(ok){
+    if(!ok){ toast('เริ่มใช้งานก่อน แล้วค่อยผูกบัญชี'); return; }
+    return fetch(SB_URL+'/auth/v1/user/identities/authorize?provider=google&skip_http_redirect=true&redirect_to='+encodeURIComponent(location.origin+location.pathname),
+      {headers:{'apikey':SB_ANON,'Authorization':'Bearer '+cls.sess.access_token}})
+      .then(function(r){ return r.json().catch(function(){return null;}); })
+      .then(function(j){
+        if(j&&j.url){ location.href=j.url; }
+        else toast('เปิดหน้า Google ไม่สำเร็จ: '+((j&&(j.msg||j.message||j.error_description))||'ตรวจว่าเปิด Google Provider + Manual linking ใน Supabase แล้ว (ดูคู่มือ)'));
+      });
+  }).catch(function(e){ toast('ผูกบัญชีไม่สำเร็จ: '+(e&&e.message||'')); });
 }
 function clsStart(){
   var err=$('cls-start-err'); if(err)err.textContent='';
@@ -26443,6 +26525,12 @@ function clsAfterAuth(){
     cls.teacher=(r[0]&&r[0][0])||null;
     cls.schools=r[1]||[];
     cls.rooms=r[2]||[];
+    // [เฟส 3] เข้าด้วยบัญชี Google → อัปเดตสถานะครูเป็น "ผูกบัญชีแล้ว" อัตโนมัติ
+    var jc=clsJwtClaims();
+    if(cls.teacher && cls.teacher.is_anonymous && jc.email){
+      cls.teacher.is_anonymous=false; cls.teacher.email=jc.email;
+      sbFetch('/rest/v1/teachers?id=eq.'+cls.sess.user_id,{method:'PATCH',body:JSON.stringify({is_anonymous:false,email:jc.email})}).catch(function(){});
+    }
     if(!cls.teacher){ // มี session แต่แถวครูหาย (เช่นสร้างไม่สำเร็จรอบก่อน) → สร้างใหม่พร้อมโค้ดกู้คืน
       var rec2=clsRecGen(); try{ localStorage.setItem('cls_recovery',rec2); }catch(e){}
       return sbFetch('/rest/v1/teachers?on_conflict=id',{method:'POST',
@@ -26473,6 +26561,9 @@ function clsRender(){
     '<div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px">'+
       '<span style="font-size:20px">👩‍🏫</span>'+
       '<b>'+esc((cls.teacher&&cls.teacher.display_name)||'ครู')+'</b>'+
+      (cls.teacher&&cls.teacher.is_anonymous===false
+        ?'<span class="cls-chip" style="background:#dcfce7;color:#166534">✔ ผูกบัญชีแล้ว'+(cls.teacher.email?' · '+esc(cls.teacher.email):'')+'</span>'
+        :'<button class="btn-ghost" style="padding:4px 10px;font-size:12px;background:#eff6ff;border-color:#93c5fd;color:#1d4ed8" onclick="clsLinkGoogle()">🔗 ผูกบัญชี Google</button>')+
       '<span class="muted" style="font-size:12px;flex:1">ห้องเรียนของครู: '+cls.rooms.length+' ห้อง</span>'+
       (rec?'<span style="font-size:12px;color:#334155">🔑 โค้ดกู้คืน (จดเก็บไว้ ใช้เข้าจากเครื่องอื่น): <b style="font-family:ui-monospace,monospace;user-select:all;background:#fef9c3;border:1px dashed #eab308;border-radius:7px;padding:2px 8px">'+esc(rec)+'</b></span>':'')+
     '</div>');
