@@ -2439,7 +2439,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
    ตัวอย่าง: ไฟล์ CAI_KAN_NEW2_72.html ออกวันที่ 22/07/2569 → V.7.2 + 2569 07 22 = "V.7.225690722"
    เหตุที่ท้ายเรียง ปี-เดือน-วัน: ตัวเลขจะโตตามเวลาเสมอ เทียบได้ทันทีว่าเครื่องไหนรุ่นใหม่กว่า (มาตรฐาน build number)
    ทุกครั้งที่แก้ไฟล์ออกรุ่นใหม่ ให้ขยับเลขรุ่น+วันที่นี้พร้อมเลขท้ายชื่อไฟล์เสมอ จะได้ตรวจจากหน้าจอได้ไม่ต้องเดา */
-const GAME_VERSION = 'V.7.53-IX2050-2569.29'; /* [เฟส 3c 2569.29] เกมคุย Supabase ตรง (Sheets เหลือเป็นตัวสำรอง): (1) login บัญชีเดิมผ่าน rpc_legacy_login — เข้าได้ทันที+กู้เซฟ+ผูกห้องเรียนอัตโนมัติ (2) เซฟเกม (ProfileBlob) ขึ้น Supabase ผ่าน rpc_set_save พร้อมคะแนนสรุป (คะแนนเก็บ=ผลรวม normScore ดีที่สุดต่อด่าน · คะแนนสอบ=ด่าน 8) — กลุ่ม 2-3 คนลงครบทุกสมาชิก (3) กระดานอันดับรายห้องจาก rpc_leaderboard เมื่อผูกห้องเรียนอยู่ (เห็นเฉพาะเพื่อนร่วมห้อง) ถอยกลับ Sheets อัตโนมัติเมื่อมีปัญหา (4) เข้าห้องเรียนแล้วดึงเซฟจาก rpc_get_save มาผสานก่อนเข้าเกม (รอสูงสุด 4 วิ) (5) Sheets ล่มไม่กั้นการเข้าเล่น — ผูก session ในเครื่อง เล่นต่อได้ ข้อมูลยังลง Supabase ครบ | [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
+const GAME_VERSION = 'V.7.54-IX2050-2569.30'; /* [เฟส 3d 2569.30] หน้าห้องเรียนครบตาม Dashboard V.2: (1) พอร์ตสูตร HOTS v2 (A20/B30/C25/D25 + CTC/STM/CRT/PRB + ระดับ 3-6 + pilok solver) มาคิดจาก events ใน Supabase ตรง — ตาราง เก็บ/สอบ/A/B/C/D/รวม/ระดับ/กาญ24/เล่น/ล่าสุด + คลิกแถวดู 4 ด้านการคิด/สิ่งที่ขาด/Strict · สรุปบนสุดเพิ่ม สมรรถนะเฉลี่ย + ระดับ 5-6 + แถบเฉลี่ยรายแหล่ง (2) ครูเจ้าของห้อง = admin ของห้องตัวเอง: ✏️ แก้ข้อมูลนักเรียน+PIN · 🧹 ล้างข้อมูลการเล่นรายคน (ตรวจ RLS แล้วแจ้งถ้ายังไม่รันแพตช์) · 🗑 ลบห้องถาวร (ยืนยันพิมพ์โค้ดห้อง) (3) dropdown โรงเรียน→ห้องเรียนหน้า login: โรงเรียนเดียวเลือกให้อัตโนมัติ+โหลดห้องทันที · โชว์จำนวนห้อง · ข้อความ error ชี้สาเหตุ (ยังไม่รัน SQL แพตช์) · SQL รวมไฟล์เดียว supabase_patch_all_v754.sql | [เฟส 3c 2569.29] เกมคุย Supabase ตรง (Sheets เหลือเป็นตัวสำรอง): (1) login บัญชีเดิมผ่าน rpc_legacy_login — เข้าได้ทันที+กู้เซฟ+ผูกห้องเรียนอัตโนมัติ (2) เซฟเกม (ProfileBlob) ขึ้น Supabase ผ่าน rpc_set_save พร้อมคะแนนสรุป (คะแนนเก็บ=ผลรวม normScore ดีที่สุดต่อด่าน · คะแนนสอบ=ด่าน 8) — กลุ่ม 2-3 คนลงครบทุกสมาชิก (3) กระดานอันดับรายห้องจาก rpc_leaderboard เมื่อผูกห้องเรียนอยู่ (เห็นเฉพาะเพื่อนร่วมห้อง) ถอยกลับ Sheets อัตโนมัติเมื่อมีปัญหา (4) เข้าห้องเรียนแล้วดึงเซฟจาก rpc_get_save มาผสานก่อนเข้าเกม (รอสูงสุด 4 วิ) (5) Sheets ล่มไม่กั้นการเข้าเล่น — ผูก session ในเครื่อง เล่นต่อได้ ข้อมูลยังลง Supabase ครบ | [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
 /* [รอบ 49 Capstone] รหัสประจำ "รอบการเปิดเกม" (Session) — ใช้ผูกข้อมูลวิจัยทุกชีต (Progress/QuestionLog/BossResults/CapstoneResults)
    อยู่ใน sessionStorage: เปิดแท็บใหม่/รีเฟรช = ได้ session ใหม่, สลับหน้าในแท็บเดิม = session เดิม (ไม่ใช่ข้อมูลระบุตัวตน) */
 const SESSION_ID = (() => {
@@ -24333,25 +24333,40 @@ function clsjOpenWithKey(k){ clsjOpen(); var ki=document.getElementById('clsj-ke
   /* [เฟส 2.2] เลือกจากรายชื่อ โรงเรียน → ห้องเรียน (ไม่ต้องรู้โค้ด) */
   var js=document.getElementById('join-school'), jr=document.getElementById('join-room');
   window._clsjSchoolsLoaded=false;
+  /* [เฟส 3d] โหลดห้องเรียนของโรงเรียนที่เลือก — แยกเป็นฟังก์ชันเพื่อเรียกได้ทั้งจาก change และตอนเลือกโรงเรียนอัตโนมัติ */
+  window.clsjLoadRooms=function(schoolId){
+    if(!jr) return;
+    if(!schoolId){ jr.disabled=true; jr.innerHTML='<option value="">ห้องเรียน...</option>'; return; }
+    jr.disabled=true; jr.innerHTML='<option value="">กำลังโหลด...</option>';
+    clsjRpc('rpc_list_classrooms',{p_school:schoolId}).then(function(rows){
+      if(!rows||!rows.length){ jr.innerHTML='<option value="">(โรงเรียนนี้ยังไม่มีห้องที่เปิดอยู่)</option>'; jr.disabled=false; return; }
+      jr.innerHTML='<option value="">ห้องเรียน...</option>'+rows.map(function(r){ return '<option value="'+_satEsc(r.join_key)+'">'+_satEsc(r.name)+'</option>'; }).join('');
+      jr.disabled=false;
+    }).catch(function(err){
+      jr.innerHTML='<option value="">โหลดห้องไม่สำเร็จ — เลือกโรงเรียนซ้ำเพื่อลองใหม่</option>'; jr.disabled=false;
+      try{ console.warn('[clsj] rpc_list_classrooms:', err&&err.message); }catch(e){}
+    });
+  };
   window.clsjLoadSchools=function(){
     if(window._clsjSchoolsLoaded||!js) return;
     window._clsjSchoolsLoaded=true;
     clsjRpc('rpc_list_schools',{}).then(function(rows){
-      if(!rows||!rows.length){ js.innerHTML='<option value="">(ยังไม่มีโรงเรียนในระบบ)</option>'; return; }
-      js.innerHTML='<option value="">โรงเรียน...</option>'+rows.map(function(s){ return '<option value="'+_satEsc(s.school_id)+'">'+_satEsc(s.name)+'</option>'; }).join('');
-    }).catch(function(){ window._clsjSchoolsLoaded=false; js.innerHTML='<option value="">โหลดไม่สำเร็จ — แตะเพื่อลองใหม่</option>'; });
+      if(!rows||!rows.length){ js.innerHTML='<option value="">(ยังไม่มีโรงเรียนในระบบ — ใช้ช่องใส่โค้ดแทนได้)</option>'; return; }
+      js.innerHTML='<option value="">โรงเรียน...</option>'+rows.map(function(s){ return '<option value="'+_satEsc(s.school_id)+'">'+_satEsc(s.name)+(s.rooms?' ('+s.rooms+' ห้อง)':'')+'</option>'; }).join('');
+      /* มีโรงเรียนเดียว → เลือกให้เลย แล้วโหลดรายชื่อห้องทันที (นักเรียนเห็นชื่อห้องโดยไม่ต้องกดอะไรเพิ่ม) */
+      if(rows.length===1){ js.value=String(rows[0].school_id); window.clsjLoadRooms(js.value); }
+    }).catch(function(err){
+      window._clsjSchoolsLoaded=false;
+      var m=String(err&&err.message||'');
+      js.innerHTML='<option value="">'+(/PGRST|function|not found|404|schema/i.test(m)
+        ?'ระบบรายชื่อยังไม่เปิด (ครูยังไม่ได้รัน SQL แพตช์) — ใช้ช่องใส่โค้ดแทน'
+        :'โหลดไม่สำเร็จ — แตะเพื่อลองใหม่')+'</option>';
+      try{ console.warn('[clsj] rpc_list_schools:', m); }catch(e){}
+    });
   };
   if(js){
     js.addEventListener('focus',function(){ window.clsjLoadSchools(); });
-    js.addEventListener('change',function(){
-      if(!jr) return;
-      if(!js.value){ jr.disabled=true; jr.innerHTML='<option value="">ห้องเรียน...</option>'; return; }
-      jr.disabled=true; jr.innerHTML='<option value="">กำลังโหลด...</option>';
-      clsjRpc('rpc_list_classrooms',{p_school:js.value}).then(function(rows){
-        jr.innerHTML='<option value="">ห้องเรียน...</option>'+(rows||[]).map(function(r){ return '<option value="'+_satEsc(r.join_key)+'">'+_satEsc(r.name)+'</option>'; }).join('');
-        jr.disabled=false;
-      }).catch(function(){ jr.innerHTML='<option value="">โหลดไม่สำเร็จ</option>'; jr.disabled=false; });
-    });
+    js.addEventListener('change',function(){ window.clsjLoadRooms(js.value); });
   }
   if(jr){ jr.addEventListener('change',function(){ if(jr.value){ try{ if(typeof AUDIO!=='undefined'&&AUDIO.playSFX)AUDIO.playSFX('click'); }catch(e){} clsjOpenWithKey(jr.value); } }); }
   setTimeout(function(){ try{ window.clsjLoadSchools(); }catch(e){} },1500); // โหลดล่วงหน้า (แท็บห้องเรียนเป็นค่าเริ่มต้น)
@@ -26679,31 +26694,282 @@ function clsLoadCounts(){
     cls.students.forEach(function(s){ cls.counts[s.classroom_id]=(cls.counts[s.classroom_id]||0)+1; });
   }).catch(function(){});
 }
+/* ---------- 3) Pilok ReferenceRoute solver (พิสูจน์ 9/9 — ตรง pilok-ref-sph-v1.0) ---------- */
+var PILOK_DIG_COST = { dirt: 2, rock: 5, tin: 1, wolfram: 1, cave: 0 };
+var PILOK_SOLVER_VERSION = 'pilok-ref-sph-v1.0';
+function _pk_inb(g, r, c) { return r >= 0 && r < g.length && c >= 0 && c < g[0].length; }
+function _pk_neigh(r, c) { return [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]]; }
+function _pk_key(r, c) { return r + ',' + c; }
+function _pk_dijkstraFromTree(g, inTree) {
+  var R = g.length, C = g[0].length, dist = {}, prev = {}, pq = [];
+  function push(d, r, c, pr) { var k = _pk_key(r, c); if (dist[k] === undefined || d < dist[k]) { dist[k] = d; prev[k] = pr; pq.push({ d: d, r: r, c: c }); } }
+  for (var r = 0; r < R; r++) for (var c = 0; c < C; c++) { if (inTree.has(_pk_key(r, c))) { dist[_pk_key(r, c)] = 0; prev[_pk_key(r, c)] = null; pq.push({ d: 0, r: r, c: c }); } }
+  for (var c2 = 0; c2 < C; c2++) { if (!inTree.has(_pk_key(0, c2))) push(PILOK_DIG_COST[g[0][c2]], 0, c2, 'S'); }
+  var done = {};
+  while (pq.length) {
+    var bi = 0;
+    for (var i = 1; i < pq.length; i++) { var a = pq[i], b = pq[bi]; if (a.d < b.d || (a.d === b.d && (a.r < b.r || (a.r === b.r && a.c < b.c)))) bi = i; }
+    var cur = pq.splice(bi, 1)[0], ck = _pk_key(cur.r, cur.c);
+    if (done[ck]) continue; done[ck] = 1;
+    if (cur.d > (dist[ck] === undefined ? Infinity : dist[ck])) continue;
+    var nb = _pk_neigh(cur.r, cur.c);
+    for (var j = 0; j < nb.length; j++) {
+      var nr = nb[j][0], nc = nb[j][1]; if (!_pk_inb(g, nr, nc)) continue;
+      var nk = _pk_key(nr, nc); if (inTree.has(nk)) continue;
+      var nd = cur.d + PILOK_DIG_COST[g[nr][nc]];
+      if (dist[nk] === undefined || nd < dist[nk]) push(nd, nr, nc, ck);
+    }
+  }
+  return { dist: dist, prev: prev };
+}
+function _pk_backtrack(prev, tk) { var path = [], cur = tk; while (cur && cur !== 'S') { path.push(cur); var p = prev[cur]; if (p === null || p === undefined) break; cur = p; if (path.length > 5000) break; } return path; }
+function _pk_sphFrom(grid, terminals, firstTerminal) {
+  var inTree = new Set(), remaining = new Set(terminals);
+  while (remaining.size) {
+    var res = _pk_dijkstraFromTree(grid, inTree), best = null, bd = Infinity;
+    var pool = inTree.size ? Array.from(remaining) : [firstTerminal];
+    for (var i = 0; i < pool.length; i++) {
+      var t = pool[i], d = res.dist[t]; if (d === undefined) continue;
+      var parts = t.split(',').map(Number), tr = parts[0], tc = parts[1];
+      if (d < bd || (d === bd && best && (tr < best.r || (tr === best.r && tc < best.c)))) { bd = d; best = { t: t, r: tr, c: tc }; }
+    }
+    if (!best) throw new Error('terminal เชื่อมไม่ถึง');
+    _pk_backtrack(res.prev, best.t).forEach(function (k) { inTree.add(k); });
+    remaining['delete'](best.t);
+  }
+  return inTree;
+}
+function _pk_allAnchored(grid, cellsSet, terminals) {
+  var row0 = Array.from(cellsSet).filter(function (k) { return k.charAt(0) === '0' && k.charAt(1) === ','; });
+  var seen = new Set(row0), st = row0.slice();
+  while (st.length) { var pr = st.pop().split(',').map(Number); var nb = _pk_neigh(pr[0], pr[1]); for (var i = 0; i < nb.length; i++) { var nk = _pk_key(nb[i][0], nb[i][1]); if (cellsSet.has(nk) && !seen.has(nk)) { seen.add(nk); st.push(nk); } } }
+  return terminals.every(function (t) { return seen.has(t); });
+}
+function _pk_prune(grid, cellsSet, terminals) {
+  var term = new Set(terminals), changed = true;
+  while (changed) {
+    changed = false;
+    var arr = Array.from(cellsSet);
+    for (var i = 0; i < arr.length; i++) {
+      var k = arr[i]; if (term.has(k)) continue;
+      var pr = k.split(',').map(Number), deg = 0, nb = _pk_neigh(pr[0], pr[1]);
+      for (var j = 0; j < nb.length; j++) if (cellsSet.has(_pk_key(nb[j][0], nb[j][1]))) deg++;
+      if (deg <= 1) { cellsSet['delete'](k); if (!_pk_allAnchored(grid, cellsSet, terminals)) cellsSet.add(k); else changed = true; }
+    }
+  }
+  return cellsSet;
+}
+function _pk_energyOf(grid, set) { var e = 0; set.forEach(function (k) { var pr = k.split(',').map(Number); e += PILOK_DIG_COST[grid[pr[0]][pr[1]]]; }); return e; }
+function _pk_terminals(grid) { var t = []; for (var r = 0; r < grid.length; r++) for (var c = 0; c < grid[0].length; c++) if (grid[r][c] === 'tin' || grid[r][c] === 'wolfram') t.push(_pk_key(r, c)); return t; }
+function _pk_bestOfStarts(grid, reqTerminals, realTerminals) {
+  var bestSet = null, bestE = Infinity, bestN = Infinity;
+  for (var i = 0; i < reqTerminals.length; i++) {
+    var set = _pk_sphFrom(grid, reqTerminals, reqTerminals[i]);
+    set = _pk_prune(grid, set, realTerminals);
+    var e = _pk_energyOf(grid, set);
+    if (e < bestE || (e === bestE && set.size < bestN)) { bestE = e; bestN = set.size; bestSet = set; }
+  }
+  return { set: bestSet, e: bestE };
+}
+function hotsV2_pilokSolve(grid) {
+  var terminals = _pk_terminals(grid);
+  if (!terminals.length) return { optimalEnergy: 0, optimalDigCount: 0, cells: [], version: PILOK_SOLVER_VERSION, terminals: 0 };
+  var best = _pk_bestOfStarts(grid, terminals, terminals);
+  var cells = Array.from(best.set).map(function (k) { return k.split(',').map(Number); }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
+  return { optimalEnergy: best.e, optimalDigCount: cells.length, cells: cells, version: PILOK_SOLVER_VERSION, terminals: terminals.length };
+}
+// server recompute route score จาก telemetry
+function hotsV2_scoreRoute(grid, actualEnergySpent, actualDigCount) {
+  var opt = hotsV2_pilokSolve(grid);
+  var energyEff = Math.min(1, opt.optimalEnergy / Math.max(1, actualEnergySpent));
+  var digEff = Math.min(1, opt.optimalDigCount / Math.max(1, actualDigCount));
+  var composite = energyEff * 0.6 + digEff * 0.4;
+  var rubric = composite >= 0.8 ? 4 : composite >= 0.65 ? 3 : composite >= 0.5 ? 2 : 1;
+  return {
+    optimalEnergy: opt.optimalEnergy, optimalDigCount: opt.optimalDigCount,
+    energyEff: Math.round(energyEff * 1000) / 1000, digEff: Math.round(digEff * 1000) / 1000,
+    routeComposite: Math.round(composite * 1000) / 1000,
+    pilokNorm10: Math.round(composite * 10 * 100) / 100, pilokWeighted5: Math.round(composite * 5 * 100) / 100,
+    rubric: rubric, solverVersion: opt.version
+  };
+}
+
+/* ===== [เฟส 3d] เครื่องคิดสมรรถนะ Dashboard V.2 จากข้อมูล Supabase (สูตรตรงกับ HOTS v2 ใน .gs — A20/B30/C25/D25) ===== */
+var CV2 = (function(){
+  var W = { A:20, B:30, C:25, D:25 }, MIN_A = 5, BOSS_EXP = 20;
+  var ITEM_MAP = { 'q1_3': 'STM', 'q1_12': 'STM', 'q1_15': 'STM', 'q1_19': 'CTC', 'q3_3': 'CTC', 'q3_7': 'STM', 'q3_15': 'CTC', 'q3_22': 'CTC', 'q3_24': 'CTC', 'q4_5': 'STM', 'q4_8': 'CTC', 'q4_14': 'PRB', 'q4_18': 'CTC', 'q4_20': 'STM', 'q4_22': 'CTC', 'q5_4': 'STM', 'q5_8': 'CTC', 'q5_12': 'CTC', 'q5_18': 'STM', 'q5_23': 'STM', 'q6_5': 'CTC', 'q6_8': 'CTC', 'q6_12': 'CTC', 'q6_16': 'STM', 'q7_6': 'CTC', 'q7_10': 'CTC', 'q7_15': 'CTC', 'qh_9': 'CTC', 'qh_10': 'CTC', 'qp_8': 'CTC', 'qp_9': 'CTC', 'qp_10': 'PRB', 'qp_11': 'STM' };
+  var BOSS_ITEMS = { 'q1_23': 'PRB', 'q3_23': 'PRB', 'q4_23': 'PRB', 'q5_21': 'PRB', 'q6_19': 'PRB', 'q7_18': 'STM', 'qh_3': 'CTC', 'qp_13': 'STM', 'q1_25': 'STM', 'q3_19': 'STM', 'q4_24': 'STM', 'q5_22': 'CTC', 'q6_11': 'PRB', 'q7_19': 'CTC', 'qh_11': 'CTC', 'qp_12': 'PRB', 'q1_6': 'CTC', 'q6_21': 'STM', 'qh_12': 'CTC', 'q8_4': 'CTC' };
+  var PERF_TASKS = { '2':{w:4,c:'CTC'}, '4':{w:4,c:'STM'}, '6':{w:4,c:'PRB'}, 'mg1':{w:3,c:'CTC'}, 'mg2':{w:7,c:'STM'}, 'mg3':{w:3,c:'CTC'}, 'pilok':{w:5,c:'CRT'} };
+  var CAP_CRIT = { PD:'PRB', EE:'CTC', ST:'STM', SD:'PRB', CD:'CRT', PA:'CTC' };
+  var COMPS = ['CTC','STM','CRT','PRB'];
+  var LV_LABEL = { 6:'เหนือความคาดหวัง', 5:'สามารถ', 4:'กำลังพัฒนา', 3:'เริ่มต้น' };
+  function r2(x){ return Math.round(x*100)/100; }
+  function num(v){ var n=Number(v); return isNaN(n)?0:n; }
+  function has(v){ return v!==''&&v!=null; }
+  function isT(v){ return v===true||String(v).toUpperCase()==='TRUE'||String(v).toUpperCase()==='PASS'||v==='1'||v===1; }
+  function lvOf(t){ return t>=80?6:t>=65?5:t>=50?4:3; }
+
+  /* ev = {q:[{sid,qid,ok,cr,att,sess,t}], p:[{sid,sc,cmp,att,t}], c:[{c24,att,fst,cmp,t,PD,EE,ST,SD,CD,PA}], k:[{w5,att,grid,en,dc,t}]} */
+  function compute(ev){
+    var comp={CTC:{e:0,m:0},STM:{e:0,m:0},CRT:{e:0,m:0},PRB:{e:0,m:0}};
+    function add(k,e,m){ if(comp[k]){ comp[k].e+=e; comp[k].m+=m; } }
+
+    /* ---- A: ข้อคิดวิเคราะห์ระหว่างด่าน (ครั้งแรกต่อข้อ) ---- */
+    var aBy={};
+    (ev.q||[]).forEach(function(r){
+      if(String(r.sid)==='8') return;
+      var qid=String(r.qid||''); if(!ITEM_MAP[qid]) return;
+      var cur=aBy[qid]; if(!cur){ aBy[qid]=r; return; }
+      var aH=has(r.att), cH=has(cur.att);
+      if(aH&&cH){ if(num(r.att)<num(cur.att)) aBy[qid]=r; }
+      else if((r.t||0)<(cur.t||0)) aBy[qid]=r;
+    });
+    var aIds=Object.keys(aBy), aCount=aIds.length, aRaw=0;
+    aIds.forEach(function(q){ aRaw+=num(aBy[q].cr); });
+    var aRate=aCount?aRaw/aCount:null;
+    var aStatus, aProv=null;
+    if(aCount===0) aStatus='MISSING_A';
+    else if(aCount<MIN_A){ aStatus='INCOMPLETE_EVIDENCE'; aProv=r2(aRate*W.A); }
+    else { aStatus='INCOMPLETE_MASTERY'; aProv=r2(aRate*W.A); }
+    if(aCount>=MIN_A){ var per=W.A/aCount; aIds.forEach(function(q){ add(ITEM_MAP[q], num(aBy[q].cr)*per, per); }); }
+
+    /* ---- B: ภารกิจ/มินิเกม 7 กิจกรรม (30) ---- */
+    var bProv=0, bDetail={}, ps=ev.p||[], pk=ev.k||[];
+    Object.keys(PERF_TASKS).forEach(function(sid){
+      var task=PERF_TASKS[sid];
+      if(sid==='pilok'){
+        if(!pk.length){ bDetail.pilok={st:'INCOMPLETE_PILOK_TELEMETRY',prov:null,w:task.w}; add(task.c,0,0); return; }
+        var vals=pk.map(function(r){
+          if(has(r.w5)&&num(r.w5)>0) return num(r.w5);
+          if(r.grid){ try{ var g=typeof r.grid==='string'?JSON.parse(r.grid):r.grid;
+            return hotsV2_scoreRoute(g, num(r.en), num(r.dc)).pilokWeighted5; }catch(e){} }
+          return 0;
+        });
+        var best5=Math.max.apply(null,vals);
+        var hasA2=pk.some(function(r){ return has(r.att)&&num(r.att)>=2; });
+        var stP=hasA2?'OK':'INCOMPLETE_ASSESSMENT';
+        var provP=r2(best5); bProv+=provP;
+        bDetail.pilok={st:stP,prov:provP,w:task.w};
+        add(task.c,best5,task.w);
+        return;
+      }
+      var rows=ps.filter(function(r){ return String(r.sid)===sid&&isT(r.cmp); });
+      if(!rows.length){ bDetail[sid]={st:'MISSING_TASK',prov:0,w:task.w}; add(task.c,0,task.w); return; }
+      var bestN=Math.max.apply(null,rows.map(function(r){ return Math.max(0,Math.min(10,num(r.sc))); }));
+      var hasA2b=rows.some(function(r){ return has(r.att)&&num(r.att)>=2; });
+      var prov=r2(bestN/10*task.w); bProv+=prov;
+      bDetail[sid]={st:hasA2b?'OK':'INCOMPLETE_ASSESSMENT',prov:prov,w:task.w};
+      add(task.c,bestN/10*task.w,task.w);
+    });
+    bProv=r2(bProv);
+    var bAllOK=Object.keys(PERF_TASKS).every(function(k){ return bDetail[k]&&bDetail[k].st==='OK'; });
+    var bStatus=bDetail.pilok.st==='INCOMPLETE_PILOK_TELEMETRY'?'INCOMPLETE_PILOK_TELEMETRY':(bAllOK?'OK':'INCOMPLETE_ASSESSMENT');
+
+    /* ---- C: ข้อ HOTS ด่านบอส 20 ข้อ (การสอบครั้งแรก) ---- */
+    var bl=(ev.q||[]).filter(function(r){ return String(r.sid)==='8'; });
+    var cCorrect=0, cCovered=0, cStatus, cProv=null, cStrict=null;
+    if(!bl.length) cStatus='MISSING_BOSS';
+    else {
+      var withA=bl.filter(function(r){ return has(r.att); }), firstBoss;
+      if(withA.length){ var minA=Math.min.apply(null,withA.map(function(r){ return num(r.att); })); firstBoss=bl.filter(function(r){ return num(r.att)===minA; }); }
+      else { var srt=bl.slice().sort(function(a,b){ return (a.t||0)-(b.t||0); }); var s0=String(srt[0].sess||''); firstBoss=s0?bl.filter(function(r){ return String(r.sess||'')===s0; }):srt.slice(0,30); }
+      var best={};
+      firstBoss.forEach(function(r){ var qid=String(r.qid||''); if(!BOSS_ITEMS[qid]) return; if(best[qid]==null) best[qid]=isT(r.ok)?1:0; });
+      cCovered=Object.keys(best).length;
+      Object.keys(best).forEach(function(qid){ cCorrect+=best[qid]; add(BOSS_ITEMS[qid], best[qid]*(W.C/BOSS_EXP), W.C/BOSS_EXP); });
+      cProv=r2(cCorrect/BOSS_EXP*W.C);
+      if(cCovered>=BOSS_EXP){ cStatus=withA.length?'OK':'INCOMPLETE_LEGACY_BOSS'; if(cStatus==='OK') cStrict=cProv; }
+      else cStatus='INCOMPLETE_LEGACY_BOSS';
+    }
+
+    /* ---- D: ด่านกาญ 2050 — ครั้งที่ 1-2 เลือกคะแนนดิบสูงสุด (24 → 25) ---- */
+    var cps=ev.c||[], dStatus, dProv=null, dStrict=null, dRaw=null, dRow=null;
+    if(!cps.length) dStatus='MISSING_CAPSTONE';
+    else {
+      var cSrt=cps.slice().sort(function(a,b){ return (a.t||0)-(b.t||0); });
+      var cA=cSrt.filter(function(r){ return has(r.att); });
+      var firstTwo=cA.length?cA.filter(function(r){ var n=num(r.att); return n===1||n===2; }):cSrt.slice(0,2);
+      if(!firstTwo.length) firstTwo=cSrt.slice(0,2);
+      dRow=firstTwo.reduce(function(bR,r){ return (bR==null||Math.min(24,num(r.c24))>Math.min(24,num(bR.c24)))?r:bR; },null);
+      var hasFirst=cps.some(function(r){ return isT(r.fst); });
+      dRaw=Math.max(0,Math.min(24,num(dRow.c24)));
+      dProv=r2(dRaw/24*W.D);
+      dStatus=(hasFirst&&isT(dRow.cmp))?'OK':'INCOMPLETE_CAPSTONE';
+      if(dStatus==='OK') dStrict=dProv;
+      Object.keys(CAP_CRIT).forEach(function(cr){ var v=Math.max(0,Math.min(4,num(dRow[cr]))); add(CAP_CRIT[cr], v*(W.D/24), 4*(W.D/24)); });
+    }
+
+    /* ---- รวม + ระดับ + สถานะ ---- */
+    var compScore={}; COMPS.forEach(function(k){ compScore[k]=comp[k].m>0?r2(comp[k].e/comp[k].m*100):null; });
+    var provTotal=r2((aProv||0)+(bProv||0)+(cProv||0)+(dProv||0));
+    var strictComplete=aStatus==='OK'&&bStatus==='OK'&&cStatus==='OK'&&dStatus==='OK';
+    var strictTotal=null, sLv=null, sNote='';
+    if(strictComplete){
+      var bs=0; for(var k2 in bDetail) bs+=(bDetail[k2].st==='OK'?bDetail[k2].prov:0)||0;
+      strictTotal=r2((aProv||0)+bs+cStrict+dStrict);
+      if(strictTotal>=80){
+        var g=dRaw>=20&&num(dRow.ST)>=3&&num(dRow.CD)>=3&&num(dRow.PA)>=3&&
+          (compScore.CTC||0)>=65&&(compScore.STM||0)>=65&&(compScore.CRT||0)>=65&&(compScore.PRB||0)>=65;
+        sLv=g?6:5; if(!g) sNote='คะแนนรวมถึงเกณฑ์ แต่หลักฐานระดับ 6 ยังไม่ครบ';
+      } else sLv=lvOf(strictTotal);
+    }
+    var provLv=lvOf(provTotal);
+    var missing=[];
+    if(aStatus!=='OK') missing.push('A:'+aStatus);
+    if(bStatus!=='OK') missing.push('B:'+bStatus);
+    if(cStatus!=='OK') missing.push('C:'+cStatus);
+    if(dStatus!=='OK') missing.push('D:'+dStatus);
+    var noData=aStatus==='MISSING_A'&&cStatus==='MISSING_BOSS'&&dStatus==='MISSING_CAPSTONE'&&bProv===0;
+    return { A:aProv, B:bProv, C:cProv, D:dProv, d24:dRaw,
+      total:provTotal, level:provLv, levelLabel:LV_LABEL[provLv],
+      strictTotal:strictTotal, strictLevel:sLv, strictNote:sNote,
+      comp:compScore, status:{A:aStatus,B:bStatus,C:cStatus,D:dStatus},
+      missing:missing, dataStatus:noData?'NO_DATA':(strictComplete?'COMPLETE_STRICT':'PROVISIONAL') };
+  }
+  return { compute: compute, LV_LABEL: LV_LABEL, W: W };
+})();
+
 /* [รวม Dashboard] โหลดข้อมูลการเล่นของนักเรียนทุกห้อง → สรุปคะแนนรายคน (คะแนนเก็บ/สอบ/กาญ 2050) */
 function clsLoadStats(){
   cls.stats=cls.stats||{}; cls.statsReady=false;
   var ids=(cls.students||[]).map(function(s){return s.id;});
   if(!ids.length){ cls.statsReady=true; clsRender(); return; }
-  var chunks=[]; for(var i=0;i<ids.length;i+=200) chunks.push(ids.slice(i,i+200));
+  var chunks=[]; for(var i=0;i<ids.length;i+=150) chunks.push(ids.slice(i,i+150));
   var stats={};
+  function S(id){ return stats[id]||(stats[id]={pb:{},boss:0,cap:0,plays:0,last:0,ev:{q:[],p:[],c:[],k:[]}}); }
+  /* [เฟส 3d] ดึงข้อมูลละเอียดพอคิดสูตร Dashboard V.2 (A/B/C/D) ได้ครบ — แยก 2 คำขอ: คำถามรายข้อ (แถวเยอะ ฟิลด์น้อย) กับที่เหลือ (แถวน้อย ฟิลด์เยอะ) */
+  var SEL_Q='student_id,stage_id,question_id,correct,credit,created_at,att:raw->>attemptNo,sess:raw->>sessionId';
+  var SEL_O='student_id,kind,stage_id,score,created_at,att:raw->>attemptNo,attC:raw->>AttemptNo,cmp:raw->>completed,fst:raw->>isFirstAttempt,c24:raw->>rawTotal24,PD:raw->>problemDecomposition,EE:raw->>evidenceEvaluation,ST:raw->>systemsThinking,SD:raw->>solutionDesign,CD:raw->>creativeDevelopment,PA:raw->>planAdaptation,w5:raw->>pilokWeighted5,w5C:raw->>PilokWeighted5,grid:raw->>gridJSON,en:raw->>energySpent,dc:raw->>actualDigCount';
   var p=Promise.resolve();
   chunks.forEach(function(ch){
     p=p.then(function(){ return sbEnsure(); }).then(function(){
-      return sbFetch('/rest/v1/events?select=student_id,kind,stage_id,score,created_at&student_id=in.('+ch.join(',')+')&limit=100000');
-    }).then(function(evs){
-      (evs||[]).forEach(function(e){
-        var s=stats[e.student_id]||(stats[e.student_id]={pb:{},boss:0,cap:0,plays:0,last:0});
-        s.plays++;
+      return Promise.all([
+        sbFetch('/rest/v1/events?kind=eq.question&select='+SEL_Q+'&student_id=in.('+ch.join(',')+')&limit=100000'),
+        sbFetch('/rest/v1/events?kind=in.(progress,boss,capstone,pilok)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')&limit=100000')
+      ]);
+    }).then(function(rr){
+      (rr[0]||[]).forEach(function(e){
+        var s=S(e.student_id); s.plays++;
         var t=Date.parse(e.created_at)||0; if(t>s.last)s.last=t;
-        var sc=Number(e.score)||0;
-        if(e.kind==='progress'){ var k=String(e.stage_id||''); if(!(k in s.pb)||sc>s.pb[k]) s.pb[k]=sc; }
+        s.ev.q.push({sid:e.stage_id,qid:e.question_id,ok:e.correct,cr:e.credit,att:e.att,sess:e.sess,t:t});
+      });
+      (rr[1]||[]).forEach(function(e){
+        var s=S(e.student_id); s.plays++;
+        var t=Date.parse(e.created_at)||0; if(t>s.last)s.last=t;
+        var sc=Number(e.score)||0, att=(e.att!=null&&e.att!=='')?e.att:e.attC;
+        if(e.kind==='progress'){ var k=String(e.stage_id||''); if(!(k in s.pb)||sc>s.pb[k]) s.pb[k]=sc;
+          s.ev.p.push({sid:e.stage_id,sc:sc,cmp:e.cmp,att:att,t:t}); }
         else if(e.kind==='boss'){ if(sc>s.boss)s.boss=sc; }
-        else if(e.kind==='capstone'){ if(sc>s.cap)s.cap=sc; }
+        else if(e.kind==='capstone'){ if(sc>s.cap)s.cap=sc;
+          s.ev.c.push({c24:(e.c24!=null&&e.c24!=='')?e.c24:sc,att:att,fst:e.fst,cmp:e.cmp,t:t,PD:e.PD,EE:e.EE,ST:e.ST,SD:e.SD,CD:e.CD,PA:e.PA}); }
+        else if(e.kind==='pilok'){ s.ev.k.push({w5:(e.w5!=null&&e.w5!=='')?e.w5:((e.w5C!=null&&e.w5C!=='')?e.w5C:(sc>0?sc:null)),att:att,grid:e.grid,en:e.en,dc:e.dc,t:t}); }
       });
     });
   });
   p.then(function(){
-    for(var k in stats){ var s=stats[k], sum=0; for(var st2 in s.pb) sum+=s.pb[st2]; s.collected=Math.round(sum*100)/100; }
+    for(var k in stats){ var s=stats[k], sum=0; for(var st2 in s.pb) sum+=s.pb[st2]; s.collected=Math.round(sum*100)/100;
+      try{ s.v2=CV2.compute(s.ev); }catch(e){ s.v2=null; }
+      delete s.ev; /* คิดเสร็จแล้ว ไม่เก็บข้อมูลดิบไว้กินหน่วยความจำ */ }
     cls.stats=stats; cls.statsReady=true; clsRender();
   }).catch(function(e){ cls.statsReady=true; clsRender(); });
 }
@@ -26711,19 +26977,37 @@ function clsStatOf(stu){
   var s=(cls.stats&&cls.stats[stu.id])||null;
   var col=Math.max(s?s.collected:0, Number(stu.collected_score)||0);
   var boss=Math.max(s?s.boss:0, Number(stu.boss_score)||0);
-  return { collected:col, boss:boss, cap:s?s.cap:0, plays:s?s.plays:0, last:s?s.last:0, has:(s&&s.plays>0)||col>0||boss>0 };
+  return { collected:col, boss:boss, cap:s?s.cap:0, plays:s?s.plays:0, last:s?s.last:0,
+    v2:(s&&s.v2)||null, has:(s&&s.plays>0)||col>0||boss>0 };
 }
 function clsSummaryHtml(){
   var students=cls.students||[], nRooms=cls.rooms.length, n=students.length;
   var played=0, colS=0, colN=0, bossS=0, bossN=0, capN=0;
+  var v2S=0, v2N=0, lv5=0, srcS={A:0,B:0,C:0,D:0}, srcN={A:0,B:0,C:0,D:0};
   students.forEach(function(stu){ var t=clsStatOf(stu);
     if(t.has){ played++; }
     if(t.collected>0){ colS+=t.collected; colN++; }
     if(t.boss>0){ bossS+=t.boss; bossN++; }
     if(t.cap>0){ capN++; }
+    if(t.v2&&t.v2.dataStatus!=='NO_DATA'){
+      v2S+=t.v2.total; v2N++; if(t.v2.level>=5) lv5++;
+      ['A','B','C','D'].forEach(function(k){ if(t.v2[k]!=null){ srcS[k]+=t.v2[k]; srcN[k]++; } });
+    }
   });
   function avg(s,c){ return c?(Math.round(s/c*10)/10):'–'; }
   function tile(v,l,c){ return '<div style="flex:1;min-width:110px;text-align:center;background:'+c+';border-radius:12px;padding:10px 8px"><div style="font-size:22px;font-weight:800">'+v+'</div><div style="font-size:11.5px;color:#475569">'+l+'</div></div>'; }
+  /* [เฟส 3d] แถบเฉลี่ยรายแหล่ง A/B/C/D ของทุกห้องรวมกัน — หน้าตาเดียวกับการ์ดแหล่งคะแนนใน Dashboard V.2 */
+  var FULL={A:20,B:30,C:25,D:25}, NAME={A:'A · ข้อคิดวิเคราะห์ระหว่างด่าน',B:'B · ภารกิจ/มินิเกม',C:'C · ข้อคิดวิเคราะห์ด่านบอส',D:'D · ด่านกาญ 2050'}, CLR={A:'#2563eb',B:'#0e7490',C:'#b45309',D:'#7c3aed'};
+  var srcBars='';
+  if(v2N>0){
+    srcBars='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">'+['A','B','C','D'].map(function(k){
+      var a=srcN[k]?srcS[k]/srcN[k]:0, pct=Math.round(a/FULL[k]*100);
+      return '<div style="flex:1;min-width:170px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:8px 10px">'+
+        '<div style="display:flex;justify-content:space-between;font-size:11.5px;color:#475569"><span>'+NAME[k]+'</span><b style="color:'+CLR[k]+'">'+avg(srcS[k],srcN[k])+'/'+FULL[k]+'</b></div>'+
+        '<div style="height:7px;background:#e2e8f0;border-radius:4px;margin-top:5px"><div style="height:7px;width:'+Math.max(2,Math.min(100,pct))+'%;background:'+CLR[k]+';border-radius:4px"></div></div>'+
+      '</div>';
+    }).join('')+'</div>';
+  }
   return '<div class="card" style="margin-bottom:14px"><h2 style="margin-top:0">สรุปข้อมูลผู้เรียน</h2>'+
     '<div style="display:flex;gap:10px;flex-wrap:wrap">'+
       tile(nRooms,'ห้องเรียน','#eff6ff')+
@@ -26732,28 +27016,84 @@ function clsSummaryHtml(){
       tile(avg(colS,colN),'คะแนนเก็บเฉลี่ย','#f0fdf4')+
       tile(avg(bossS,bossN),'คะแนนสอบเฉลี่ย (30)','#fef9c3')+
       tile(capN,'ทำภารกิจกาญ 2050 แล้ว','#fdf2f8')+
-    '</div>'+
+      tile(avg(v2S,v2N),'สมรรถนะเฉลี่ย (100)','#ede9fe')+
+      tile(v2N?lv5:'–','ระดับ 5-6 (คน)','#e0e7ff')+
+    '</div>'+srcBars+
     (cls.statsReady?'':'<div class="muted" style="font-size:12px;margin-top:8px"><span class="loading" style="border-color:#2563eb;border-top-color:transparent;width:12px;height:12px"></span> กำลังโหลดคะแนนล่าสุด...</div>')+
   '</div>';
 }
 function clsOpenScores(id){ cls.openScores=(cls.openScores===id)?null:id; if(cls.openScores) cls.open=null; clsRender(); }
+/* [เฟส 3d] เซลล์คะแนนแหล่ง A/B/C/D — มีจุด • เมื่อข้อมูลยังไม่ครบตามเกณฑ์ (ชี้เพื่อดูสาเหตุ) */
+function clsV2Cell(v,st,name){
+  var num=(v==null)?'<span class="muted">–</span>':(Math.round(v*10)/10);
+  var mk=(st&&st!=='OK')?' <span style="color:#d97706;cursor:help" title="'+esc(name+': '+clsV2StText(st))+'">•</span>':'';
+  return '<td style="text-align:center">'+num+mk+'</td>';
+}
+function clsV2StText(st){
+  return { MISSING_A:'ยังไม่มีข้อมูลข้อคิดวิเคราะห์', INCOMPLETE_EVIDENCE:'ข้อคิดวิเคราะห์ยังน้อยกว่า 5 ข้อ',
+    INCOMPLETE_MASTERY:'ยังไม่มีรอบเล่นซ้ำ (ใช้ผลครั้งแรกไปก่อน)', MISSING_TASK:'ยังไม่ทำภารกิจ',
+    INCOMPLETE_ASSESSMENT:'ยังไม่มีรอบประเมิน (ครั้งที่ 2 ขึ้นไป)', INCOMPLETE_PILOK_TELEMETRY:'ยังไม่มีข้อมูลด่านปิล๊อก',
+    MISSING_BOSS:'ยังไม่สอบด่านบอส', INCOMPLETE_LEGACY_BOSS:'ข้อมูลด่านบอสยังไม่ครบ 20 ข้อ',
+    MISSING_CAPSTONE:'ยังไม่ทำด่านกาญ 2050', INCOMPLETE_CAPSTONE:'ด่านกาญ 2050 ยังไม่สมบูรณ์' }[st]||st;
+}
+function clsV2Toggle(id){ var el=$('cv2d-'+id); if(el) el.style.display=(el.style.display==='none')?'':'none'; }
+var CLS_LV_CLR={6:'#7c3aed',5:'#16a34a',4:'#d97706',3:'#64748b'};
 function clsScoresHtml(r){
   var studs=(cls.students||[]).filter(function(s){return s.classroom_id===r.id;})
     .sort(function(a,b){ return (Number(a.student_number)||999)-(Number(b.student_number)||999); });
   if(!studs.length) return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px"><div class="muted" style="font-size:13px">ยังไม่มีรายชื่อนักเรียนในห้องนี้</div></div>';
   function d(t){ if(!t) return '–'; var x=new Date(t); return x.getDate()+'/'+(x.getMonth()+1); }
-  var rows=studs.map(function(s){ var t=clsStatOf(s);
-    return '<tr><td>'+esc(s.student_number||'')+'</td><td>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</td>'+
+  var NCOL=13;
+  var rows=studs.map(function(s){ var t=clsStatOf(s), v=t.v2;
+    var lvHtml='<span class="muted">–</span>';
+    if(v&&v.dataStatus!=='NO_DATA') lvHtml='<b style="color:'+(CLS_LV_CLR[v.level]||'#334155')+'">'+v.level+'</b> <span style="font-size:10.5px;color:#64748b">'+esc(v.levelLabel||'')+'</span>';
+    var main='<tr style="cursor:pointer" onclick="clsV2Toggle(\''+esc(s.id)+'\')" title="คลิกเพื่อดูรายละเอียดสมรรถนะ">'+
+      '<td>'+esc(s.student_number||'')+'</td><td>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</td>'+
       '<td style="text-align:center">'+(t.collected>0?t.collected:'–')+'</td>'+
       '<td style="text-align:center">'+(t.boss>0?t.boss:'–')+'</td>'+
+      (v?clsV2Cell(v.A,v.status.A,'A'):'<td style="text-align:center"><span class="muted">–</span></td>')+
+      (v?clsV2Cell(v.B,v.status.B,'B'):'<td style="text-align:center"><span class="muted">–</span></td>')+
+      (v?clsV2Cell(v.C,v.status.C,'C'):'<td style="text-align:center"><span class="muted">–</span></td>')+
+      (v?clsV2Cell(v.D,v.status.D,'D'):'<td style="text-align:center"><span class="muted">–</span></td>')+
+      '<td style="text-align:center">'+((v&&v.dataStatus!=='NO_DATA')?'<b>'+(Math.round(v.total*10)/10)+'</b>':'<span class="muted">–</span>')+'</td>'+
+      '<td style="text-align:center">'+lvHtml+'</td>'+
       '<td style="text-align:center">'+(t.cap>0?(t.cap+'/24'):'–')+'</td>'+
       '<td style="text-align:center">'+(t.plays||'–')+'</td>'+
       '<td style="text-align:center">'+d(t.last)+'</td></tr>';
+    /* แถวรายละเอียด (พับอยู่ คลิกแถวหลักเพื่อเปิด) — องค์ประกอบ 4 ด้าน + สถานะครบ/ขาด + ปุ่มจัดการ */
+    var det='<tr id="cv2d-'+esc(s.id)+'" style="display:none;background:#f8fafc"><td colspan="'+NCOL+'" style="padding:10px 14px">';
+    if(v&&v.dataStatus!=='NO_DATA'){
+      var CN={CTC:'คิดอย่างมีวิจารณญาณ',STM:'คิดเชิงระบบ',CRT:'คิดสร้างสรรค์',PRB:'คิดแก้ปัญหา'};
+      det+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">'+
+        ['CTC','STM','CRT','PRB'].map(function(k){ var cv=v.comp[k];
+          return '<div style="flex:1;min-width:140px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 9px">'+
+            '<div style="display:flex;justify-content:space-between;font-size:11px;color:#475569"><span>'+k+' · '+CN[k]+'</span><b>'+(cv==null?'–':Math.round(cv)+'%')+'</b></div>'+
+            '<div style="height:6px;background:#e2e8f0;border-radius:3px;margin-top:4px"><div style="height:6px;width:'+(cv==null?0:Math.max(2,Math.min(100,Math.round(cv))))+'%;background:#2563eb;border-radius:3px"></div></div></div>';
+        }).join('')+'</div>';
+      det+='<div style="font-size:12px;color:#475569">'+
+        (v.dataStatus==='COMPLETE_STRICT'
+          ?'✅ ข้อมูลครบตามเกณฑ์ทางการ · คะแนนสมบูรณ์ '+v.strictTotal+'/100 ระดับ '+v.strictLevel+(v.strictNote?' <span style="color:#b45309">('+esc(v.strictNote)+')</span>':'')
+          :'ℹ️ คะแนนฉบับข้อมูลเท่าที่มี (Provisional)'+(v.missing.length?' · ยังขาด: '+esc(v.missing.map(function(m){ var p=m.split(':'); return p[0]+' ('+clsV2StText(p[1])+')'; }).join(' · ')):''))+
+        '</div>';
+    } else det+='<div class="muted" style="font-size:12.5px">ยังไม่มีข้อมูลการเล่นพอสรุปสมรรถนะ</div>';
+    det+='<div style="margin-top:8px"><button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#b91c1c" onclick="clsWipeStudent(\''+esc(s.id)+'\',\''+esc((s.first_name||'')+' '+(s.last_name||''))+'\')">🧹 ล้างข้อมูลการเล่นของคนนี้</button></div>';
+    det+='</td></tr>';
+    return main+det;
   }).join('');
   return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px">'+
     (cls.statsReady?'':'<div class="muted" style="font-size:12px;margin-bottom:6px"><span class="loading" style="border-color:#2563eb;border-top-color:transparent;width:12px;height:12px"></span> กำลังโหลดคะแนน...</div>')+
-    '<div style="overflow-x:auto"><table class="cls-tbl"><tr><th style="width:52px">เลขที่</th><th>ชื่อ-นามสกุล</th><th style="text-align:center">คะแนนเก็บ</th><th style="text-align:center">คะแนนสอบ (30)</th><th style="text-align:center">กาญ 2050</th><th style="text-align:center">ครั้งที่เล่น</th><th style="text-align:center">ล่าสุด</th></tr>'+rows+'</table></div>'+
-    '<div class="muted" style="font-size:11.5px;margin-top:6px">คะแนนเก็บ = ผลรวมคะแนนดีที่สุดต่อด่าน · คะแนนสอบ = ด่านบอสครั้งที่ดีที่สุด · กาญ 2050 = คะแนนดิบ 6 เกณฑ์ (เต็ม 24)</div>'+
+    '<div style="overflow-x:auto"><table class="cls-tbl"><tr>'+
+      '<th style="width:46px">เลขที่</th><th style="min-width:130px">ชื่อ-นามสกุล</th>'+
+      '<th style="text-align:center" title="ผลรวมคะแนนดีที่สุดต่อด่าน">เก็บ</th>'+
+      '<th style="text-align:center" title="ด่านบอส ครั้งที่ดีที่สุด (ครั้ง 1-2)">สอบ/30</th>'+
+      '<th style="text-align:center" title="ข้อคิดวิเคราะห์ระหว่างด่าน">A/20</th>'+
+      '<th style="text-align:center" title="ภารกิจและมินิเกม 7 กิจกรรม">B/30</th>'+
+      '<th style="text-align:center" title="ข้อคิดวิเคราะห์ในด่านบอส 20 ข้อ (สอบครั้งแรก)">C/25</th>'+
+      '<th style="text-align:center" title="ด่านกาญ 2050 (ครั้ง 1-2 เลือกสูงสุด)">D/25</th>'+
+      '<th style="text-align:center" title="คะแนนสมรรถนะรวม">รวม/100</th>'+
+      '<th style="text-align:center" title="ระดับสมรรถนะ 3-6">ระดับ</th>'+
+      '<th style="text-align:center">กาญ/24</th><th style="text-align:center">เล่น</th><th style="text-align:center">ล่าสุด</th></tr>'+rows+'</table></div>'+
+    '<div class="muted" style="font-size:11.5px;margin-top:6px">สูตรเดียวกับ Dashboard V.2: A ข้อคิดวิเคราะห์ระหว่างด่าน (20) · B ภารกิจ/มินิเกม (30) · C ข้อคิดวิเคราะห์ด่านบอส (25) · D ด่านกาญ 2050 (25) · จุดส้ม • = ข้อมูลส่วนนั้นยังไม่ครบตามเกณฑ์ · <b>คลิกแถวนักเรียนเพื่อดู 4 ด้านการคิด (CTC/STM/CRT/PRB) และสิ่งที่ยังขาด</b></div>'+
   '</div>';
 }
 
@@ -26806,6 +27146,7 @@ function clsRender(){
           '<button class="btn-primary" style="background:#1d4ed8;padding:7px 14px" onclick="clsOpenScores(\''+esc(r.id)+'\')">📊 คะแนนของห้อง</button>'+
           '<button class="btn-primary" style="background:#0e7490;padding:7px 14px" onclick="clsOpenRoster(\''+esc(r.id)+'\')">👥 รายชื่อนักเรียน</button>'+
           '<button class="btn-ghost" style="padding:6px 14px" onclick="clsToggleRoom(\''+esc(r.id)+'\','+(r.is_active?'false':'true')+')">'+(r.is_active?'ปิดห้องชั่วคราว':'เปิดห้อง')+'</button>'+
+          '<button class="btn-ghost" style="padding:6px 14px;color:#b91c1c" onclick="clsDeleteRoom(\''+esc(r.id)+'\')">🗑 ลบห้องถาวร</button>'+
         '</div>'+
       '</div>'+
       (cls.open===r.id?clsRosterHtml(r):'')+
@@ -26872,16 +27213,62 @@ function clsRosterHtml(r){
 }
 function clsFillRoster(){
   if(!cls.open) return;
-  sbEnsure().then(function(){ return sbFetch('/rest/v1/students?classroom_id=eq.'+cls.open+'&select=id,student_number,first_name,last_name'); })
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/students?classroom_id=eq.'+cls.open+'&select=id,student_number,first_name,last_name,join_pin'); })
   .then(function(rows){
     cls.roster=(rows||[]).sort(function(a,b){ return (Number(a.student_number)||999)-(Number(b.student_number)||999); });
     var el=$('cls-roster-tbl'); if(!el) return;
     if(!cls.roster.length){ el.innerHTML='<div class="muted" style="font-size:13px">ยังไม่มีรายชื่อ — เพิ่มจากฟอร์มด้านบน หรือให้นักเรียนพิมพ์ชื่อเองตอนเข้าห้อง</div>'; return; }
-    el.innerHTML='<table class="cls-tbl"><tr><th style="width:60px">เลขที่</th><th>ชื่อ</th><th>นามสกุล</th><th style="width:60px"></th></tr>'+
+    el.innerHTML='<table class="cls-tbl"><tr><th style="width:60px">เลขที่</th><th>ชื่อ</th><th>นามสกุล</th><th style="width:70px" title="PIN สำหรับเข้าห้อง (ตั้งเมื่อต้องการกันเพื่อนแตะชื่อผิดคน)">PIN</th><th style="width:120px"></th></tr>'+
       cls.roster.map(function(s){ return '<tr><td>'+esc(s.student_number||'')+'</td><td>'+esc(s.first_name||'')+'</td><td>'+esc(s.last_name||'')+'</td>'+
-        '<td><button class="btn-ghost" style="padding:3px 9px;font-size:12px;color:#b91c1c" onclick="clsDelStudent(\''+esc(s.id)+'\')">ลบ</button></td></tr>'; }).join('')+
+        '<td>'+esc(s.join_pin||'–')+'</td>'+
+        '<td><button class="btn-ghost" style="padding:3px 9px;font-size:12px;color:#1d4ed8" onclick="clsEditStudent(\''+esc(s.id)+'\')">✏️ แก้ไข</button> '+
+        '<button class="btn-ghost" style="padding:3px 9px;font-size:12px;color:#b91c1c" onclick="clsDelStudent(\''+esc(s.id)+'\')">ลบ</button></td></tr>'; }).join('')+
       '</table>';
   }).catch(function(e){ var el=$('cls-roster-tbl'); if(el) el.innerHTML='<div class="err" style="display:block">โหลดรายชื่อไม่สำเร็จ: '+esc(e&&e.message||'')+'</div>'; });
+}
+/* [เฟส 3d ตามคำขอ] ครูเจ้าของห้องแก้ข้อมูลนักเรียนได้เอง (เลขที่/ชื่อ/นามสกุล/PIN) — สิทธิ์คุมด้วย RLS ห้องของตัวเองเท่านั้น */
+function clsEditStudent(id){
+  var s=(cls.roster||[]).filter(function(x){return x.id===id;})[0]; if(!s) return;
+  var no=prompt('เลขที่', s.student_number||''); if(no==null) return;
+  var fn=prompt('ชื่อ', s.first_name||''); if(fn==null) return;
+  if(!String(fn).trim()){ toast('ชื่อห้ามว่าง'); return; }
+  var ln=prompt('นามสกุล', s.last_name||''); if(ln==null) return;
+  var pin=prompt('PIN เข้าห้อง 4-6 หลัก (เว้นว่าง = ไม่ใช้ PIN)', s.join_pin||''); if(pin==null) return;
+  pin=String(pin).trim();
+  if(pin&&!/^\d{4,6}$/.test(pin)){ toast('PIN ต้องเป็นตัวเลข 4-6 หลัก'); return; }
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'PATCH',
+    body:JSON.stringify({student_number:String(no).trim(),first_name:String(fn).trim(),last_name:String(ln).trim(),join_pin:pin||null})}); })
+  .then(function(){ toast('บันทึกการแก้ไขแล้ว'); return clsAfterAuth(); })
+  .catch(function(e){ toast('แก้ไขไม่สำเร็จ: '+(e&&e.message||'')); });
+}
+/* [เฟส 3d ตามคำขอ] ล้างข้อมูลการเล่นของนักเรียน 1 คน (คะแนน/ประวัติ/เซฟเกม) — รายชื่อยังอยู่ เริ่มเล่นใหม่ได้
+   ต้องรัน SQL แพตช์ (นโยบายให้ครูลบข้อมูลในห้องตัวเอง) ก่อนจึงใช้ได้ */
+function clsWipeStudent(id,name){
+  if(!confirm('ล้างข้อมูลการเล่นทั้งหมดของ "'+(name||'นักเรียนคนนี้')+'"?\n\n- คะแนน/ประวัติการเล่น/แบบประเมิน/เซฟเกม จะถูกลบถาวร\n- รายชื่อยังอยู่ในห้อง เข้าเล่นใหม่ได้เหมือนคนใหม่')) return;
+  if(!confirm('ยืนยันอีกครั้ง: ลบข้อมูลการเล่นของ "'+(name||'')+'" ถาวร?')) return;
+  sbEnsure()
+    .then(function(){ return sbFetch('/rest/v1/events?student_id=eq.'+id,{method:'DELETE'}); })
+    .then(function(){ return sbFetch('/rest/v1/surveys?student_id=eq.'+id,{method:'DELETE'}).catch(function(){}); })
+    .then(function(){ return sbFetch('/rest/v1/attempts?student_id=eq.'+id,{method:'DELETE'}).catch(function(){}); })
+    .then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'PATCH',body:JSON.stringify({save_blob:null,collected_score:null,boss_score:null})}); })
+    /* RLS ที่ยังไม่ได้ติดตั้งจะ "ลบไม่ได้แต่ไม่ฟ้อง error" — ตรวจซ้ำว่าลบจริงไหม จะได้บอกครูตรง ๆ */
+    .then(function(){ return sbFetch('/rest/v1/events?student_id=eq.'+id+'&select=id&limit=1'); })
+    .then(function(left){
+      if(left&&left.length){ toast('⚠️ ลบไม่สำเร็จ — โปรดรัน SQL แพตช์ล่าสุด (สิทธิ์ครูลบข้อมูลในห้องตัวเอง) แล้วลองใหม่'); return; }
+      toast('ล้างข้อมูลการเล่นแล้ว'); return clsAfterAuth(); })
+    .catch(function(e){ toast('ล้างไม่สำเร็จ: '+(e&&e.message||'')+' — ถ้าขึ้นเรื่องสิทธิ์ ให้รัน SQL แพตช์ล่าสุดก่อน'); });
+}
+/* [เฟส 3d ตามคำขอ] ลบห้องถาวร — ยืนยัน 2 ชั้น (พิมพ์โค้ดห้อง) เพราะลบแล้วนักเรียน+ข้อมูลการเล่นทั้งห้องหายถาวร */
+function clsDeleteRoom(id){
+  var r=cls.rooms.filter(function(x){return x.id===id;})[0]; if(!r) return;
+  var n=cls.counts[id]||0;
+  if(!confirm('ลบห้อง "'+r.name+'" ถาวร?\n\n- รายชื่อนักเรียน '+n+' คน และข้อมูลการเล่นทั้งหมดของห้องนี้จะถูกลบถาวร\n- ถ้าแค่อยากพักห้อง ใช้ "ปิดห้องชั่วคราว" แทน')) return;
+  var typed=prompt('พิมพ์โค้ดห้อง "'+r.join_key+'" เพื่อยืนยันการลบถาวร');
+  if(typed==null) return;
+  if(String(typed).trim().toUpperCase()!==String(r.join_key).toUpperCase()){ toast('โค้ดไม่ตรง — ยังไม่ลบ'); return; }
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/classrooms?id=eq.'+id,{method:'DELETE'}); })
+  .then(function(){ toast('ลบห้อง '+r.name+' แล้ว'); return clsAfterAuth(); })
+  .catch(function(e){ toast('ลบห้องไม่สำเร็จ: '+(e&&e.message||'')); });
 }
 function clsAddStudent(){
   var err=$('cls-roster-err'); if(err)err.textContent='';
