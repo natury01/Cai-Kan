@@ -2416,7 +2416,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
    ตัวอย่าง: ไฟล์ CAI_KAN_NEW2_72.html ออกวันที่ 22/07/2569 → V.7.2 + 2569 07 22 = "V.7.225690722"
    เหตุที่ท้ายเรียง ปี-เดือน-วัน: ตัวเลขจะโตตามเวลาเสมอ เทียบได้ทันทีว่าเครื่องไหนรุ่นใหม่กว่า (มาตรฐาน build number)
    ทุกครั้งที่แก้ไฟล์ออกรุ่นใหม่ ให้ขยับเลขรุ่น+วันที่นี้พร้อมเลขท้ายชื่อไฟล์เสมอ จะได้ตรวจจากหน้าจอได้ไม่ต้องเดา */
-const GAME_VERSION = 'V.7.45-IX2050-2569.21'; /* [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
+const GAME_VERSION = 'V.7.46-IX2050-2569.22'; /* [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
 /* [รอบ 49 Capstone] รหัสประจำ "รอบการเปิดเกม" (Session) — ใช้ผูกข้อมูลวิจัยทุกชีต (Progress/QuestionLog/BossResults/CapstoneResults)
    อยู่ใน sessionStorage: เปิดแท็บใหม่/รีเฟรช = ได้ session ใหม่, สลับหน้าในแท็บเดิม = session เดิม (ไม่ใช่ข้อมูลระบุตัวตน) */
 const SESSION_ID = (() => {
@@ -24131,6 +24131,17 @@ function openEmbeddedDashboard(){
   .login-or::before,.login-or::after{content:"";flex:1;height:1px;background:#e2e8f0}
   .btn-view{width:100%;background:#eff6ff;color:#1e40af;border:1.5px solid #93c5fd;border-radius:10px;padding:10px;font-size:14px;font-weight:700;cursor:pointer}
   .btn-view:hover{background:#dbeafe}
+  /* [เฟส 1] ระบบห้องเรียน (Supabase) */
+  .cls-key{font-family:ui-monospace,Consolas,monospace;font-size:24px;font-weight:800;letter-spacing:4px;background:#ecfeff;border:2px dashed #06b6d4;border-radius:12px;padding:6px 16px;display:inline-block;color:#0e7490;user-select:all}
+  .cls-room{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px;background:#fff}
+  .cls-room.inactive{opacity:.55}
+  .cls-chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;margin-left:6px}
+  .cls-note{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:9px 12px;font-size:12.5px;color:#78350f;margin:8px 0}
+  .cls-tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .cls-tbl th{background:#f8fafc;text-align:left;padding:6px 8px;border-bottom:2px solid #e5e7eb;font-size:12px}
+  .cls-tbl td{padding:5px 8px;border-bottom:1px solid #f1f5f9}
+  .cls-in{font-family:inherit;font-size:14px;padding:8px 10px;border:1.5px solid #cbd5e1;border-radius:9px}
+  .cls-in:focus{outline:2px solid #bfdbfe;border-color:#2563eb}
   .datewarn{display:inline-block;background:#fffbeb;border:1px solid #fde68a;color:#b45309;border-radius:6px;padding:1px 6px;font-size:10.5px;font-weight:700;cursor:pointer;margin-left:4px}
   .datewarn:hover{background:#fde68a}
   .v2-eligrow{display:flex;align-items:center;gap:10px;margin:8px 0}
@@ -24188,6 +24199,7 @@ function openEmbeddedDashboard(){
       <button id="btn-satisfaction" class="btn-ghost admin-only">😊 ความพึงพอใจ</button>
       <button id="btn-hotsv2" class="btn-ghost" style="background:#ecfdf5;border-color:#a7f3d0;color:#047857">🎯 HOTS v2</button>
       <button id="btn-export" class="btn-ghost">⬇ ส่งออก CSV</button>
+      <button id="btn-classroom" class="btn-ghost" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">🏫 ห้องเรียน</button>
       <button id="btn-logout">ออกจากระบบ</button>
     </div>
   </header>
@@ -24203,6 +24215,20 @@ function openEmbeddedDashboard(){
     <div class="pagenav" style="display:none">
       <button id="nav-v2" class="on">🎯 Dashboard V.2 <span class="sub">HOTS ทางการ · A20·B30·C25·D25</span></button>
       <button id="nav-v1" class="v1">📘 Dashboard V.1 <span class="sub">เกณฑ์เดิม · A20·B25·C25·D30</span></button>
+    </div>
+
+    <!-- ============ [เฟส 1] หน้าจัดการห้องเรียน (Supabase — ระบบใหม่ แยกจาก Google Sheets) ============ -->
+    <div id="page-cls" class="hidden">
+      <div class="v2banner" style="background:linear-gradient(90deg,#eff6ff,#dbeafe);border-color:#93c5fd">
+        <div style="font-size:22px">🏫</div>
+        <div style="flex:1;min-width:220px">
+          <div style="font-weight:800;color:#1d4ed8;font-size:15px">ระบบห้องเรียน — ครูสร้างห้อง · นักเรียนเข้าด้วยโค้ด ไม่ต้องสมัคร</div>
+          <div style="font-size:12px;color:#1e40af">ระบบใหม่บนฐานข้อมูล Supabase · เริ่มใช้ได้โดยไม่ต้องสมัคร (ผูกบัญชีภายหลังได้) · แยกจากข้อมูลคะแนนเดิม</div>
+        </div>
+        <button class="btn-ghost" id="cls-back" style="background:#fff">← กลับ Dashboard</button>
+      </div>
+      <div id="cls-status"></div>
+      <div id="cls-main"></div>
     </div>
 
     <!-- ============ หน้า V.1 (เกณฑ์เดิม) ============ -->
@@ -26014,6 +26040,303 @@ function fillV2Help(){
       'การตัดสินระดับ: ถ้าผ่าน Strict ใช้คะแนน Strict · ถ้ายังไม่ครบใช้ Provisional ไปก่อน (ผลราย<b>กลุ่ม</b>จะเป็น Provisional เสมอ เพราะเกณฑ์วิจัยนับเฉพาะรายบุคคล)</p>'+
     '</div>';
 }
+
+/* ============================================================================
+ *  [เฟส 1 · Supabase] ระบบห้องเรียน — ครูสร้างห้อง + join key + รายชื่อนักเรียน
+ *  ใช้ Supabase Auth แบบ anonymous (ใช้ก่อน ผูกบัญชีทีหลัง) · แยกจากระบบ Google Sheets เดิม
+ *  ความปลอดภัย: ใช้ anon public key (เปิดเผยได้) + RLS ฝั่งเซิร์ฟเวอร์คุมสิทธิ์จริง
+ * ============================================================================ */
+var SB_URL='https://janoonnhzpwjnxqjvswt.supabase.co';
+var SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imphbm9vbm5oenB3am54cWp2c3d0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUyMzUxODIsImV4cCI6MjEwMDgxMTE4Mn0.bimXWE_w_RRwOY9KbmLGqkpBlaI57WV34CXdLtbe4Vs';
+var GAME_CODE='kanchanaburi2050';
+var cls={ sess:null, teacher:null, schools:[], rooms:[], counts:{}, open:null, roster:[], schemaOk:null };
+
+function clsSaveSess(){ try{ if(cls.sess) localStorage.setItem('sb_cls_sess', JSON.stringify(cls.sess)); else localStorage.removeItem('sb_cls_sess'); }catch(e){} }
+function clsLoadSess(){ try{ var s=JSON.parse(localStorage.getItem('sb_cls_sess')||'null'); if(s&&s.refresh_token) cls.sess=s; }catch(e){} }
+
+function sbFetch(path,opt){
+  opt=opt||{};
+  var h={ 'apikey':SB_ANON, 'Content-Type':'application/json',
+          'Authorization':'Bearer '+((cls.sess&&cls.sess.access_token)||SB_ANON) };
+  opt.headers=Object.assign(h,opt.headers||{});
+  return fetch(SB_URL+path,opt).then(function(r){
+    return r.text().then(function(t){
+      var j=null; try{ j=t?JSON.parse(t):null; }catch(e){}
+      if(!r.ok){ var m=(j&&(j.message||j.msg||j.error_description||j.hint))||('HTTP '+r.status);
+        var err=new Error(m); err.status=r.status; err.code=(j&&j.code)||''; throw err; }
+      return j;
+    });
+  });
+}
+function sbSetSessionFromAuth(j){
+  cls.sess={ access_token:j.access_token, refresh_token:j.refresh_token,
+    user_id:(j.user&&j.user.id)||(cls.sess&&cls.sess.user_id)||'',
+    expires_at: Date.now()+(((j.expires_in||3600)-60)*1000) };
+  clsSaveSess();
+}
+function sbRefresh(){
+  if(!cls.sess||!cls.sess.refresh_token) return Promise.resolve(false);
+  return fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',
+    headers:{'apikey':SB_ANON,'Content-Type':'application/json'},
+    body:JSON.stringify({refresh_token:cls.sess.refresh_token})})
+  .then(function(r){ return r.json().catch(function(){return null;}); })
+  .then(function(j){ if(j&&j.access_token){ sbSetSessionFromAuth(j); return true; } cls.sess=null; clsSaveSess(); return false; })
+  .catch(function(){ return false; });
+}
+function sbEnsure(){
+  if(!cls.sess) return Promise.resolve(false);
+  if(Date.now() < (cls.sess.expires_at||0)-30000) return Promise.resolve(true);
+  return sbRefresh();
+}
+function sbAnonSignup(){
+  return fetch(SB_URL+'/auth/v1/signup',{method:'POST',
+    headers:{'apikey':SB_ANON,'Content-Type':'application/json'}, body:'{}'})
+  .then(function(r){ return r.text().then(function(t){ var j=null; try{ j=JSON.parse(t); }catch(e){}
+    if(!r.ok||!j||!j.access_token){ var m=(j&&(j.msg||j.message||j.error_description))||('HTTP '+r.status); throw new Error(m); }
+    sbSetSessionFromAuth(j); return j; }); });
+}
+
+/* ---------- เปิด/ปิดหน้า ---------- */
+function openClassroomPage(){
+  var p1=$('page-v1'),p2=$('page-v2'),pc=$('page-cls');
+  if(p1)p1.classList.add('hidden'); if(p2)p2.classList.add('hidden'); if(pc)pc.classList.remove('hidden');
+  clsInit();
+}
+function closeClassroomPage(){ var pc=$('page-cls'); if(pc)pc.classList.add('hidden'); showPage('v2'); }
+
+/* ---------- สถานะ + เริ่มระบบ ---------- */
+function clsStatus(html){ var el=$('cls-status'); if(el) el.innerHTML=html; }
+function clsMain(html){ var el=$('cls-main'); if(el) el.innerHTML=html; }
+function clsErrBox(t){ return '<div class="card"><div class="err" style="display:block">'+esc(t)+'</div></div>'; }
+
+function clsInit(){
+  clsStatus('<div class="card" style="padding:14px 16px"><span class="loading" style="border-color:#2563eb;border-top-color:transparent"></span> กำลังตรวจการเชื่อมต่อระบบห้องเรียน...</div>');
+  clsMain('');
+  // 1) ตรวจ schema (อ่านตาราง games ด้วย anon key)
+  sbFetch('/rest/v1/games?select=code&limit=1').then(function(rows){
+    cls.schemaOk=true;
+    // 2) มี session เดิมไหม
+    clsLoadSess();
+    return sbEnsure().then(function(ok){
+      if(ok) return clsAfterAuth();
+      clsShowStart();
+    });
+  }).catch(function(e){
+    cls.schemaOk=false;
+    if(e&&(String(e.code)==='42P01'||e.status===404)){
+      clsStatus(clsErrBox('ยังไม่ได้วางโครงฐานข้อมูล — เปิด Supabase → SQL Editor → วางไฟล์ supabase_schema.sql แล้วกด Run (ขั้น 1.2 ในคู่มือ) เสร็จแล้วกดปุ่มด้านล่าง')+
+        '<div class="card"><button class="btn-primary" onclick="clsInit()" style="background:#1d4ed8">ลองใหม่</button></div>');
+    } else {
+      clsStatus(clsErrBox('เชื่อมต่อฐานข้อมูลไม่ได้ ('+ (e&&e.message||'ไม่ทราบสาเหตุ') +') — ตรวจอินเทอร์เน็ตแล้วลองใหม่')+
+        '<div class="card"><button class="btn-primary" onclick="clsInit()" style="background:#1d4ed8">ลองใหม่</button></div>');
+    }
+  });
+}
+function clsShowStart(){
+  clsStatus('');
+  clsMain(
+    '<div class="card" style="max-width:560px;margin:0 auto;text-align:center;padding:26px">'+
+      '<div style="font-size:44px">🏫</div>'+
+      '<h2 style="margin:8px 0 4px">เริ่มใช้ระบบห้องเรียน</h2>'+
+      '<div class="muted" style="font-size:13.5px;margin-bottom:14px">กดปุ่มเดียว ใช้ได้เลย <b>ไม่ต้องสมัครสมาชิก</b> — ระบบจะจำครูไว้ในเบราว์เซอร์เครื่องนี้ (ผูกบัญชีถาวรได้ภายหลัง)</div>'+
+      '<input class="cls-in" id="cls-tname" type="text" placeholder="ชื่อครู (เช่น ครูอาคม)" style="width:80%;margin-bottom:12px;text-align:center">'+
+      '<button class="btn-primary" id="cls-start" style="width:80%;background:#1d4ed8;font-size:16px" onclick="clsStart()">🚀 เริ่มใช้งาน (ไม่ต้องสมัคร)</button>'+
+      '<div class="err" id="cls-start-err" style="margin-top:10px"></div>'+
+      '<div class="cls-note" style="text-align:left;margin-top:14px">⚠️ โหมดยังไม่ผูกบัญชี: อย่าล้างข้อมูลเบราว์เซอร์ (Clear browsing data) มิฉะนั้นจะเข้าถึงห้องที่สร้างไว้ไม่ได้ · ถ้าต้องใช้หลายเครื่อง แนะนำผูกบัญชี (จะเปิดให้ในเฟสถัดไป)</div>'+
+    '</div>');
+}
+function clsStart(){
+  var err=$('cls-start-err'); if(err)err.textContent='';
+  var btn=$('cls-start'); if(btn){btn.disabled=true; btn.textContent='กำลังเริ่ม...';}
+  var name=(($('cls-tname')&&$('cls-tname').value)||'').trim()||'ครู';
+  sbAnonSignup().then(function(){
+    // upsert แถวครู (id = auth uid)
+    return sbFetch('/rest/v1/teachers?on_conflict=id',{method:'POST',
+      headers:{'Prefer':'resolution=merge-duplicates,return=representation'},
+      body:JSON.stringify([{id:cls.sess.user_id,is_anonymous:true,display_name:name}])});
+  }).then(function(){ return clsAfterAuth(); })
+  .catch(function(e){
+    if(btn){btn.disabled=false; btn.textContent='🚀 เริ่มใช้งาน (ไม่ต้องสมัคร)';}
+    var m=String(e&&e.message||'');
+    if(/[Aa]nonymous.*(disabled|not allowed)/.test(m))
+      m='ยังไม่ได้เปิดสวิตช์ Anonymous Sign-ins — เปิดใน Supabase → Authentication → Sign In / Providers (ขั้น 1.5 ในคู่มือ)';
+    if(err) err.textContent='เริ่มไม่สำเร็จ: '+m;
+  });
+}
+function clsAfterAuth(){
+  return Promise.all([
+    sbFetch('/rest/v1/teachers?id=eq.'+cls.sess.user_id+'&select=*'),
+    sbFetch('/rest/v1/schools?select=id,name&order=name'),
+    sbFetch('/rest/v1/classrooms?select=*&order=created_at.desc')
+  ]).then(function(r){
+    cls.teacher=(r[0]&&r[0][0])||null;
+    cls.schools=r[1]||[];
+    cls.rooms=r[2]||[];
+    if(!cls.teacher){ // มี session แต่แถวครูหาย (เช่นสร้างไม่สำเร็จรอบก่อน) → สร้างใหม่
+      return sbFetch('/rest/v1/teachers?on_conflict=id',{method:'POST',
+        headers:{'Prefer':'resolution=merge-duplicates,return=representation'},
+        body:JSON.stringify([{id:cls.sess.user_id,is_anonymous:true,display_name:'ครู'}])})
+        .then(function(rows){ cls.teacher=rows&&rows[0]; return clsLoadCounts(); });
+    }
+    return clsLoadCounts();
+  }).then(function(){ clsRender(); })
+  .catch(function(e){
+    clsStatus(clsErrBox('โหลดข้อมูลห้องเรียนไม่สำเร็จ: '+(e&&e.message||''))+'<div class="card"><button class="btn-primary" onclick="clsInit()" style="background:#1d4ed8">ลองใหม่</button></div>');
+  });
+}
+function clsLoadCounts(){
+  cls.counts={};
+  if(!cls.rooms.length) return Promise.resolve();
+  var ids=cls.rooms.map(function(r){return r.id;}).join(',');
+  return sbFetch('/rest/v1/students?select=id,classroom_id&classroom_id=in.('+ids+')').then(function(rows){
+    (rows||[]).forEach(function(s){ cls.counts[s.classroom_id]=(cls.counts[s.classroom_id]||0)+1; });
+  }).catch(function(){});
+}
+
+/* ---------- เรนเดอร์หลัก ---------- */
+function clsJoinKeyGen(){ var A='ABCDEFGHJKMNPQRSTUVWXYZ23456789',k=''; for(var i=0;i<6;i++)k+=A[Math.floor(Math.random()*A.length)]; return k; }
+function clsRender(){
+  clsStatus(
+    '<div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px">'+
+      '<span style="font-size:20px">👩‍🏫</span>'+
+      '<b>'+esc((cls.teacher&&cls.teacher.display_name)||'ครู')+'</b>'+
+      (cls.teacher&&cls.teacher.is_anonymous?'<span class="cls-chip" style="background:#fef3c7;color:#92400e">ยังไม่ผูกบัญชี — อย่าล้างข้อมูลเบราว์เซอร์</span>':'<span class="cls-chip" style="background:#dcfce7;color:#166534">ผูกบัญชีแล้ว</span>')+
+      '<span class="muted" style="font-size:12px;flex:1">ห้องเรียนของครู: '+cls.rooms.length+' ห้อง</span>'+
+    '</div>');
+  var h='';
+  // ฟอร์มสร้างห้องใหม่
+  var schoolOpts='<option value="">— เลือกโรงเรียน —</option>'+cls.schools.map(function(s){return '<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>';}).join('')+'<option value="__new__">＋ เพิ่มโรงเรียนใหม่...</option>';
+  h+='<div class="card" style="margin-bottom:14px"><h2>สร้างห้องเรียนใหม่</h2>'+
+     '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">'+
+       '<div><label style="font-size:12px;font-weight:700;display:block;margin-bottom:3px">โรงเรียน</label><select class="cls-in" id="cls-school" onchange="clsSchoolSel()" style="min-width:200px">'+schoolOpts+'</select></div>'+
+       '<div id="cls-newschool-wrap" style="display:none"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:3px">ชื่อโรงเรียนใหม่</label><input class="cls-in" id="cls-newschool" type="text" placeholder="เช่น โรงเรียนบ้านกาญจน์"></div>'+
+       '<div><label style="font-size:12px;font-weight:700;display:block;margin-bottom:3px">ชื่อห้อง</label><input class="cls-in" id="cls-rname" type="text" placeholder="เช่น ป.4/1" style="width:120px"></div>'+
+       '<button class="btn-primary" style="background:#1d4ed8" onclick="clsCreateRoom()">+ สร้างห้อง</button>'+
+     '</div><div class="err" id="cls-create-err" style="margin-top:8px"></div></div>';
+  // รายการห้อง
+  if(!cls.rooms.length) h+='<div class="card"><div class="muted">ยังไม่มีห้องเรียน — สร้างห้องแรกจากฟอร์มด้านบน</div></div>';
+  cls.rooms.forEach(function(r){
+    var sc=cls.schools.filter(function(s){return s.id===r.school_id;})[0];
+    var n=cls.counts[r.id]||0;
+    h+='<div class="cls-room'+(r.is_active?'':' inactive')+'">'+
+      '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">'+
+        '<div style="flex:1;min-width:180px"><b style="font-size:16px">'+esc(r.name)+'</b>'+
+          (sc?' <span class="muted" style="font-size:12.5px">· '+esc(sc.name)+'</span>':'')+
+          '<div class="muted" style="font-size:12px">นักเรียน '+n+' คน'+(r.is_active?'':' · <b style="color:#b91c1c">ปิดใช้งาน</b>')+'</div></div>'+
+        '<div style="text-align:center"><div class="muted" style="font-size:11px;margin-bottom:2px">โค้ดเข้าห้อง (บอกนักเรียน)</div><span class="cls-key">'+esc(r.join_key)+'</span></div>'+
+        '<div style="display:flex;flex-direction:column;gap:6px">'+
+          '<button class="btn-primary" style="background:#0e7490;padding:7px 14px" onclick="clsOpenRoster(\''+esc(r.id)+'\')">👥 รายชื่อนักเรียน</button>'+
+          '<button class="btn-ghost" style="padding:6px 14px" onclick="clsToggleRoom(\''+esc(r.id)+'\','+(r.is_active?'false':'true')+')">'+(r.is_active?'ปิดห้องชั่วคราว':'เปิดห้อง')+'</button>'+
+        '</div>'+
+      '</div>'+
+      (cls.open===r.id?clsRosterHtml(r):'')+
+    '</div>';
+  });
+  clsMain(h);
+  if(cls.open) clsFillRoster();
+}
+function clsSchoolSel(){ var v=$('cls-school').value, w=$('cls-newschool-wrap'); if(w)w.style.display=(v==='__new__')?'':'none'; }
+function clsCreateRoom(){
+  var err=$('cls-create-err'); if(err)err.textContent='';
+  var name=(($('cls-rname')&&$('cls-rname').value)||'').trim();
+  if(!name){ if(err)err.textContent='กรุณาตั้งชื่อห้อง เช่น ป.4/1'; return; }
+  var sel=($('cls-school')&&$('cls-school').value)||'';
+  var p=Promise.resolve(sel);
+  if(sel==='__new__'){
+    var sn=(($('cls-newschool')&&$('cls-newschool').value)||'').trim();
+    if(!sn){ if(err)err.textContent='กรุณากรอกชื่อโรงเรียนใหม่'; return; }
+    p=sbEnsure().then(function(){ return sbFetch('/rest/v1/schools',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify([{name:sn,created_by:cls.sess.user_id}])}); })
+      .then(function(rows){ return rows[0].id; });
+  }
+  p.then(function(schoolId){
+    return sbEnsure().then(function(){
+      return sbFetch('/rest/v1/classrooms',{method:'POST',headers:{'Prefer':'return=representation'},
+        body:JSON.stringify([{teacher_id:cls.sess.user_id,school_id:schoolId||null,name:name,join_key:clsJoinKeyGen(),is_active:true,allow_self_add:true,join_pin_required:false}])});
+    });
+  }).then(function(){ return clsAfterAuth(); })
+  .catch(function(e){
+    if(e&&String(e.code)==='23505') return clsCreateRoom(); // join_key ชน (โอกาสน้อยมาก) → สุ่มใหม่
+    if(err)err.textContent='สร้างห้องไม่สำเร็จ: '+(e&&e.message||'');
+  });
+}
+function clsToggleRoom(id,active){
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/classrooms?id=eq.'+id,{method:'PATCH',body:JSON.stringify({is_active:active==='true'||active===true})}); })
+    .then(function(){ return clsAfterAuth(); })
+    .catch(function(e){ toast('แก้ไขไม่สำเร็จ: '+(e&&e.message||'')); });
+}
+
+/* ---------- รายชื่อนักเรียน ---------- */
+function clsOpenRoster(id){ cls.open=(cls.open===id)?null:id; clsRender(); }
+function clsRosterHtml(r){
+  return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px">'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">'+
+      '<div><label style="font-size:12px;font-weight:700;display:block;margin-bottom:3px">เลขที่</label><input class="cls-in" id="cls-st-no" style="width:70px" inputmode="numeric"></div>'+
+      '<div><label style="font-size:12px;font-weight:700;display:block;margin-bottom:3px">ชื่อ</label><input class="cls-in" id="cls-st-first" style="width:140px"></div>'+
+      '<div><label style="font-size:12px;font-weight:700;display:block;margin-bottom:3px">นามสกุล</label><input class="cls-in" id="cls-st-last" style="width:140px"></div>'+
+      '<button class="btn-primary" style="background:#0e7490" onclick="clsAddStudent()">+ เพิ่ม</button>'+
+    '</div>'+
+    '<details style="margin-bottom:10px"><summary style="cursor:pointer;font-size:13px;font-weight:700;color:#0e7490">วางรายชื่อทั้งห้องทีเดียว (คัดลอกจาก Excel ได้)</summary>'+
+      '<div class="muted" style="font-size:12px;margin:6px 0">รูปแบบ: บรรทัดละคน "เลขที่ ชื่อ นามสกุล" เช่น<br><code>1 สมชาย ใจดี</code><br><code>2 สมหญิง รักเรียน</code></div>'+
+      '<textarea class="cls-in" id="cls-bulk" style="width:100%;min-height:90px"></textarea>'+
+      '<button class="btn-primary" style="background:#0e7490;margin-top:6px" onclick="clsBulkAdd()">เพิ่มทั้งชุด</button></details>'+
+    '<div class="err" id="cls-roster-err"></div>'+
+    '<div id="cls-roster-tbl"><span class="loading" style="border-color:#0e7490;border-top-color:transparent"></span></div>'+
+  '</div>';
+}
+function clsFillRoster(){
+  if(!cls.open) return;
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/students?classroom_id=eq.'+cls.open+'&select=id,student_number,first_name,last_name'); })
+  .then(function(rows){
+    cls.roster=(rows||[]).sort(function(a,b){ return (Number(a.student_number)||999)-(Number(b.student_number)||999); });
+    var el=$('cls-roster-tbl'); if(!el) return;
+    if(!cls.roster.length){ el.innerHTML='<div class="muted" style="font-size:13px">ยังไม่มีรายชื่อ — เพิ่มจากฟอร์มด้านบน หรือให้นักเรียนพิมพ์ชื่อเองตอนเข้าห้อง</div>'; return; }
+    el.innerHTML='<table class="cls-tbl"><tr><th style="width:60px">เลขที่</th><th>ชื่อ</th><th>นามสกุล</th><th style="width:60px"></th></tr>'+
+      cls.roster.map(function(s){ return '<tr><td>'+esc(s.student_number||'')+'</td><td>'+esc(s.first_name||'')+'</td><td>'+esc(s.last_name||'')+'</td>'+
+        '<td><button class="btn-ghost" style="padding:3px 9px;font-size:12px;color:#b91c1c" onclick="clsDelStudent(\''+esc(s.id)+'\')">ลบ</button></td></tr>'; }).join('')+
+      '</table>';
+  }).catch(function(e){ var el=$('cls-roster-tbl'); if(el) el.innerHTML='<div class="err" style="display:block">โหลดรายชื่อไม่สำเร็จ: '+esc(e&&e.message||'')+'</div>'; });
+}
+function clsAddStudent(){
+  var err=$('cls-roster-err'); if(err)err.textContent='';
+  var no=(($('cls-st-no')&&$('cls-st-no').value)||'').trim();
+  var fn=(($('cls-st-first')&&$('cls-st-first').value)||'').trim();
+  var ln=(($('cls-st-last')&&$('cls-st-last').value)||'').trim();
+  if(!fn){ if(err)err.textContent='กรุณากรอกชื่อ'; return; }
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/students',{method:'POST',body:JSON.stringify([{classroom_id:cls.open,student_number:no,first_name:fn,last_name:ln}])}); })
+  .then(function(){ clsBumpCount(1); clsRender(); })
+  .catch(function(e){ if(err)err.textContent='เพิ่มไม่สำเร็จ: '+(e&&e.message||''); });
+}
+function clsBulkAdd(){
+  var err=$('cls-roster-err'); if(err)err.textContent='';
+  var txt=(($('cls-bulk')&&$('cls-bulk').value)||'').trim();
+  if(!txt){ if(err)err.textContent='วางรายชื่อก่อน (บรรทัดละคน)'; return; }
+  var rows=[];
+  txt.split(/\r?\n/).forEach(function(line){
+    var t=line.trim().split(/[\s\t]+/).filter(Boolean);
+    if(!t.length) return;
+    var no='', i=0;
+    if(/^\d+\.?$/.test(t[0])){ no=t[0].replace('.',''); i=1; }
+    var fn=t[i]||'', ln=t.slice(i+1).join(' ');
+    if(fn) rows.push({classroom_id:cls.open,student_number:no,first_name:fn,last_name:ln});
+  });
+  if(!rows.length){ if(err)err.textContent='อ่านรายชื่อไม่ได้ ตรวจรูปแบบอีกครั้ง'; return; }
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/students',{method:'POST',body:JSON.stringify(rows)}); })
+  .then(function(){ clsBumpCount(rows.length); clsRender(); toast('เพิ่มรายชื่อ '+rows.length+' คนแล้ว'); })
+  .catch(function(e){ if(err)err.textContent='เพิ่มไม่สำเร็จ: '+(e&&e.message||''); });
+}
+function clsDelStudent(id){
+  if(!confirm('ลบนักเรียนคนนี้ออกจากห้อง?')) return;
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'DELETE'}); })
+  .then(function(){ clsBumpCount(-1); clsRender(); })
+  .catch(function(e){ toast('ลบไม่สำเร็จ: '+(e&&e.message||'')); });
+}
+function clsBumpCount(d){ if(cls.open){ cls.counts[cls.open]=Math.max(0,(cls.counts[cls.open]||0)+d); } }
+
+/* ---------- ผูกปุ่ม ---------- */
+(function(){
+  var b=$('btn-classroom'); if(b) b.onclick=openClassroomPage;
+  var bk=$('cls-back'); if(bk) bk.onclick=closeClassroomPage;
+})();
 
 <\/script>
 </body>
