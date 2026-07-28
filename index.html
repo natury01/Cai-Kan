@@ -1534,6 +1534,8 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
         <div class="screen-credit-line">ออกแบบและพัฒนา | นายอาคม อินต๊ะพันธ์</div><!-- [รอบ 52 ตามคำขอ] เครดิตท้ายหน้า Login ตำแหน่งเดียวกับหน้าแรก -->
         <div class="auth-box">
           <div class="auth-title">เข้าสู่การผจญภัย</div>
+          <!-- [เฟส 2] เข้าห้องเรียนด้วยโค้ดจากครู — ไม่ต้องสมัคร ระบบผูกบัญชีให้อัตโนมัติ -->
+          <button id="btn-join-classroom" class="btn btn-primary" style="width:100%;margin:0 0 calc(var(--vw)*0.6);background:linear-gradient(135deg,#2563eb,#0e7490);font-size:calc(var(--vw)*1.05)" onclick="clsjOpen()">🏫 เข้าห้องเรียนด้วยโค้ดจากครู</button>
           <div class="auth-tabs">
             <button id="auth-tab-login" class="auth-tab active" data-tab="login">เข้าสู่ระบบ</button>
             <button id="auth-tab-register" class="auth-tab" data-tab="register">สมัครสมาชิกใหม่</button>
@@ -2416,7 +2418,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
    ตัวอย่าง: ไฟล์ CAI_KAN_NEW2_72.html ออกวันที่ 22/07/2569 → V.7.2 + 2569 07 22 = "V.7.225690722"
    เหตุที่ท้ายเรียง ปี-เดือน-วัน: ตัวเลขจะโตตามเวลาเสมอ เทียบได้ทันทีว่าเครื่องไหนรุ่นใหม่กว่า (มาตรฐาน build number)
    ทุกครั้งที่แก้ไฟล์ออกรุ่นใหม่ ให้ขยับเลขรุ่น+วันที่นี้พร้อมเลขท้ายชื่อไฟล์เสมอ จะได้ตรวจจากหน้าจอได้ไม่ต้องเดา */
-const GAME_VERSION = 'V.7.46-IX2050-2569.22'; /* [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
+const GAME_VERSION = 'V.7.47-IX2050-2569.23'; /* [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
 /* [รอบ 49 Capstone] รหัสประจำ "รอบการเปิดเกม" (Session) — ใช้ผูกข้อมูลวิจัยทุกชีต (Progress/QuestionLog/BossResults/CapstoneResults)
    อยู่ใน sessionStorage: เปิดแท็บใหม่/รีเฟรช = ได้ session ใหม่, สลับหน้าในแท็บเดิม = session เดิม (ไม่ใช่ข้อมูลระบุตัวตน) */
 const SESSION_ID = (() => {
@@ -20483,8 +20485,82 @@ function sheetGet(params) {
 // แต่ตั้งแต่ v2.8 มี autoHealAllScores() ที่ฝั่ง .gs รันเองทุก 5 นาทีเป็นตาข่ายนิรภัยชั้นสองเพิ่มด้วย ดูหัวไฟล์ .gs)
 // GET (login/checkUsername/leaderboard/ping) ยังคง 12 วิเท่าเดิมไว้ เพราะเป็นจุดที่ผู้เล่นรอดูผลอยู่หน้าจอ ต้องตอบสนองไว
 function sheetPost(body) {
+  try { SBTee.tee(body); } catch (e) {} // [เฟส 2] ส่งสำเนาเข้า Supabase เมื่ออยู่ในโหมดห้องเรียน (มี dedup — เรียกซ้ำจากคิวไม่ทำให้ข้อมูลซ้ำ)
   return _fetchWithTimeout(GOOGLE_SHEET_URL, { method: 'POST', body: JSON.stringify(body) }, 35000).then(r => r.json());
 }
+
+/* ============================================================================
+ *  [เฟส 2 · Supabase] โหมดห้องเรียน — นักเรียนเข้าด้วยโค้ดครู ไม่ต้องสมัคร
+ *  SBTee = ส่ง "สำเนา" ข้อมูลการเล่นเข้า Supabase ควบคู่กับ Google Sheets (dual-write)
+ *  ทำงานเฉพาะเมื่อผูกกับห้องเรียน (localStorage 'cls_current') · ล้มเหลว = เข้าคิวลองใหม่ ไม่กระทบเกม
+ * ============================================================================ */
+const SB_URL = 'https://janoonnhzpwjnxqjvswt.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imphbm9vbm5oenB3am54cWp2c3d0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUyMzUxODIsImV4cCI6MjEwMDgxMTE4Mn0.bimXWE_w_RRwOY9KbmLGqkpBlaI57WV34CXdLtbe4Vs';
+const SB_GAME_CODE = 'kanchanaburi2050';
+const SBTee = {
+  QKEY: 'sbTeeQueue_v1', SKEY: 'sbTeeSent_v1', _flushing: false,
+  _hash(s) { let n = 0; for (let i = 0; i < s.length; i++) { n = (n * 31 + s.charCodeAt(i)) >>> 0; } return 'h' + n.toString(36) + '_' + s.length; },
+  bind() { try { return JSON.parse(localStorage.getItem('cls_current') || 'null'); } catch (e) { return null; } },
+  tee(body) {
+    if (!body || !body.action) return;
+    const MAP = { saveProgress: 1, saveBossResult: 1, logQuestions: 1, saveCapstoneResult: 1, savePilokDigResult: 1, saveSatisfaction: 2, saveSelfAssessment: 2 };
+    if (!MAP[body.action]) return;
+    const b = this.bind(); if (!b || !b.student_id) return;
+    // ส่งเฉพาะข้อมูลของนักเรียนที่ผูกห้องอยู่ (กันกรณีสลับบัญชีบนเครื่องเดียว)
+    if (body.username && b.username && String(body.username).toLowerCase() !== String(b.username).toLowerCase()) return;
+    const id = this._hash(JSON.stringify(body));
+    let sent = []; try { sent = JSON.parse(localStorage.getItem(this.SKEY) || '[]'); } catch (e) {}
+    if (sent.indexOf(id) >= 0) return;
+    let q = []; try { q = JSON.parse(localStorage.getItem(this.QKEY) || '[]'); } catch (e) {}
+    if (q.some(it => it.id === id)) return;
+    q.push({ id: id, body: body, t: Date.now() });
+    while (q.length > 200) q.shift();
+    try { localStorage.setItem(this.QKEY, JSON.stringify(q)); } catch (e) {}
+    this.flush();
+  },
+  _rpc(name, payload) {
+    return fetch(SB_URL + '/rest/v1/rpc/' + name, { method: 'POST',
+      headers: { 'apikey': SB_ANON, 'Authorization': 'Bearer ' + SB_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload) })
+      .then(r => { if (!r.ok) return r.text().then(t => { throw new Error('HTTP ' + r.status + ' ' + t.slice(0, 140)); }); return r.text(); });
+  },
+  _send(body) {
+    const b = this.bind(); if (!b) return Promise.resolve();
+    const a = body.action;
+    if (a === 'saveSatisfaction' || a === 'saveSelfAssessment') {
+      return this._rpc('rpc_submit_survey', { p_join_key: b.join_key, p_student: b.student_id, p_pin: b.jpin || '', p_game_code: SB_GAME_CODE,
+        p_kind: a === 'saveSatisfaction' ? 'satisfaction' : 'self_assessment', p_payload: body, p_dims: null,
+        p_overall: (body.overallAvg != null && body.overallAvg !== '' ? Number(body.overallAvg) : null), p_interpretation: body.interpretation || null });
+    }
+    const att = { session_id: String(body.sessionId || ''), attempt_no: (body.attemptNo != null && body.attemptNo !== '' ? Number(body.attemptNo) : null),
+      is_first: body.isFirstAttempt === true, game_version: String(body.gameVersion || '') };
+    let evs = [];
+    if (a === 'logQuestions') { evs = (body.logs || []).map(L => ({ stage_id: String(L.stageId || ''), kind: 'question', question_id: String(L.questionId || ''), correct: !!L.correct, credit: (typeof L.creditWeight === 'number' ? L.creditWeight : (L.correct ? 1 : 0)), score: null, raw: L })); }
+    else if (a === 'saveProgress') { evs = [{ stage_id: String(body.stageId || ''), kind: 'progress', question_id: null, correct: null, credit: null, score: Number(body.score) || 0, raw: body }]; }
+    else if (a === 'saveBossResult') { evs = [{ stage_id: '8', kind: 'boss', question_id: null, correct: null, credit: null, score: Number(body.totalScore) || 0, raw: body }]; }
+    else if (a === 'saveCapstoneResult') { evs = [{ stage_id: 'balance2050', kind: 'capstone', question_id: null, correct: null, credit: null, score: Number(body.rawTotal24) || 0, raw: body }]; }
+    else if (a === 'savePilokDigResult') { evs = [{ stage_id: 'pilok', kind: 'pilok', question_id: null, correct: null, credit: null, score: Number(body.pilokWeighted5) || 0, raw: body }]; }
+    return this._rpc('rpc_submit_events', { p_join_key: b.join_key, p_student: b.student_id, p_pin: b.jpin || '', p_game_code: SB_GAME_CODE, p_attempt: att, p_events: evs });
+  },
+  flush() {
+    if (this._flushing) return;
+    let q = []; try { q = JSON.parse(localStorage.getItem(this.QKEY) || '[]'); } catch (e) {}
+    if (!q.length) return;
+    this._flushing = true;
+    const it = q[0];
+    this._send(it.body).then(() => {
+      let sent = []; try { sent = JSON.parse(localStorage.getItem(this.SKEY) || '[]'); } catch (e) {}
+      sent.push(it.id); while (sent.length > 300) sent.shift();
+      try { localStorage.setItem(this.SKEY, JSON.stringify(sent)); } catch (e) {}
+      let cur = []; try { cur = JSON.parse(localStorage.getItem(this.QKEY) || '[]'); } catch (e) {}
+      cur = cur.filter(x => x.id !== it.id);
+      try { localStorage.setItem(this.QKEY, JSON.stringify(cur)); } catch (e) {}
+      this._flushing = false;
+      if (cur.length) setTimeout(() => this.flush(), 300);
+    }).catch(e => { console.warn('[SBTee] ส่งเข้า Supabase ไม่สำเร็จ (จะลองใหม่):', e && e.message); this._flushing = false; });
+  }
+};
+setInterval(() => { try { SBTee.flush(); } catch (e) {} }, 30000); // ลองส่งคิวค้างทุก 30 วิ ระหว่างเปิดเกม
 
 // จำแนกสาเหตุที่เชื่อมต่อ Google Sheet ไม่สำเร็จ ให้ข้อความที่ช่วยแก้ปัญหาได้จริง (ไม่ใช่แค่ "เชื่อมต่อไม่ได้" เฉยๆ)
 // พิมพ์ error เต็มลง console เสมอ เปิด DevTools (F12) ดูรายละเอียดจริงได้ที่แท็บ Console
@@ -23703,6 +23779,35 @@ window.addEventListener('pagehide', () => { if (typeof flushAnswerLogs === 'func
 </style>
 <div id="sat-survey"><div class="sat-card"><div class="sat-head"><h2 id="sat-title">แบบประเมินความพึงพอใจต่อชุดการเรียนรู้ดิจิทัลรูปแบบเกม</h2><button class="sat-close" onclick="closeSatisfactionSurvey()" title="ปิด">✕</button></div><div class="sat-body" id="sat-body"></div></div></div>
 
+<!-- [เฟส 2] หน้าต่างเข้าห้องเรียนด้วยโค้ดจากครู (Supabase) -->
+<style>
+#clsj{position:fixed;inset:0;z-index:9100;background:rgba(10,25,45,.6);display:none;overflow:auto;padding:18px;font-family:'Sarabun','Prompt',sans-serif}
+#clsj.on{display:block}
+#clsj *{box-sizing:border-box}
+#clsj .jcard{max-width:560px;margin:4vh auto;background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.4);overflow:hidden}
+#clsj .jhead{background:linear-gradient(90deg,#1d4ed8,#0e7490);color:#fff;padding:15px 20px;display:flex;align-items:center;gap:12px}
+#clsj .jhead h2{margin:0;font-size:18px;font-weight:800;flex:1}
+#clsj .jx{background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:10px;width:38px;height:38px;font-size:17px;font-weight:800;cursor:pointer}
+#clsj .jbody{padding:18px 20px 24px}
+#clsj .jkey-in{width:100%;font-family:ui-monospace,Consolas,monospace;font-size:28px;font-weight:800;letter-spacing:8px;text-align:center;text-transform:uppercase;padding:12px;border:2px solid #93c5fd;border-radius:12px}
+#clsj .jkey-in:focus{outline:3px solid #bfdbfe;border-color:#2563eb}
+#clsj .jbtn{width:100%;background:#1d4ed8;color:#fff;border:none;border-radius:12px;font-size:16.5px;font-weight:800;padding:13px;cursor:pointer;margin-top:12px}
+#clsj .jbtn:disabled{opacity:.6}
+#clsj .jbtn.alt{background:#f1f5f9;color:#334155;border:1.5px solid #cbd5e1}
+#clsj .jerr{color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;border-radius:10px;padding:9px 12px;font-size:13.5px;margin-top:10px;display:none}
+#clsj .jerr.on{display:block}
+#clsj .jroom{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px;color:#1e3a8a}
+#clsj .jlist{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:46vh;overflow-y:auto;padding:2px}
+#clsj .jstu{border:1.5px solid #cbd5e1;border-radius:11px;background:#fff;padding:10px 12px;font-family:inherit;font-size:14.5px;font-weight:700;color:#1f2937;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px}
+#clsj .jstu:hover{border-color:#2563eb;background:#eff6ff}
+#clsj .jstu .no{flex:0 0 auto;background:#1d4ed8;color:#fff;border-radius:8px;min-width:30px;text-align:center;padding:2px 6px;font-size:13px}
+#clsj .jhint{font-size:12.5px;color:#64748b;margin-top:10px;line-height:1.55}
+#clsj .jself{border-top:1px dashed #cbd5e1;margin-top:14px;padding-top:12px}
+#clsj .jself input{font-family:inherit;font-size:14.5px;padding:9px 11px;border:1.5px solid #cbd5e1;border-radius:9px;margin:3px 4px 3px 0}
+@media(max-width:520px){#clsj .jlist{grid-template-columns:1fr}}
+</style>
+<div id="clsj"><div class="jcard"><div class="jhead"><h2 id="clsj-title">🏫 เข้าห้องเรียน</h2><button class="jx" onclick="clsjClose()">✕</button></div><div class="jbody" id="clsj-body"></div></div></div>
+
 <script>
 /* ---- แบบประเมินความพึงพอใจ (15 ข้อ 3 ด้าน มาตร 1-5 + 2 อัตนัย) ตามไฟล์ที่ครูแนบ ---- */
 var SAT_SCALE=[[5,'มากที่สุด'],[4,'มาก'],[3,'ปานกลาง'],[2,'น้อย'],[1,'น้อยที่สุด']];
@@ -23933,6 +24038,115 @@ function submitSelfAssessment(){
   }).catch(function(e){
     if(typeof SyncQueue!=='undefined'&&SyncQueue.push){ SyncQueue.push(payload); done(true); } else { err.textContent='เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง'; err.classList.add('on'); btn.disabled=false; btn.textContent='✅ ส่งแบบประเมินตนเอง'; }
   });
+}
+
+/* ============================================================================
+ *  [เฟส 2] เข้าห้องเรียนด้วยโค้ดจากครู — นักเรียนไม่ต้องสมัคร
+ *  โฟลว์: ใส่โค้ด 6 ตัว → เห็นรายชื่อห้อง → แตะชื่อตัวเอง → ระบบผูกบัญชีให้อัตโนมัติ
+ *  (สร้างบัญชี Google Sheets เงียบ ๆ จากรหัสประจำตัวนักเรียน — เข้าเครื่องไหนก็ได้ ข้อมูลตามมา)
+ * ============================================================================ */
+var clsjState={ room:null, roster:[] };
+function clsjRpc(name,payload){
+  return fetch(SB_URL+'/rest/v1/rpc/'+name,{method:'POST',
+    headers:{'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON,'Content-Type':'application/json'},
+    body:JSON.stringify(payload)})
+  .then(function(r){ return r.text().then(function(t){ var j=null; try{ j=t?JSON.parse(t):null; }catch(e){}
+    if(!r.ok){ throw new Error((j&&(j.message||j.msg||j.hint))||('HTTP '+r.status)); } return j; }); });
+}
+function clsjErr(t){ var e=document.getElementById('clsj-err'); if(e){ e.textContent=t; e.classList.add('on'); } }
+function clsjOpen(){
+  try{ if(typeof AUDIO!=='undefined'&&AUDIO.playSFX)AUDIO.playSFX('click'); }catch(e){}
+  var last=''; try{ last=localStorage.getItem('cls_last_key')||''; }catch(e){}
+  document.getElementById('clsj-title').textContent='🏫 เข้าห้องเรียน';
+  document.getElementById('clsj-body').innerHTML=
+    '<div style="font-size:14px;color:#475569;margin-bottom:10px">ใส่<b>โค้ดเข้าห้อง 6 ตัว</b>ที่ครูบอก แล้วกดตรวจ</div>'+
+    '<input class="jkey-in" id="clsj-key" maxlength="6" autocomplete="off" value="'+_satEsc(last)+'" placeholder="เช่น G5AWKW">'+
+    '<button class="jbtn" id="clsj-go" onclick="clsjLookup()">🔎 ตรวจโค้ด</button>'+
+    '<div class="jerr" id="clsj-err"></div>'+
+    '<div class="jhint">ไม่มีโค้ด? ถามคุณครูประจำห้อง หรือกลับไปเข้าสู่ระบบ/สมัครแบบปกติได้ตามเดิม</div>';
+  document.getElementById('clsj').classList.add('on');
+  var ki=document.getElementById('clsj-key');
+  ki.addEventListener('keydown',function(ev){ if(ev.key==='Enter') clsjLookup(); });
+  if(!last) ki.focus();
+}
+function clsjClose(){ document.getElementById('clsj').classList.remove('on'); }
+function clsjLookup(){
+  var key=(document.getElementById('clsj-key').value||'').trim().toUpperCase();
+  var e=document.getElementById('clsj-err'); if(e)e.classList.remove('on');
+  if(key.length<4){ clsjErr('โค้ดต้องมี 6 ตัว ลองดูอีกครั้งนะ'); return; }
+  var btn=document.getElementById('clsj-go'); btn.disabled=true; btn.textContent='กำลังตรวจ...';
+  clsjRpc('rpc_lookup_classroom',{p_join_key:key}).then(function(rows){
+    if(!rows||!rows.length){ btn.disabled=false; btn.textContent='🔎 ตรวจโค้ด'; clsjErr('ไม่พบห้องเรียนจากโค้ดนี้ — ตรวจกับครูอีกครั้งนะ'); return; }
+    clsjState.room=rows[0]; clsjState.room.join_key=key;
+    try{ localStorage.setItem('cls_last_key',key); }catch(err){}
+    return clsjRpc('rpc_get_roster',{p_join_key:key}).then(function(ros){ clsjState.roster=ros||[]; clsjRoster(); });
+  }).catch(function(err){ btn.disabled=false; btn.textContent='🔎 ตรวจโค้ด'; clsjErr('เชื่อมต่อไม่สำเร็จ: '+(err&&err.message||'ลองใหม่อีกครั้ง')); });
+}
+function clsjRoster(){
+  var r=clsjState.room;
+  document.getElementById('clsj-title').textContent='🏫 '+(r.name||'ห้องเรียน');
+  var list=clsjState.roster.map(function(s,i){
+    return '<button class="jstu" onclick="clsjPick('+i+')"><span class="no">'+_satEsc(s.student_number||'–')+'</span><span>'+_satEsc((s.first_name||'')+' '+(s.last_name||''))+'</span></button>';
+  }).join('');
+  document.getElementById('clsj-body').innerHTML=
+    '<div class="jroom">ห้อง <b>'+_satEsc(r.name||'')+'</b>'+(r.school_name?' · '+_satEsc(r.school_name):'')+' — <b>แตะชื่อของเธอ</b>เพื่อเข้าเล่นได้เลย!</div>'+
+    (clsjState.roster.length?('<div class="jlist">'+list+'</div>'):'<div class="jhint" style="font-size:14px">ครูยังไม่ได้ใส่รายชื่อ — พิมพ์ชื่อของเธอด้านล่างได้เลย</div>')+
+    (r.allow_self_add?('<div class="jself"><b style="font-size:13.5px;color:#334155">ไม่มีชื่อของเธอ? เพิ่มเองตรงนี้</b><br>'+
+      '<input id="clsj-no" style="width:70px" inputmode="numeric" placeholder="เลขที่">'+
+      '<input id="clsj-fn" style="width:130px" placeholder="ชื่อ">'+
+      '<input id="clsj-ln" style="width:130px" placeholder="นามสกุล">'+
+      '<button class="jbtn" style="width:auto;padding:9px 18px;margin-top:4px" onclick="clsjSelfAdd()">+ เพิ่มชื่อฉัน</button></div>'):'')+
+    '<div class="jerr" id="clsj-err"></div>'+
+    '<button class="jbtn alt" onclick="clsjOpen()">← ใส่โค้ดใหม่</button>';
+}
+function clsjUser(sid){ return 'c'+String(sid).replace(/-/g,'').slice(0,7); }
+function clsjPinOf(sid){ var h=String(sid).replace(/-/g,''),n=0; for(var i=0;i<h.length;i++){ n=(n*33+h.charCodeAt(i))>>>0; } return String(1000+(n%9000)); }
+function clsjPick(i){
+  var s=clsjState.roster[i]; if(!s) return;
+  var jpin='';
+  if(clsjState.room.pin_required&&s.has_pin){ jpin=prompt('ใส่ PIN ของเธอ (ถามครูถ้าไม่ทราบ)')||''; if(!jpin) return; }
+  clsjBind({student_id:s.student_id,first_name:s.first_name||'',last_name:s.last_name||'',student_number:s.student_number||''},jpin);
+}
+function clsjSelfAdd(){
+  var e=document.getElementById('clsj-err'); if(e)e.classList.remove('on');
+  var no=(document.getElementById('clsj-no').value||'').trim();
+  var fn=(document.getElementById('clsj-fn').value||'').trim();
+  var ln=(document.getElementById('clsj-ln').value||'').trim();
+  if(!fn){ clsjErr('พิมพ์ชื่อก่อนนะ'); return; }
+  clsjRpc('rpc_add_student',{p_join_key:clsjState.room.join_key,p_number:no,p_first:fn,p_last:ln})
+    .then(function(sid){ clsjBind({student_id:sid,first_name:fn,last_name:ln,student_number:no},''); })
+    .catch(function(err){ clsjErr('เพิ่มชื่อไม่สำเร็จ: '+(err&&err.message||'')); });
+}
+function clsjBind(stu,jpin){
+  var body=document.getElementById('clsj-body');
+  body.innerHTML='<div style="text-align:center;padding:30px 10px"><div style="font-size:40px">⏳</div><div style="font-weight:800;color:#1d4ed8;margin-top:8px">กำลังพาเข้าห้องเรียน... รอสักครู่นะ</div></div>';
+  var r=clsjState.room;
+  var uname=clsjUser(stu.student_id), pin=clsjPinOf(stu.student_id);
+  function bindDone(){
+    try{ localStorage.setItem('cls_current',JSON.stringify({username:uname,student_id:stu.student_id,join_key:r.join_key,jpin:jpin||'',classroom:r.name||'',school:r.school_name||''})); }catch(e){}
+    try{ if(typeof AUDIO!=='undefined'&&AUDIO.playSFX)AUDIO.playSFX('victory'); }catch(e){}
+    clsjClose();
+    if(typeof afterAuthSuccess==='function') afterAuthSuccess();
+  }
+  function fail(msg){
+    body.innerHTML='<div class="jerr on">'+_satEsc(msg||'เข้าห้องไม่สำเร็จ ลองใหม่อีกครั้ง')+'</div>'+
+      '<button class="jbtn alt" onclick="clsjRoster()">← กลับรายชื่อ</button>';
+  }
+  Auth.login(uname,pin).then(function(res){
+    if(res&&res.success){ bindDone(); return; }
+    // ยังไม่มีบัญชี → สมัครให้เงียบ ๆ จากข้อมูลรายชื่อห้อง
+    var payload={ username:uname, pin:pin,
+      characterName:(stu.first_name||'นักสำรวจ')+'·'+String(stu.student_id).replace(/-/g,'').slice(0,4),
+      firstName:stu.first_name||'', lastName:stu.last_name||'',
+      'class':r.name||'', studentNumber:stu.student_number||'', school:r.school_name||'', groupSize:1 };
+    return Auth.register(payload).then(function(rr){
+      if(rr&&rr.success){ bindDone(); return; }
+      // เผื่อชื่อชนกัน (สมัครไว้แล้วจากเครื่องอื่นวินาทีเดียวกัน) → ลองเข้าซ้ำ
+      return Auth.login(uname,pin).then(function(r2){
+        if(r2&&r2.success){ bindDone(); } else fail((rr&&(rr.message||rr.error))||'สมัครอัตโนมัติไม่สำเร็จ');
+      });
+    });
+  }).catch(function(e){ fail('เชื่อมต่อไม่สำเร็จ — ตรวจอินเทอร์เน็ตแล้วลองใหม่'); });
 }
 
 /* ---- เปิด Dashboard ที่ฝังในไฟล์เกมนี้ (blob แท็บใหม่ + ส่งลิงก์ backend ให้อัตโนมัติ) ---- */
