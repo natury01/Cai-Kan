@@ -2322,7 +2322,7 @@ function clsLoadCounts(){
   var ids=cls.rooms.map(function(r){return r.id;}).join(',');
   var base='id,classroom_id,student_number,first_name,last_name,collected_score,boss_score';
   /* group_ref/external_ref = ข้อมูลกลุ่มบัญชีเดิม — ถ้าฐานข้อมูลยังไม่รันแพตช์ล่าสุด (ไม่มีคอลัมน์) ให้ถอยไปแบบเดิม */
-  return sbFetch('/rest/v1/students?select='+base+',external_ref,group_ref&classroom_id=in.('+ids+')')
+  return sbFetch('/rest/v1/students?select='+base+',external_ref,group_ref,character_name&classroom_id=in.('+ids+')')
     .catch(function(){ return sbFetch('/rest/v1/students?select='+base+'&classroom_id=in.('+ids+')'); })
     .then(function(rows){
       cls.students=rows||[];
@@ -2449,11 +2449,14 @@ var CV2 = (function(){
     var comp={CTC:{e:0,m:0},STM:{e:0,m:0},CRT:{e:0,m:0},PRB:{e:0,m:0}};
     function add(k,e,m){ if(comp[k]){ comp[k].e+=e; comp[k].m+=m; } }
 
-    /* ---- A: ข้อคิดวิเคราะห์ระหว่างด่าน (ครั้งแรกต่อข้อ) ---- */
-    var aBy={};
+    /* ---- A: ข้อคิดวิเคราะห์ระหว่างด่าน — [ตามคำขอครู] คิดตามสัดส่วนจากข้อมูลเท่าที่มี:
+         มีรอบ 2-3 → ครั้งแรก 40% + รอบเก่งสุด 60% (สูตรทางการ hotsV2_scoreA) · มีแค่ครั้งแรก → ใช้ครั้งแรกเต็ม ---- */
+    var aBy={}, aRounds={};
     (ev.q||[]).forEach(function(r){
       if(String(r.sid)==='8') return;
       var qid=String(r.qid||''); if(!ITEM_MAP[qid]) return;
+      var an=has(r.att)?num(r.att):null;
+      if(an===2||an===3){ var rd=aRounds[an]||(aRounds[an]={c:0,n:0}); rd.c+=num(r.cr); rd.n++; }
       var cur=aBy[qid]; if(!cur){ aBy[qid]=r; return; }
       var aH=has(r.att), cH=has(cur.att);
       if(aH&&cH){ if(num(r.att)<num(cur.att)) aBy[qid]=r; }
@@ -2462,10 +2465,14 @@ var CV2 = (function(){
     var aIds=Object.keys(aBy), aCount=aIds.length, aRaw=0;
     aIds.forEach(function(q){ aRaw+=num(aBy[q].cr); });
     var aRate=aCount?aRaw/aCount:null;
+    var mRate=null;
+    [2,3].forEach(function(an){ var rd=aRounds[an]; if(rd&&rd.n>0){ var rr2=rd.c/rd.n; if(mRate==null||rr2>mRate) mRate=rr2; } });
     var aStatus, aProv=null;
     if(aCount===0) aStatus='MISSING_A';
-    else if(aCount<MIN_A){ aStatus='INCOMPLETE_EVIDENCE'; aProv=r2(aRate*W.A); }
-    else { aStatus='INCOMPLETE_MASTERY'; aProv=r2(aRate*W.A); }
+    else {
+      aProv=r2((mRate!=null?(aRate*0.4+mRate*0.6):aRate)*W.A);
+      aStatus = aCount<MIN_A ? 'INCOMPLETE_EVIDENCE' : (mRate!=null ? 'OK' : 'INCOMPLETE_MASTERY');
+    }
     if(aCount>=MIN_A){ var per=W.A/aCount; aIds.forEach(function(q){ add(ITEM_MAP[q], num(aBy[q].cr)*per, per); }); }
 
     /* ---- B: ภารกิจ/มินิเกม 7 กิจกรรม (30) ---- */
@@ -2474,7 +2481,10 @@ var CV2 = (function(){
       var task=PERF_TASKS[sid];
       if(sid==='pilok'){
         if(!pk.length){ bDetail.pilok={st:'INCOMPLETE_PILOK_TELEMETRY',prov:null,w:task.w}; add(task.c,0,0); return; }
-        var vals=pk.map(function(r){
+        /* [ตามคำขอครู] ขุดปิล๊อกรอบประเมิน (ครั้ง 2+) มีเมื่อไหร่ใช้รอบนั้น · มีแค่ครั้งแรกก็ใช้ครั้งแรก */
+        var pk23=pk.filter(function(r){ return has(r.att)&&num(r.att)>=2; });
+        var pkUse=pk23.length?pk23:pk;
+        var vals=pkUse.map(function(r){
           if(has(r.w5)&&num(r.w5)>0) return num(r.w5);
           if(r.grid){ try{ var g=typeof r.grid==='string'?JSON.parse(r.grid):r.grid;
             return hotsV2_scoreRoute(g, num(r.en), num(r.dc)).pilokWeighted5; }catch(e){} }
@@ -2490,10 +2500,12 @@ var CV2 = (function(){
       }
       var rows=ps.filter(function(r){ return String(r.sid)===sid&&isT(r.cmp); });
       if(!rows.length){ bDetail[sid]={st:'MISSING_TASK',prov:0,w:task.w}; add(task.c,0,task.w); return; }
-      var bestN=Math.max.apply(null,rows.map(function(r){ return Math.max(0,Math.min(10,num(r.sc))); }));
-      var hasA2b=rows.some(function(r){ return has(r.att)&&num(r.att)>=2; });
+      /* [ตามคำขอครู] มีรอบประเมิน (ครั้ง 2 ขึ้นไป) → ใช้รอบนั้นตามสูตรทางการ · เล่นแค่ครั้งแรก → ใช้ครั้งแรกไปก่อน */
+      var rows23=rows.filter(function(r){ return has(r.att)&&num(r.att)>=2; });
+      var use=rows23.length?rows23:rows;
+      var bestN=Math.max.apply(null,use.map(function(r){ return Math.max(0,Math.min(10,num(r.sc))); }));
       var prov=r2(bestN/10*task.w); bProv+=prov;
-      bDetail[sid]={st:hasA2b?'OK':'INCOMPLETE_ASSESSMENT',prov:prov,w:task.w};
+      bDetail[sid]={st:rows23.length?'OK':'INCOMPLETE_ASSESSMENT',prov:prov,w:task.w};
       add(task.c,bestN/10*task.w,task.w);
     });
     bProv=r2(bProv);
@@ -2716,19 +2728,24 @@ function clsSummaryHtml(){
       '</div>'+
     '</div>';
   }
+  /* [ตามคำขอครู] แยก 3 ส่วนเป็นกล่องสี ชัดเจนแต่ยังกระชับแถวเดียว */
+  function grp(icon,label,tiles,bg,edge,clr){
+    return '<div style="flex:1;min-width:190px;background:'+bg+';border:1px solid var(--line);border-left:4px solid '+edge+';border-radius:10px;padding:6px 10px">'+
+      '<div style="font-size:10.5px;font-weight:800;color:'+clr+';letter-spacing:.2px">'+icon+' '+label+'</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">'+tiles+'</div></div>';
+  }
   return '<div class="card" style="margin-bottom:14px;padding:12px 16px">'+
-    '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
-      '<b style="font-size:14.5px;margin-right:2px">สรุปข้อมูลผู้เรียน</b>'+
-      mini(nRooms,'ห้องเรียน','#eff6ff')+
-      mini(n,'นักเรียน','#eff6ff')+
-      mini(played,'มีข้อมูลเล่น','#ecfdf5')+
-      tag('🏆 ผลสัมฤทธิ์','#9a3412','#fff7ed')+
-      mini(avg(colS,colN),'เก็บเฉลี่ย','#fffbeb')+
-      mini(avg(bossS,bossN),'สอบเฉลี่ย (30)','#fef9c3')+
-      tag('🧠 สมรรถนะ','#065f46','#ecfdf5')+
-      mini(avg(v2S,v2N),'เฉลี่ย (100)','#ecfdf5')+
-      mini(v2N?lv5:'–','ระดับ 5-6','#d1fae5')+
-      mini(capN,'ทำกาญ 2050','#ecfdf5')+
+    '<b style="font-size:14.5px">สรุปข้อมูลผู้เรียน</b>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin-top:7px">'+
+      grp('👨‍🏫','ข้อมูลทั่วไป',
+        mini(nRooms,'ห้องเรียน','#fff')+mini(n,'นักเรียน','#fff')+mini(played,'มีข้อมูลเล่น','#fff'),
+        '#f8fafc','#64748b','#334155')+
+      grp('🏆','ผลสัมฤทธิ์การเรียน (คะแนนเกม)',
+        mini(avg(colS,colN),'เก็บเฉลี่ย','#fff')+mini(avg(bossS,bossN),'สอบเฉลี่ย (30)','#fff')+mini(bossN,'สอบแล้ว (คน)','#fff'),
+        '#fff7ed','#f59e0b','#9a3412')+
+      grp('🧠','สมรรถนะการคิดขั้นสูง (HOTS)',
+        mini(avg(v2S,v2N),'เฉลี่ย (100)','#fff')+mini(v2N?lv5:'–','ระดับ 5-6','#fff')+mini(capN,'ทำกาญ 2050','#fff'),
+        '#ecfdf5','#047857','#065f46')+
     '</div>'+
     '<details style="margin-top:8px">'+
       '<summary style="cursor:pointer;font-weight:700;font-size:12px;color:#1d4ed8">📈 กราฟสมรรถนะ 4 แหล่ง · เรดาร์ 4 ด้านการคิด · เกณฑ์ระดับ 6 (คลิกเปิด/ปิด)</summary>'+
@@ -2788,7 +2805,7 @@ function clsScoresHtml(r){
     var zebra=idx%2?'background:#fbfdff;':'';
     var main='<tr style="cursor:pointer;'+zebra+'" onclick="clsV2Toggle(\''+esc(s.id)+'\')" title="คลิกเพื่อดูรายละเอียดสมรรถนะ">'+
       '<td>'+esc(s.student_number||'')+'</td>'+
-      '<td><b>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</b>'+grpChip+'</td>'+
+      '<td><b>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</b>'+(s.character_name?' <span style="font-size:10.5px;color:#7c3aed">🎮 '+esc(s.character_name)+'</span>':'')+grpChip+'</td>'+
       '<td style="text-align:center;background:'+ACH_BG+'">'+(t.collected>0?'<b>'+t.collected+'</b>':'–')+'</td>'+
       '<td style="text-align:center;background:'+ACH_BG+';border-right:2px solid #fde68a">'+(t.boss>0?t.boss:'–')+'</td>'+
       (v?clsV2Cell(v.A,v.status.A,'A',HOTS_BG):'<td style="text-align:center;background:'+HOTS_BG+'"><span class="muted">–</span></td>')+
@@ -2877,7 +2894,8 @@ function clsRender(){
   // สรุปข้อมูลผู้เรียน (บนสุด)
   h+=clsSummaryHtml();
   // ฟอร์มสร้างห้องใหม่
-  var schoolOpts='<option value="">— เลือกโรงเรียน —</option>'+cls.schools.map(function(s){return '<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>';}).join('')+'<option value="__new__">＋ เพิ่มโรงเรียนใหม่...</option>';
+  /* [แก้ข้อ 4] มีโรงเรียนเดียว → เลือกให้เลย กันสร้างห้องแบบ "ไม่ระบุโรงเรียน" แล้วห้องไม่โผล่ใน dropdown หน้า login */
+  var schoolOpts='<option value="">— เลือกโรงเรียน —</option>'+cls.schools.map(function(s){return '<option value="'+esc(s.id)+'"'+(cls.schools.length===1?' selected':'')+'>'+esc(s.name)+'</option>';}).join('')+'<option value="__new__">＋ เพิ่มโรงเรียนใหม่...</option>';
   h+='<div class="card" style="margin-bottom:14px"><h2>สร้างห้องเรียนใหม่</h2>'+
      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">'+
        '<div><label style="font-size:12px;font-weight:700;display:block;margin-bottom:3px">โรงเรียน</label><select class="cls-in" id="cls-school" onchange="clsSchoolSel()" style="min-width:200px">'+schoolOpts+'</select></div>'+
@@ -2897,11 +2915,11 @@ function clsRender(){
           (sc?' <span class="muted" style="font-size:12.5px">· '+esc(sc.name)+'</span>':'')+
           '<div class="muted" style="font-size:12px">นักเรียน '+n+' คน'+(r.is_active?'':' · <b style="color:#b91c1c">ปิดใช้งาน</b>')+'</div></div>'+
         '<div style="text-align:center"><div class="muted" style="font-size:11px;margin-bottom:2px">โค้ดเข้าห้อง (บอกนักเรียน)</div><span class="cls-key">'+esc(r.join_key)+'</span></div>'+
-        '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;width:100%;margin-top:8px">'+ /* [ตามคำขอครู] ปุ่มเรียงแนวนอน ไม่เปลืองพื้นที่แนวตั้ง */
-          '<button class="btn-primary" style="background:#1d4ed8;padding:6px 14px" onclick="clsOpenScores(\''+esc(r.id)+'\')">📊 คะแนนของห้อง</button>'+
-          '<button class="btn-primary" style="background:#0e7490;padding:6px 14px" onclick="clsOpenRoster(\''+esc(r.id)+'\')">👥 รายชื่อนักเรียน</button>'+
-          '<button class="btn-ghost" style="padding:5px 14px" onclick="clsToggleRoom(\''+esc(r.id)+'\','+(r.is_active?'false':'true')+')">'+(r.is_active?'ปิดห้องชั่วคราว':'เปิดห้อง')+'</button>'+
-          '<button class="btn-ghost" style="padding:5px 14px;color:#b91c1c" onclick="clsDeleteRoom(\''+esc(r.id)+'\')">🗑 ลบห้องถาวร</button>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;width:100%;margin-top:7px">'+ /* [ตามคำขอครู] ปุ่มแนวนอน ขนาดเล็กแบบชิป */
+          '<button class="btn-primary" style="background:#1d4ed8;padding:3px 11px;font-size:12px;border-radius:8px" onclick="clsOpenScores(\''+esc(r.id)+'\')">📊 คะแนนของห้อง</button>'+
+          '<button class="btn-primary" style="background:#0e7490;padding:3px 11px;font-size:12px;border-radius:8px" onclick="clsOpenRoster(\''+esc(r.id)+'\')">👥 รายชื่อนักเรียน</button>'+
+          '<button class="btn-ghost" style="padding:2px 11px;font-size:12px;border-radius:8px" onclick="clsToggleRoom(\''+esc(r.id)+'\','+(r.is_active?'false':'true')+')">'+(r.is_active?'ปิดห้องชั่วคราว':'เปิดห้อง')+'</button>'+
+          '<button class="btn-ghost" style="padding:2px 11px;font-size:12px;border-radius:8px;color:#b91c1c" onclick="clsDeleteRoom(\''+esc(r.id)+'\')">🗑 ลบห้อง</button>'+
         '</div>'+
       '</div>'+
       (cls.open===r.id?clsRosterHtml(r):'')+
@@ -2968,13 +2986,14 @@ function clsRosterHtml(r){
 }
 function clsFillRoster(){
   if(!cls.open) return;
-  sbEnsure().then(function(){ return sbFetch('/rest/v1/students?classroom_id=eq.'+cls.open+'&select=id,student_number,first_name,last_name,join_pin'); })
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/students?classroom_id=eq.'+cls.open+'&select=id,student_number,first_name,last_name,join_pin,character_name').catch(function(){ return sbFetch('/rest/v1/students?classroom_id=eq.'+cls.open+'&select=id,student_number,first_name,last_name,join_pin'); }); })
   .then(function(rows){
     cls.roster=(rows||[]).sort(function(a,b){ return (Number(a.student_number)||999)-(Number(b.student_number)||999); });
     var el=$('cls-roster-tbl'); if(!el) return;
     if(!cls.roster.length){ el.innerHTML='<div class="muted" style="font-size:13px">ยังไม่มีรายชื่อ — เพิ่มจากฟอร์มด้านบน หรือให้นักเรียนพิมพ์ชื่อเองตอนเข้าห้อง</div>'; return; }
-    el.innerHTML='<table class="cls-tbl"><tr><th style="width:60px">เลขที่</th><th>ชื่อ</th><th>นามสกุล</th><th style="width:70px" title="PIN สำหรับเข้าห้อง (ตั้งเมื่อต้องการกันเพื่อนแตะชื่อผิดคน)">PIN</th><th style="width:120px"></th></tr>'+
+    el.innerHTML='<table class="cls-tbl"><tr><th style="width:60px">เลขที่</th><th>ชื่อ</th><th>นามสกุล</th><th title="ชื่อที่แสดงในเกม/กระดานคะแนน — นักเรียนตั้งเองตอนเข้าห้อง หรือครูแก้ให้">🎮 ชื่อในเกม</th><th style="width:70px" title="PIN สำหรับเข้าห้อง (ตั้งเมื่อต้องการกันเพื่อนแตะชื่อผิดคน)">PIN</th><th style="width:120px"></th></tr>'+
       cls.roster.map(function(s){ return '<tr><td>'+esc(s.student_number||'')+'</td><td>'+esc(s.first_name||'')+'</td><td>'+esc(s.last_name||'')+'</td>'+
+        '<td>'+(s.character_name?'<span style="color:#7c3aed;font-weight:700">'+esc(s.character_name)+'</span>':'<span class="muted">–</span>')+'</td>'+
         '<td>'+esc(s.join_pin||'–')+'</td>'+
         '<td><button class="btn-ghost" style="padding:3px 9px;font-size:12px;color:#1d4ed8" onclick="clsEditStudent(\''+esc(s.id)+'\')">✏️ แก้ไข</button> '+
         '<button class="btn-ghost" style="padding:3px 9px;font-size:12px;color:#b91c1c" onclick="clsDelStudent(\''+esc(s.id)+'\')">ลบ</button></td></tr>'; }).join('')+
@@ -2992,11 +3011,12 @@ function clsEditStudent(id){
     var fn=prompt('ชื่อ', s.first_name||''); if(fn==null) return;
     if(!String(fn).trim()){ toast('ชื่อห้ามว่าง'); return; }
     var ln=prompt('นามสกุล', s.last_name||''); if(ln==null) return;
+    var gn=prompt('🎮 ชื่อในเกม (เว้นว่าง = ใช้ชื่อจริง)', s.character_name||''); if(gn==null) return;
     var pin=prompt('PIN เข้าห้อง 4-6 หลัก (เว้นว่าง = ไม่ใช้ PIN)', pin0||''); if(pin==null) return;
     pin=String(pin).trim();
     if(pin&&!/^\d{4,6}$/.test(pin)){ toast('PIN ต้องเป็นตัวเลข 4-6 หลัก'); return; }
     sbEnsure().then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'PATCH',
-      body:JSON.stringify({student_number:String(no).trim(),first_name:String(fn).trim(),last_name:String(ln).trim(),join_pin:pin||null})}); })
+      body:JSON.stringify({student_number:String(no).trim(),first_name:String(fn).trim(),last_name:String(ln).trim(),character_name:String(gn).trim().slice(0,20)||null,join_pin:pin||null})}); })
     .then(function(){ toast('บันทึกการแก้ไขแล้ว'); return clsAfterAuth(); })
     .catch(function(e){ toast('แก้ไขไม่สำเร็จ: '+(e&&e.message||'')); });
   }
