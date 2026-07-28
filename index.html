@@ -2439,7 +2439,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
    ตัวอย่าง: ไฟล์ CAI_KAN_NEW2_72.html ออกวันที่ 22/07/2569 → V.7.2 + 2569 07 22 = "V.7.225690722"
    เหตุที่ท้ายเรียง ปี-เดือน-วัน: ตัวเลขจะโตตามเวลาเสมอ เทียบได้ทันทีว่าเครื่องไหนรุ่นใหม่กว่า (มาตรฐาน build number)
    ทุกครั้งที่แก้ไฟล์ออกรุ่นใหม่ ให้ขยับเลขรุ่น+วันที่นี้พร้อมเลขท้ายชื่อไฟล์เสมอ จะได้ตรวจจากหน้าจอได้ไม่ต้องเดา */
-const GAME_VERSION = 'V.7.51-IX2050-2569.27'; /* [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
+const GAME_VERSION = 'V.7.53-IX2050-2569.29'; /* [เฟส 3c 2569.29] เกมคุย Supabase ตรง (Sheets เหลือเป็นตัวสำรอง): (1) login บัญชีเดิมผ่าน rpc_legacy_login — เข้าได้ทันที+กู้เซฟ+ผูกห้องเรียนอัตโนมัติ (2) เซฟเกม (ProfileBlob) ขึ้น Supabase ผ่าน rpc_set_save พร้อมคะแนนสรุป (คะแนนเก็บ=ผลรวม normScore ดีที่สุดต่อด่าน · คะแนนสอบ=ด่าน 8) — กลุ่ม 2-3 คนลงครบทุกสมาชิก (3) กระดานอันดับรายห้องจาก rpc_leaderboard เมื่อผูกห้องเรียนอยู่ (เห็นเฉพาะเพื่อนร่วมห้อง) ถอยกลับ Sheets อัตโนมัติเมื่อมีปัญหา (4) เข้าห้องเรียนแล้วดึงเซฟจาก rpc_get_save มาผสานก่อนเข้าเกม (รอสูงสุด 4 วิ) (5) Sheets ล่มไม่กั้นการเข้าเล่น — ผูก session ในเครื่อง เล่นต่อได้ ข้อมูลยังลง Supabase ครบ | [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
 /* [รอบ 49 Capstone] รหัสประจำ "รอบการเปิดเกม" (Session) — ใช้ผูกข้อมูลวิจัยทุกชีต (Progress/QuestionLog/BossResults/CapstoneResults)
    อยู่ใน sessionStorage: เปิดแท็บใหม่/รีเฟรช = ได้ session ใหม่, สลับหน้าในแท็บเดิม = session เดิม (ไม่ใช่ข้อมูลระบุตัวตน) */
 const SESSION_ID = (() => {
@@ -20524,7 +20524,7 @@ const SBTee = {
   bind() { try { return JSON.parse(localStorage.getItem('cls_current') || 'null'); } catch (e) { return null; } },
   tee(body) {
     if (!body || !body.action) return;
-    const MAP = { saveProgress: 1, saveBossResult: 1, logQuestions: 1, saveCapstoneResult: 1, savePilokDigResult: 1, saveSatisfaction: 2, saveSelfAssessment: 2 };
+    const MAP = { saveProgress: 1, saveBossResult: 1, logQuestions: 1, saveCapstoneResult: 1, savePilokDigResult: 1, saveSatisfaction: 2, saveSelfAssessment: 2, saveProfileBlob: 3 }; // [เฟส 3c] เซฟเกม (ProfileBlob) ขึ้น Supabase ด้วย
     if (!MAP[body.action]) return;
     const b = this.bind(); if (!b || !b.student_id) return;
     // ส่งเฉพาะข้อมูลของนักเรียนที่ผูกห้องอยู่ (กันกรณีสลับบัญชีบนเครื่องเดียว)
@@ -20553,15 +20553,39 @@ const SBTee = {
         p_kind: a === 'saveSatisfaction' ? 'satisfaction' : 'self_assessment', p_payload: body, p_dims: null,
         p_overall: (body.overallAvg != null && body.overallAvg !== '' ? Number(body.overallAvg) : null), p_interpretation: body.interpretation || null });
     }
+    if (a === 'saveProfileBlob') {
+      // [เฟส 3c] เซฟเกมลง Supabase → login จากเครื่องไหนก็ได้ ความคืบหน้าตามมา + คะแนนสรุปใช้ทำกระดานอันดับรายห้อง
+      let blob = null; try { blob = typeof body.blob === 'string' ? JSON.parse(body.blob) : body.blob; } catch (e) {}
+      if (!blob || typeof blob !== 'object') return Promise.resolve();
+      let collected = 0, boss = 0;
+      const stg = blob.stages || {};
+      Object.keys(stg).forEach(sid => {
+        const en = stg[sid] || {};
+        const ns = (typeof en.normScore === 'number') ? en.normScore : 0; // สเกลวิจัย: ด่านละ 0-10, บอส 0-30
+        collected += ns;
+        if (String(sid) === '8') boss = ns;
+      });
+      const bm = (b.member_ids && b.member_ids.length) ? b.member_ids : [b.student_id];
+      let bc = Promise.resolve();
+      bm.forEach(mid => { bc = bc.then(() => this._rpc('rpc_set_save', { p_join_key: b.join_key, p_student: mid, p_pin: b.jpin || '', p_blob: blob, p_collected: collected, p_boss: boss })); });
+      return bc;
+    }
     const att = { session_id: String(body.sessionId || ''), attempt_no: (body.attemptNo != null && body.attemptNo !== '' ? Number(body.attemptNo) : null),
       is_first: body.isFirstAttempt === true, game_version: String(body.gameVersion || '') };
+    // [กลุ่ม 2-3 คน/เครื่อง] ติดป้ายกลุ่มลงข้อมูลดิบ + บันทึกให้ครบทุกสมาชิก
+    const members = (b.member_ids && b.member_ids.length) ? b.member_ids : [b.student_id];
+    const gmeta = members.length > 1 ? { size: members.length, members: b.member_names || [] } : null;
+    const wrap = o => gmeta ? Object.assign({}, o, { _group: gmeta }) : o;
     let evs = [];
-    if (a === 'logQuestions') { evs = (body.logs || []).map(L => ({ stage_id: String(L.stageId || ''), kind: 'question', question_id: String(L.questionId || ''), correct: !!L.correct, credit: (typeof L.creditWeight === 'number' ? L.creditWeight : (L.correct ? 1 : 0)), score: null, raw: L })); }
-    else if (a === 'saveProgress') { evs = [{ stage_id: String(body.stageId || ''), kind: 'progress', question_id: null, correct: null, credit: null, score: Number(body.score) || 0, raw: body }]; }
-    else if (a === 'saveBossResult') { evs = [{ stage_id: '8', kind: 'boss', question_id: null, correct: null, credit: null, score: Number(body.totalScore) || 0, raw: body }]; }
-    else if (a === 'saveCapstoneResult') { evs = [{ stage_id: 'balance2050', kind: 'capstone', question_id: null, correct: null, credit: null, score: Number(body.rawTotal24) || 0, raw: body }]; }
-    else if (a === 'savePilokDigResult') { evs = [{ stage_id: 'pilok', kind: 'pilok', question_id: null, correct: null, credit: null, score: Number(body.pilokWeighted5) || 0, raw: body }]; }
-    return this._rpc('rpc_submit_events', { p_join_key: b.join_key, p_student: b.student_id, p_pin: b.jpin || '', p_game_code: SB_GAME_CODE, p_attempt: att, p_events: evs });
+    if (a === 'logQuestions') { evs = (body.logs || []).map(L => ({ stage_id: String(L.stageId || ''), kind: 'question', question_id: String(L.questionId || ''), correct: !!L.correct, credit: (typeof L.creditWeight === 'number' ? L.creditWeight : (L.correct ? 1 : 0)), score: null, raw: wrap(L) })); }
+    else if (a === 'saveProgress') { evs = [{ stage_id: String(body.stageId || ''), kind: 'progress', question_id: null, correct: null, credit: null, score: Number(body.score) || 0, raw: wrap(body) }]; }
+    else if (a === 'saveBossResult') { evs = [{ stage_id: '8', kind: 'boss', question_id: null, correct: null, credit: null, score: Number(body.totalScore) || 0, raw: wrap(body) }]; }
+    else if (a === 'saveCapstoneResult') { evs = [{ stage_id: 'balance2050', kind: 'capstone', question_id: null, correct: null, credit: null, score: Number(body.rawTotal24) || 0, raw: wrap(body) }]; }
+    else if (a === 'savePilokDigResult') { evs = [{ stage_id: 'pilok', kind: 'pilok', question_id: null, correct: null, credit: null, score: Number(body.pilokWeighted5) || 0, raw: wrap(body) }]; }
+    // ส่งทีละสมาชิก (คะแนนลงครบทุกคนในกลุ่ม)
+    let chain = Promise.resolve();
+    members.forEach(mid => { chain = chain.then(() => this._rpc('rpc_submit_events', { p_join_key: b.join_key, p_student: mid, p_pin: b.jpin || '', p_game_code: SB_GAME_CODE, p_attempt: att, p_events: evs })); });
+    return chain;
   },
   flush() {
     if (this._flushing) return;
@@ -20582,6 +20606,39 @@ const SBTee = {
   }
 };
 setInterval(() => { try { SBTee.flush(); } catch (e) {} }, 30000); // ลองส่งคิวค้างทุก 30 วิ ระหว่างเปิดเกม
+
+/* [เฟส 3c] เกมคุยกับ Supabase ตรง (เร็วกว่า Apps Script มาก) — Google Sheets เหลือเป็นตัวสำรอง
+   - sbLegacyLogin: บัญชีเดิม (username+PIN ที่ย้ายมาจาก Sheets) เข้าสู่ระบบผ่าน Supabase
+   - sbFetchSave:   ดึงเซฟเกม (ProfileBlob) จาก Supabase — แตะชื่อ/ล็อกอินจากเครื่องไหน ความคืบหน้าตามมา
+   - sbBindLegacy:  ผูก session + ห้องเรียน + กู้เซฟ หลัง login ผ่าน Supabase สำเร็จ */
+function sbLegacyLogin(username, pin) {
+  return SBTee._rpc('rpc_legacy_login', { p_username: username, p_pin: pin })
+    .then(t => { let rows = []; try { rows = JSON.parse(t || '[]'); } catch (e) {} return (rows && rows.length) ? rows[0] : null; })
+    .catch(e => { console.warn('[SB] legacy login (จะลองทาง Sheets ต่อ):', e && e.message); return null; });
+}
+function sbFetchSave(bind) {
+  if (!bind || !bind.join_key || !bind.student_id) return Promise.resolve(null);
+  return SBTee._rpc('rpc_get_save', { p_join_key: bind.join_key, p_student: bind.student_id, p_pin: bind.jpin || '' })
+    .then(t => { try { const v = JSON.parse(t); return (v && typeof v === 'object') ? v : null; } catch (e) { return null; } })
+    .catch(() => null);
+}
+function sbBindLegacy(row, username, pin) {
+  try {
+    localStorage.setItem('cls_current', JSON.stringify({
+      username: username, student_id: row.student_id,
+      member_ids: [row.student_id],
+      member_names: [((row.first_name || '') + ' ' + (row.last_name || '')).trim()],
+      group_size: 1,
+      join_key: row.join_key, jpin: pin || '', classroom: row.classroom_name || '', school: row.school_name || ''
+    }));
+  } catch (e) {}
+  Auth._bindSession(username, {
+    username: username, characterName: '',
+    firstName: row.first_name || '', lastName: row.last_name || '',
+    school: row.school_name || '', class: row.classroom_name || '', studentNumber: row.student_number || ''
+  });
+  if (row.save_blob) Auth._restoreFromBlob(row.save_blob);
+}
 
 // จำแนกสาเหตุที่เชื่อมต่อ Google Sheet ไม่สำเร็จ ให้ข้อความที่ช่วยแก้ปัญหาได้จริง (ไม่ใช่แค่ "เชื่อมต่อไม่ได้" เฉยๆ)
 // พิมพ์ error เต็มลง console เสมอ เปิด DevTools (F12) ดูรายละเอียดจริงได้ที่แท็บ Console
@@ -21934,12 +21991,31 @@ function getLeaderboardCached(maxAgeMs) {
   const now = Date.now();
   if (_lbCache && now - _lbCacheAt < maxAgeMs) return Promise.resolve(_lbCache);
   if (_lbInflight) return _lbInflight; // มีคำขอกำลังวิ่งอยู่ — เกาะไปด้วย ไม่ยิงซ้ำ
-  _lbInflight = sheetGet({ action: 'getLeaderboard' }).then(res => {
-    _lbInflight = null;
-    const list = (res && res.leaderboard) || [];
-    if (list.length || !_lbCache) { _lbCache = list; _lbCacheAt = Date.now(); }
-    return _lbCache;
-  }).catch(e => { _lbInflight = null; if (_lbCache) return _lbCache; throw e; });
+  // [เฟส 3c] ผูกห้องเรียนอยู่ → ใช้กระดานอันดับ "รายห้อง" จาก Supabase (เร็วกว่า + เห็นเฉพาะเพื่อนร่วมห้องตัวเอง) · มีปัญหาเมื่อไรถอยกลับไปดึงจาก Sheets อัตโนมัติ
+  const _bnd = (typeof SBTee !== 'undefined' && SBTee.bind) ? SBTee.bind() : null;
+  const _sbReq = (_bnd && _bnd.join_key)
+    ? SBTee._rpc('rpc_leaderboard', { p_join_key: _bnd.join_key }).then(t => {
+        let rows = []; try { rows = JSON.parse(t || '[]'); } catch (e) {}
+        return rows
+          .filter(r => (Number(r.collected) || 0) > 0 || (Number(r.boss) || 0) > 0) // โชว์เฉพาะคนที่เริ่มเล่นแล้ว (เหมือนกระดานเดิม)
+          .map(r => {
+            const sid = String(r.sid || '');
+            const mine = _bnd.member_ids && _bnd.member_ids.indexOf(sid) >= 0;
+            return {
+              username: mine ? _bnd.username : ('c' + sid.replace(/-/g, '').slice(0, 7)), // ชื่อบัญชีคงที่จากรหัสนักเรียน (สูตรเดียวกับ clsjUser)
+              characterName: ((r.first_name || '') + ' ' + (r.last_name || '')).trim(),
+              totalScore: Number(r.collected) || 0, bossScore: Number(r.boss) || 0, badgeIds: ''
+            };
+          });
+      })
+    : Promise.reject(new Error('ยังไม่ได้ผูกห้องเรียน'));
+  _lbInflight = _sbReq
+    .catch(() => sheetGet({ action: 'getLeaderboard' }).then(res => (res && res.leaderboard) || []))
+    .then(list => {
+      _lbInflight = null;
+      if (list.length || !_lbCache) { _lbCache = list; _lbCacheAt = Date.now(); }
+      return _lbCache;
+    }).catch(e => { _lbInflight = null; if (_lbCache) return _lbCache; throw e; });
   return _lbInflight;
 }
 
@@ -22477,6 +22553,17 @@ function wireAuthEvents() {
     }
     // [รอบ 56 ตามคำขอ] ระบบกลุ่มย้ายไปกำหนดตอน "สมัครสมาชิก" — ล็อกอินไม่ถามซ้ำ (ข้อมูลกลุ่มกู้จากโปรไฟล์ที่ซิงก์ไว้อัตโนมัติ)
     setAuthButtonsBusy(true);
+    // [เฟส 3c] ลอง Supabase ก่อน — บัญชีเดิมที่ย้ายข้อมูลมาแล้ว login ได้ทันที (เร็วกว่า Sheets มาก) พร้อมกู้เซฟ+ผูกห้องเรียนอัตโนมัติ
+    try {
+      const sbRow = await sbLegacyLogin(username, pin);
+      if (sbRow && sbRow.student_id) {
+        sbBindLegacy(sbRow, username, pin);
+        setAuthButtonsBusy(false);
+        AUDIO.playSFX('victory');
+        afterAuthSuccess();
+        return;
+      }
+    } catch (e) { console.warn('[SB] legacy login ข้ามไปใช้ Sheets:', e && e.message); }
     const res = await Auth.login(username, pin);
     setAuthButtonsBusy(false);
     if (res && res.success) {
@@ -23824,6 +23911,9 @@ window.addEventListener('pagehide', () => { if (typeof flushAnswerLogs === 'func
 #clsj .jstu{border:1.5px solid #cbd5e1;border-radius:11px;background:#fff;padding:10px 12px;font-family:inherit;font-size:14.5px;font-weight:700;color:#1f2937;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px}
 #clsj .jstu:hover{border-color:#2563eb;background:#eff6ff}
 #clsj .jstu .no{flex:0 0 auto;background:#1d4ed8;color:#fff;border-radius:8px;min-width:30px;text-align:center;padding:2px 6px;font-size:13px}
+#clsj .jstu.sel{background:#1d4ed8;border-color:#1e40af;color:#fff}
+#clsj .jstu.sel .no{background:#fff;color:#1d4ed8}
+#clsj .jgroup-hint{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:8px 12px;font-size:12.5px;color:#1e40af;margin-top:10px}
 #clsj .jhint{font-size:12.5px;color:#64748b;margin-top:10px;line-height:1.55}
 #clsj .jself{border-top:1px dashed #cbd5e1;margin-top:14px;padding-top:12px}
 #clsj .jself input{font-family:inherit;font-size:14.5px;padding:9px 11px;border:1.5px solid #cbd5e1;border-radius:9px;margin:3px 4px 3px 0}
@@ -24107,13 +24197,16 @@ function clsjLookup(){
 }
 function clsjRoster(){
   var r=clsjState.room;
+  clsjState.sel=[]; // [กลุ่ม] รายการ index ที่เลือก (สูงสุด 3 คน — เครื่องเดียวกันเล่นได้หลายคน)
   document.getElementById('clsj-title').textContent='🏫 '+(r.name||'ห้องเรียน');
   var list=clsjState.roster.map(function(s,i){
-    return '<button class="jstu" onclick="clsjPick('+i+')"><span class="no">'+_satEsc(s.student_number||'–')+'</span><span>'+_satEsc((s.first_name||'')+' '+(s.last_name||''))+'</span></button>';
+    return '<button class="jstu" id="jstu-'+i+'" onclick="clsjToggle('+i+')"><span class="no">'+_satEsc(s.student_number||'–')+'</span><span>'+_satEsc((s.first_name||'')+' '+(s.last_name||''))+'</span></button>';
   }).join('');
   document.getElementById('clsj-body').innerHTML=
-    '<div class="jroom">ห้อง <b>'+_satEsc(r.name||'')+'</b>'+(r.school_name?' · '+_satEsc(r.school_name):'')+' — <b>แตะชื่อของเธอ</b>เพื่อเข้าเล่นได้เลย!</div>'+
+    '<div class="jroom">ห้อง <b>'+_satEsc(r.name||'')+'</b>'+(r.school_name?' · '+_satEsc(r.school_name):'')+' — <b>แตะชื่อของเธอ</b> แล้วกดปุ่มเข้าเล่น</div>'+
     (clsjState.roster.length?('<div class="jlist">'+list+'</div>'):'<div class="jhint" style="font-size:14px">ครูยังไม่ได้ใส่รายชื่อ — พิมพ์ชื่อของเธอด้านล่างได้เลย</div>')+
+    '<div class="jgroup-hint">👥 ใช้คอมพิวเตอร์<b>เครื่องเดียวกันหลายคน</b>? แตะชื่อเพื่อนที่เล่นด้วยกันได้<b>สูงสุด 3 คน</b> — คะแนนจะบันทึกให้ครบทุกคน</div>'+
+    '<button class="jbtn" id="clsj-go2" onclick="clsjGo()" disabled>▶ เข้าเล่น</button>'+
     (r.allow_self_add?('<div class="jself"><b style="font-size:13.5px;color:#334155">ไม่มีชื่อของเธอ? เพิ่มเองตรงนี้</b><br>'+
       '<input id="clsj-no" style="width:70px" inputmode="numeric" placeholder="เลขที่">'+
       '<input id="clsj-fn" style="width:130px" placeholder="ชื่อ">'+
@@ -24122,14 +24215,25 @@ function clsjRoster(){
     '<div class="jerr" id="clsj-err"></div>'+
     '<button class="jbtn alt" onclick="clsjOpen()">← ใส่โค้ดใหม่</button>';
 }
+function clsjToggle(i){
+  var s=clsjState.roster[i]; if(!s) return;
+  var sel=clsjState.sel, at=sel.indexOf(i);
+  if(at>=0) sel.splice(at,1);
+  else { if(sel.length>=3){ clsjErr('เลือกได้สูงสุด 3 คนต่อเครื่องนะ'); return; } sel.push(i); }
+  var e=document.getElementById('clsj-err'); if(e)e.classList.remove('on');
+  clsjState.roster.forEach(function(_,k){ var el=document.getElementById('jstu-'+k); if(el)el.classList.toggle('sel',sel.indexOf(k)>=0); });
+  var go=document.getElementById('clsj-go2');
+  if(go){ go.disabled=!sel.length; go.textContent=sel.length? ('▶ เข้าเล่น ('+sel.length+' คน)') : '▶ เข้าเล่น'; }
+}
+function clsjGo(){
+  var sel=clsjState.sel||[]; if(!sel.length) return;
+  var members=sel.map(function(i){ var s=clsjState.roster[i]; return {student_id:s.student_id,first_name:s.first_name||'',last_name:s.last_name||'',student_number:s.student_number||'',has_pin:!!s.has_pin}; });
+  var jpin='';
+  if(clsjState.room.pin_required&&members[0].has_pin){ jpin=prompt('ใส่ PIN ของ '+members[0].first_name+' (ถามครูถ้าไม่ทราบ)')||''; if(!jpin) return; }
+  clsjBindGroup(members,jpin);
+}
 function clsjUser(sid){ return 'c'+String(sid).replace(/-/g,'').slice(0,7); }
 function clsjPinOf(sid){ var h=String(sid).replace(/-/g,''),n=0; for(var i=0;i<h.length;i++){ n=(n*33+h.charCodeAt(i))>>>0; } return String(1000+(n%9000)); }
-function clsjPick(i){
-  var s=clsjState.roster[i]; if(!s) return;
-  var jpin='';
-  if(clsjState.room.pin_required&&s.has_pin){ jpin=prompt('ใส่ PIN ของเธอ (ถามครูถ้าไม่ทราบ)')||''; if(!jpin) return; }
-  clsjBind({student_id:s.student_id,first_name:s.first_name||'',last_name:s.last_name||'',student_number:s.student_number||''},jpin);
-}
 function clsjSelfAdd(){
   var e=document.getElementById('clsj-err'); if(e)e.classList.remove('on');
   var no=(document.getElementById('clsj-no').value||'').trim();
@@ -24137,19 +24241,50 @@ function clsjSelfAdd(){
   var ln=(document.getElementById('clsj-ln').value||'').trim();
   if(!fn){ clsjErr('พิมพ์ชื่อก่อนนะ'); return; }
   clsjRpc('rpc_add_student',{p_join_key:clsjState.room.join_key,p_number:no,p_first:fn,p_last:ln})
-    .then(function(sid){ clsjBind({student_id:sid,first_name:fn,last_name:ln,student_number:no},''); })
+    .then(function(sid){
+      // โหลดรายชื่อใหม่ แล้วเลือกชื่อที่เพิ่งเพิ่มให้เลย (เพิ่มเพื่อน/เลือกเพิ่มต่อได้)
+      return clsjRpc('rpc_get_roster',{p_join_key:clsjState.room.join_key}).then(function(ros){
+        clsjState.roster=ros||[]; clsjRoster();
+        var idx=-1; clsjState.roster.forEach(function(s,i){ if(s.student_id===sid) idx=i; });
+        if(idx>=0) clsjToggle(idx);
+      });
+    })
     .catch(function(err){ clsjErr('เพิ่มชื่อไม่สำเร็จ: '+(err&&err.message||'')); });
 }
-function clsjBind(stu,jpin){
+/* ผูกบัญชีแบบกลุ่ม (1-3 คน) — คนแรกที่เลือก = เจ้าของบัญชีเกม (ชื่อบัญชีคงที่จากรหัสนักเรียน) */
+function clsjBindGroup(members,jpin){
   var body=document.getElementById('clsj-body');
   body.innerHTML='<div style="text-align:center;padding:30px 10px"><div style="font-size:40px">⏳</div><div style="font-weight:800;color:#1d4ed8;margin-top:8px">กำลังพาเข้าห้องเรียน... รอสักครู่นะ</div></div>';
-  var r=clsjState.room;
-  var uname=clsjUser(stu.student_id), pin=clsjPinOf(stu.student_id);
+  var r=clsjState.room, seat=members[0];
+  var uname=clsjUser(seat.student_id), pin=clsjPinOf(seat.student_id);
   function bindDone(){
-    try{ localStorage.setItem('cls_current',JSON.stringify({username:uname,student_id:stu.student_id,join_key:r.join_key,jpin:jpin||'',classroom:r.name||'',school:r.school_name||''})); }catch(e){}
+    try{ localStorage.setItem('cls_current',JSON.stringify({
+      username:uname, student_id:seat.student_id,
+      member_ids:members.map(function(m){return m.student_id;}),
+      member_names:members.map(function(m){return (m.first_name+' '+m.last_name).trim();}),
+      group_size:members.length,
+      join_key:r.join_key, jpin:jpin||'', classroom:r.name||'', school:r.school_name||'' })); }catch(e){}
+    /* [เฟส 3c] กันหลุด: ถ้า Sheets ล่ม/ช้าจน login-สมัครเงียบไม่สำเร็จ ก็ยังผูก session ในเครื่องให้เล่นได้
+       (ข้อมูลการเล่นยังบันทึกครบผ่าน Supabase — SBTee) */
+    try{
+      var _sd=(typeof getSaveData==='function')?getSaveData():null;
+      if(_sd&&(!_sd.username||String(_sd.username).toLowerCase()!==uname.toLowerCase())){
+        Auth._bindSession(uname,{ username:uname, firstName:seat.first_name||'', lastName:seat.last_name||'',
+          school:r.school_name||'', 'class':r.name||'', studentNumber:seat.student_number||'' });
+      }
+    }catch(e){}
     try{ if(typeof AUDIO!=='undefined'&&AUDIO.playSFX)AUDIO.playSFX('victory'); }catch(e){}
     clsjClose();
-    if(typeof afterAuthSuccess==='function') afterAuthSuccess();
+    /* [เฟส 3c] ดึงเซฟเกมจาก Supabase มาผสานก่อนเข้าเกม — แตะชื่อจากเครื่องไหน เหรียญ/ไอเทม/ด่านที่ผ่านตามมาครบ
+       (รอไม่เกิน 4 วิ · ดึงไม่ได้ก็เข้าเล่นได้ปกติ) */
+    var _fin=function(){ if(typeof afterAuthSuccess==='function') afterAuthSuccess(); };
+    try{
+      Promise.race([
+        sbFetchSave({ join_key:r.join_key, student_id:seat.student_id, jpin:jpin||'' }),
+        new Promise(function(res){ setTimeout(function(){ res(null); },4000); })
+      ]).then(function(sv){ try{ if(sv) Auth._restoreFromBlob(sv); }catch(e){} _fin(); })
+        .catch(function(){ _fin(); });
+    }catch(e){ _fin(); }
   }
   function fail(msg){
     body.innerHTML='<div class="jerr on">'+_satEsc(msg||'เข้าห้องไม่สำเร็จ ลองใหม่อีกครั้ง')+'</div>'+
@@ -24157,19 +24292,26 @@ function clsjBind(stu,jpin){
   }
   Auth.login(uname,pin).then(function(res){
     if(res&&res.success){ bindDone(); return; }
-    // ยังไม่มีบัญชี → สมัครให้เงียบ ๆ จากข้อมูลรายชื่อห้อง
+    // ยังไม่มีบัญชี → สมัครให้เงียบ ๆ (รวมสมาชิกกลุ่มคนที่ 2-3 ให้ระบบเดิมรู้จักด้วย)
+    var m2=members[1]||{}, m3=members[2]||{};
     var payload={ username:uname, pin:pin,
-      characterName:(stu.first_name||'นักสำรวจ')+'·'+String(stu.student_id).replace(/-/g,'').slice(0,4),
-      firstName:stu.first_name||'', lastName:stu.last_name||'',
-      'class':r.name||'', studentNumber:stu.student_number||'', school:r.school_name||'', groupSize:1 };
+      characterName:(seat.first_name||'นักสำรวจ')+'·'+String(seat.student_id).replace(/-/g,'').slice(0,4),
+      firstName:seat.first_name||'', lastName:seat.last_name||'',
+      'class':r.name||'', studentNumber:seat.student_number||'', school:r.school_name||'',
+      groupSize:members.length,
+      member2FirstName:m2.first_name||'', member2LastName:m2.last_name||'', member2Class:m2.first_name?(r.name||''):'', member2Number:m2.student_number||'',
+      member3FirstName:m3.first_name||'', member3LastName:m3.last_name||'', member3Class:m3.first_name?(r.name||''):'', member3Number:m3.student_number||'' };
     return Auth.register(payload).then(function(rr){
       if(rr&&rr.success){ bindDone(); return; }
-      // เผื่อชื่อชนกัน (สมัครไว้แล้วจากเครื่องอื่นวินาทีเดียวกัน) → ลองเข้าซ้ำ
       return Auth.login(uname,pin).then(function(r2){
-        if(r2&&r2.success){ bindDone(); } else fail((rr&&(rr.message||rr.error))||'สมัครอัตโนมัติไม่สำเร็จ');
+        /* [เฟส 3c] สมัคร+login ฝั่ง Sheets ไม่ผ่านทั้งคู่ = ระบบเก่ามีปัญหา — ไม่กั้นนักเรียน เข้าเล่นผ่าน Supabase ได้เลย */
+        bindDone();
       });
     });
-  }).catch(function(e){ fail('เชื่อมต่อไม่สำเร็จ — ตรวจอินเทอร์เน็ตแล้วลองใหม่'); });
+  }).catch(function(e){
+    /* [เฟส 3c] Sheets เชื่อมไม่ได้ ≠ เข้าห้องไม่ได้ — ผูก session ในเครื่องแล้วเข้าเล่นเลย (คะแนนยังลง Supabase ครบ) */
+    bindDone();
+  });
 }
 /* [เฟส 2.1] แท็บ "เข้าห้องเรียน" บนหน้า login — ใส่โค้ดในแท็บแล้วไปต่อที่หน้ารายชื่อ */
 function clsjOpenWithKey(k){ clsjOpen(); var ki=document.getElementById('clsj-key'); if(ki) ki.value=k; clsjLookup(); }
@@ -24511,8 +24653,8 @@ function openEmbeddedDashboard(mode){
       <div class="v2banner" style="background:linear-gradient(90deg,#eff6ff,#dbeafe);border-color:#93c5fd">
         <div style="font-size:22px">🏫</div>
         <div style="flex:1;min-width:220px">
-          <div style="font-weight:800;color:#1d4ed8;font-size:15px">ระบบห้องเรียน — ครูสร้างห้อง · นักเรียนเข้าด้วยโค้ด ไม่ต้องสมัคร</div>
-          <div style="font-size:12px;color:#1e40af">ระบบใหม่บนฐานข้อมูล Supabase · เริ่มใช้ได้โดยไม่ต้องสมัคร (ผูกบัญชีภายหลังได้) · แยกจากข้อมูลคะแนนเดิม</div>
+          <div style="font-weight:800;color:#1d4ed8;font-size:15px">ห้องเรียนของครู</div>
+          <div style="font-size:12px;color:#1e40af">สร้างห้อง · แชร์โค้ดให้นักเรียนเข้าเล่น · ดูรายชื่อและคะแนนของแต่ละห้องได้ในหน้านี้</div>
         </div>
         <button class="btn-ghost" id="cls-back" style="background:#fff">← กลับ Dashboard</button>
       </div>
@@ -26399,9 +26541,10 @@ function sbAnonSignup(){
 function openClassroomPage(){
   var p1=$('page-v1'),p2=$('page-v2'),pc=$('page-cls');
   if(p1)p1.classList.add('hidden'); if(p2)p2.classList.add('hidden'); if(pc)pc.classList.remove('hidden');
+  var rb=document.querySelector('.ro-banner'); if(rb)rb.style.display='none'; // แถบ "โหมดอ่านอย่างเดียว" ไม่เกี่ยวกับหน้าห้องเรียน — ซ่อน
   clsInit();
 }
-function closeClassroomPage(){ var pc=$('page-cls'); if(pc)pc.classList.add('hidden'); showPage('v2'); }
+function closeClassroomPage(){ var pc=$('page-cls'); if(pc)pc.classList.add('hidden'); var rb=document.querySelector('.ro-banner'); if(rb)rb.style.display=''; showPage('v2'); }
 
 /* ---------- สถานะ + เริ่มระบบ ---------- */
 function clsStatus(html){ var el=$('cls-status'); if(el) el.innerHTML=html; }
@@ -26522,18 +26665,96 @@ function clsAfterAuth(){
         .then(function(rows){ cls.teacher=rows&&rows[0]; return clsLoadCounts(); });
     }
     return clsLoadCounts();
-  }).then(function(){ clsRender(); })
+  }).then(function(){ clsRender(); clsLoadStats(); })
   .catch(function(e){
     clsStatus(clsErrBox('โหลดข้อมูลห้องเรียนไม่สำเร็จ: '+(e&&e.message||''))+'<div class="card"><button class="btn-primary" onclick="clsInit()" style="background:#1d4ed8">ลองใหม่</button></div>');
   });
 }
 function clsLoadCounts(){
-  cls.counts={};
+  cls.counts={}; cls.students=[];
   if(!cls.rooms.length) return Promise.resolve();
   var ids=cls.rooms.map(function(r){return r.id;}).join(',');
-  return sbFetch('/rest/v1/students?select=id,classroom_id&classroom_id=in.('+ids+')').then(function(rows){
-    (rows||[]).forEach(function(s){ cls.counts[s.classroom_id]=(cls.counts[s.classroom_id]||0)+1; });
+  return sbFetch('/rest/v1/students?select=id,classroom_id,student_number,first_name,last_name,collected_score,boss_score&classroom_id=in.('+ids+')').then(function(rows){
+    cls.students=rows||[];
+    cls.students.forEach(function(s){ cls.counts[s.classroom_id]=(cls.counts[s.classroom_id]||0)+1; });
   }).catch(function(){});
+}
+/* [รวม Dashboard] โหลดข้อมูลการเล่นของนักเรียนทุกห้อง → สรุปคะแนนรายคน (คะแนนเก็บ/สอบ/กาญ 2050) */
+function clsLoadStats(){
+  cls.stats=cls.stats||{}; cls.statsReady=false;
+  var ids=(cls.students||[]).map(function(s){return s.id;});
+  if(!ids.length){ cls.statsReady=true; clsRender(); return; }
+  var chunks=[]; for(var i=0;i<ids.length;i+=200) chunks.push(ids.slice(i,i+200));
+  var stats={};
+  var p=Promise.resolve();
+  chunks.forEach(function(ch){
+    p=p.then(function(){ return sbEnsure(); }).then(function(){
+      return sbFetch('/rest/v1/events?select=student_id,kind,stage_id,score,created_at&student_id=in.('+ch.join(',')+')&limit=100000');
+    }).then(function(evs){
+      (evs||[]).forEach(function(e){
+        var s=stats[e.student_id]||(stats[e.student_id]={pb:{},boss:0,cap:0,plays:0,last:0});
+        s.plays++;
+        var t=Date.parse(e.created_at)||0; if(t>s.last)s.last=t;
+        var sc=Number(e.score)||0;
+        if(e.kind==='progress'){ var k=String(e.stage_id||''); if(!(k in s.pb)||sc>s.pb[k]) s.pb[k]=sc; }
+        else if(e.kind==='boss'){ if(sc>s.boss)s.boss=sc; }
+        else if(e.kind==='capstone'){ if(sc>s.cap)s.cap=sc; }
+      });
+    });
+  });
+  p.then(function(){
+    for(var k in stats){ var s=stats[k], sum=0; for(var st2 in s.pb) sum+=s.pb[st2]; s.collected=Math.round(sum*100)/100; }
+    cls.stats=stats; cls.statsReady=true; clsRender();
+  }).catch(function(e){ cls.statsReady=true; clsRender(); });
+}
+function clsStatOf(stu){
+  var s=(cls.stats&&cls.stats[stu.id])||null;
+  var col=Math.max(s?s.collected:0, Number(stu.collected_score)||0);
+  var boss=Math.max(s?s.boss:0, Number(stu.boss_score)||0);
+  return { collected:col, boss:boss, cap:s?s.cap:0, plays:s?s.plays:0, last:s?s.last:0, has:(s&&s.plays>0)||col>0||boss>0 };
+}
+function clsSummaryHtml(){
+  var students=cls.students||[], nRooms=cls.rooms.length, n=students.length;
+  var played=0, colS=0, colN=0, bossS=0, bossN=0, capN=0;
+  students.forEach(function(stu){ var t=clsStatOf(stu);
+    if(t.has){ played++; }
+    if(t.collected>0){ colS+=t.collected; colN++; }
+    if(t.boss>0){ bossS+=t.boss; bossN++; }
+    if(t.cap>0){ capN++; }
+  });
+  function avg(s,c){ return c?(Math.round(s/c*10)/10):'–'; }
+  function tile(v,l,c){ return '<div style="flex:1;min-width:110px;text-align:center;background:'+c+';border-radius:12px;padding:10px 8px"><div style="font-size:22px;font-weight:800">'+v+'</div><div style="font-size:11.5px;color:#475569">'+l+'</div></div>'; }
+  return '<div class="card" style="margin-bottom:14px"><h2 style="margin-top:0">สรุปข้อมูลผู้เรียน</h2>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap">'+
+      tile(nRooms,'ห้องเรียน','#eff6ff')+
+      tile(n,'นักเรียนทั้งหมด','#eff6ff')+
+      tile(played,'มีข้อมูลการเล่น','#ecfdf5')+
+      tile(avg(colS,colN),'คะแนนเก็บเฉลี่ย','#f0fdf4')+
+      tile(avg(bossS,bossN),'คะแนนสอบเฉลี่ย (30)','#fef9c3')+
+      tile(capN,'ทำภารกิจกาญ 2050 แล้ว','#fdf2f8')+
+    '</div>'+
+    (cls.statsReady?'':'<div class="muted" style="font-size:12px;margin-top:8px"><span class="loading" style="border-color:#2563eb;border-top-color:transparent;width:12px;height:12px"></span> กำลังโหลดคะแนนล่าสุด...</div>')+
+  '</div>';
+}
+function clsOpenScores(id){ cls.openScores=(cls.openScores===id)?null:id; if(cls.openScores) cls.open=null; clsRender(); }
+function clsScoresHtml(r){
+  var studs=(cls.students||[]).filter(function(s){return s.classroom_id===r.id;})
+    .sort(function(a,b){ return (Number(a.student_number)||999)-(Number(b.student_number)||999); });
+  if(!studs.length) return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px"><div class="muted" style="font-size:13px">ยังไม่มีรายชื่อนักเรียนในห้องนี้</div></div>';
+  function d(t){ if(!t) return '–'; var x=new Date(t); return x.getDate()+'/'+(x.getMonth()+1); }
+  var rows=studs.map(function(s){ var t=clsStatOf(s);
+    return '<tr><td>'+esc(s.student_number||'')+'</td><td>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</td>'+
+      '<td style="text-align:center">'+(t.collected>0?t.collected:'–')+'</td>'+
+      '<td style="text-align:center">'+(t.boss>0?t.boss:'–')+'</td>'+
+      '<td style="text-align:center">'+(t.cap>0?(t.cap+'/24'):'–')+'</td>'+
+      '<td style="text-align:center">'+(t.plays||'–')+'</td>'+
+      '<td style="text-align:center">'+d(t.last)+'</td></tr>';
+  }).join('');
+  return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px">'+
+    (cls.statsReady?'':'<div class="muted" style="font-size:12px;margin-bottom:6px"><span class="loading" style="border-color:#2563eb;border-top-color:transparent;width:12px;height:12px"></span> กำลังโหลดคะแนน...</div>')+
+    '<div style="overflow-x:auto"><table class="cls-tbl"><tr><th style="width:52px">เลขที่</th><th>ชื่อ-นามสกุล</th><th style="text-align:center">คะแนนเก็บ</th><th style="text-align:center">คะแนนสอบ (30)</th><th style="text-align:center">กาญ 2050</th><th style="text-align:center">ครั้งที่เล่น</th><th style="text-align:center">ล่าสุด</th></tr>'+rows+'</table></div>'+
+    '<div class="muted" style="font-size:11.5px;margin-top:6px">คะแนนเก็บ = ผลรวมคะแนนดีที่สุดต่อด่าน · คะแนนสอบ = ด่านบอสครั้งที่ดีที่สุด · กาญ 2050 = คะแนนดิบ 6 เกณฑ์ (เต็ม 24)</div>'+
+  '</div>';
 }
 
 /* ---------- เรนเดอร์หลัก ---------- */
@@ -26550,6 +26771,16 @@ function clsRender(){
       '<span class="muted" style="font-size:12px;flex:1">ห้องเรียนของครู: '+cls.rooms.length+' ห้อง</span>'+
     '</div>');
   var h='';
+  // [ตามคำขอ] แนะนำผูก Google เมื่อยังไม่ผูก — ข้อมูลจะได้อยู่ถาวรและเปิดได้ทุกเครื่อง
+  if(!(cls.teacher&&cls.teacher.is_anonymous===false)){
+    h+='<div class="card" style="margin-bottom:14px;background:#eff6ff;border:1px solid #bfdbfe;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px">'+
+      '<span style="font-size:20px">💡</span>'+
+      '<span style="flex:1;min-width:220px;font-size:13px;color:#1e3a8a">ตอนนี้ข้อมูลห้องเรียนผูกกับเบราว์เซอร์เครื่องนี้ชั่วคราว — <b>เข้าสู่ระบบด้วย Google เพื่อให้ข้อมูลอยู่ถาวร</b> และเปิดดูได้จากทุกเครื่อง</span>'+
+      '<button class="btn-primary" style="background:#1d4ed8;padding:8px 16px" onclick="clsLinkGoogle()">🔵 เข้าสู่ระบบด้วย Google</button>'+
+    '</div>';
+  }
+  // สรุปข้อมูลผู้เรียน (บนสุด)
+  h+=clsSummaryHtml();
   // ฟอร์มสร้างห้องใหม่
   var schoolOpts='<option value="">— เลือกโรงเรียน —</option>'+cls.schools.map(function(s){return '<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>';}).join('')+'<option value="__new__">＋ เพิ่มโรงเรียนใหม่...</option>';
   h+='<div class="card" style="margin-bottom:14px"><h2>สร้างห้องเรียนใหม่</h2>'+
@@ -26572,11 +26803,13 @@ function clsRender(){
           '<div class="muted" style="font-size:12px">นักเรียน '+n+' คน'+(r.is_active?'':' · <b style="color:#b91c1c">ปิดใช้งาน</b>')+'</div></div>'+
         '<div style="text-align:center"><div class="muted" style="font-size:11px;margin-bottom:2px">โค้ดเข้าห้อง (บอกนักเรียน)</div><span class="cls-key">'+esc(r.join_key)+'</span></div>'+
         '<div style="display:flex;flex-direction:column;gap:6px">'+
+          '<button class="btn-primary" style="background:#1d4ed8;padding:7px 14px" onclick="clsOpenScores(\''+esc(r.id)+'\')">📊 คะแนนของห้อง</button>'+
           '<button class="btn-primary" style="background:#0e7490;padding:7px 14px" onclick="clsOpenRoster(\''+esc(r.id)+'\')">👥 รายชื่อนักเรียน</button>'+
           '<button class="btn-ghost" style="padding:6px 14px" onclick="clsToggleRoom(\''+esc(r.id)+'\','+(r.is_active?'false':'true')+')">'+(r.is_active?'ปิดห้องชั่วคราว':'เปิดห้อง')+'</button>'+
         '</div>'+
       '</div>'+
       (cls.open===r.id?clsRosterHtml(r):'')+
+      (cls.openScores===r.id?clsScoresHtml(r):'')+
     '</div>';
   });
   clsMain(h);
@@ -26620,7 +26853,7 @@ function clsRenameRoom(id){
 }
 
 /* ---------- รายชื่อนักเรียน ---------- */
-function clsOpenRoster(id){ cls.open=(cls.open===id)?null:id; clsRender(); }
+function clsOpenRoster(id){ cls.open=(cls.open===id)?null:id; if(cls.open) cls.openScores=null; clsRender(); }
 function clsRosterHtml(r){
   return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px">'+
     '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">'+
@@ -26657,7 +26890,7 @@ function clsAddStudent(){
   var ln=(($('cls-st-last')&&$('cls-st-last').value)||'').trim();
   if(!fn){ if(err)err.textContent='กรุณากรอกชื่อ'; return; }
   sbEnsure().then(function(){ return sbFetch('/rest/v1/students',{method:'POST',body:JSON.stringify([{classroom_id:cls.open,student_number:no,first_name:fn,last_name:ln}])}); })
-  .then(function(){ clsBumpCount(1); clsRender(); })
+  .then(function(){ ['cls-st-no','cls-st-first','cls-st-last'].forEach(function(id){ var e=$(id); if(e)e.value=''; }); return clsAfterAuth(); })
   .catch(function(e){ if(err)err.textContent='เพิ่มไม่สำเร็จ: '+(e&&e.message||''); });
 }
 function clsBulkAdd(){
@@ -26675,13 +26908,13 @@ function clsBulkAdd(){
   });
   if(!rows.length){ if(err)err.textContent='อ่านรายชื่อไม่ได้ ตรวจรูปแบบอีกครั้ง'; return; }
   sbEnsure().then(function(){ return sbFetch('/rest/v1/students',{method:'POST',body:JSON.stringify(rows)}); })
-  .then(function(){ clsBumpCount(rows.length); clsRender(); toast('เพิ่มรายชื่อ '+rows.length+' คนแล้ว'); })
+  .then(function(){ toast('เพิ่มรายชื่อ '+rows.length+' คนแล้ว'); return clsAfterAuth(); })
   .catch(function(e){ if(err)err.textContent='เพิ่มไม่สำเร็จ: '+(e&&e.message||''); });
 }
 function clsDelStudent(id){
   if(!confirm('ลบนักเรียนคนนี้ออกจากห้อง?')) return;
   sbEnsure().then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'DELETE'}); })
-  .then(function(){ clsBumpCount(-1); clsRender(); })
+  .then(function(){ return clsAfterAuth(); })
   .catch(function(e){ toast('ลบไม่สำเร็จ: '+(e&&e.message||'')); });
 }
 function clsBumpCount(d){ if(cls.open){ cls.counts[cls.open]=Math.max(0,(cls.counts[cls.open]||0)+d); } }

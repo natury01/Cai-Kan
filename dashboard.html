@@ -266,8 +266,8 @@
       <div class="v2banner" style="background:linear-gradient(90deg,#eff6ff,#dbeafe);border-color:#93c5fd">
         <div style="font-size:22px">🏫</div>
         <div style="flex:1;min-width:220px">
-          <div style="font-weight:800;color:#1d4ed8;font-size:15px">ระบบห้องเรียน — ครูสร้างห้อง · นักเรียนเข้าด้วยโค้ด ไม่ต้องสมัคร</div>
-          <div style="font-size:12px;color:#1e40af">ระบบใหม่บนฐานข้อมูล Supabase · เริ่มใช้ได้โดยไม่ต้องสมัคร (ผูกบัญชีภายหลังได้) · แยกจากข้อมูลคะแนนเดิม</div>
+          <div style="font-weight:800;color:#1d4ed8;font-size:15px">ห้องเรียนของครู</div>
+          <div style="font-size:12px;color:#1e40af">สร้างห้อง · แชร์โค้ดให้นักเรียนเข้าเล่น · ดูรายชื่อและคะแนนของแต่ละห้องได้ในหน้านี้</div>
         </div>
         <button class="btn-ghost" id="cls-back" style="background:#fff">← กลับ Dashboard</button>
       </div>
@@ -2154,9 +2154,10 @@ function sbAnonSignup(){
 function openClassroomPage(){
   var p1=$('page-v1'),p2=$('page-v2'),pc=$('page-cls');
   if(p1)p1.classList.add('hidden'); if(p2)p2.classList.add('hidden'); if(pc)pc.classList.remove('hidden');
+  var rb=document.querySelector('.ro-banner'); if(rb)rb.style.display='none'; // แถบ "โหมดอ่านอย่างเดียว" ไม่เกี่ยวกับหน้าห้องเรียน — ซ่อน
   clsInit();
 }
-function closeClassroomPage(){ var pc=$('page-cls'); if(pc)pc.classList.add('hidden'); showPage('v2'); }
+function closeClassroomPage(){ var pc=$('page-cls'); if(pc)pc.classList.add('hidden'); var rb=document.querySelector('.ro-banner'); if(rb)rb.style.display=''; showPage('v2'); }
 
 /* ---------- สถานะ + เริ่มระบบ ---------- */
 function clsStatus(html){ var el=$('cls-status'); if(el) el.innerHTML=html; }
@@ -2277,18 +2278,96 @@ function clsAfterAuth(){
         .then(function(rows){ cls.teacher=rows&&rows[0]; return clsLoadCounts(); });
     }
     return clsLoadCounts();
-  }).then(function(){ clsRender(); })
+  }).then(function(){ clsRender(); clsLoadStats(); })
   .catch(function(e){
     clsStatus(clsErrBox('โหลดข้อมูลห้องเรียนไม่สำเร็จ: '+(e&&e.message||''))+'<div class="card"><button class="btn-primary" onclick="clsInit()" style="background:#1d4ed8">ลองใหม่</button></div>');
   });
 }
 function clsLoadCounts(){
-  cls.counts={};
+  cls.counts={}; cls.students=[];
   if(!cls.rooms.length) return Promise.resolve();
   var ids=cls.rooms.map(function(r){return r.id;}).join(',');
-  return sbFetch('/rest/v1/students?select=id,classroom_id&classroom_id=in.('+ids+')').then(function(rows){
-    (rows||[]).forEach(function(s){ cls.counts[s.classroom_id]=(cls.counts[s.classroom_id]||0)+1; });
+  return sbFetch('/rest/v1/students?select=id,classroom_id,student_number,first_name,last_name,collected_score,boss_score&classroom_id=in.('+ids+')').then(function(rows){
+    cls.students=rows||[];
+    cls.students.forEach(function(s){ cls.counts[s.classroom_id]=(cls.counts[s.classroom_id]||0)+1; });
   }).catch(function(){});
+}
+/* [รวม Dashboard] โหลดข้อมูลการเล่นของนักเรียนทุกห้อง → สรุปคะแนนรายคน (คะแนนเก็บ/สอบ/กาญ 2050) */
+function clsLoadStats(){
+  cls.stats=cls.stats||{}; cls.statsReady=false;
+  var ids=(cls.students||[]).map(function(s){return s.id;});
+  if(!ids.length){ cls.statsReady=true; clsRender(); return; }
+  var chunks=[]; for(var i=0;i<ids.length;i+=200) chunks.push(ids.slice(i,i+200));
+  var stats={};
+  var p=Promise.resolve();
+  chunks.forEach(function(ch){
+    p=p.then(function(){ return sbEnsure(); }).then(function(){
+      return sbFetch('/rest/v1/events?select=student_id,kind,stage_id,score,created_at&student_id=in.('+ch.join(',')+')&limit=100000');
+    }).then(function(evs){
+      (evs||[]).forEach(function(e){
+        var s=stats[e.student_id]||(stats[e.student_id]={pb:{},boss:0,cap:0,plays:0,last:0});
+        s.plays++;
+        var t=Date.parse(e.created_at)||0; if(t>s.last)s.last=t;
+        var sc=Number(e.score)||0;
+        if(e.kind==='progress'){ var k=String(e.stage_id||''); if(!(k in s.pb)||sc>s.pb[k]) s.pb[k]=sc; }
+        else if(e.kind==='boss'){ if(sc>s.boss)s.boss=sc; }
+        else if(e.kind==='capstone'){ if(sc>s.cap)s.cap=sc; }
+      });
+    });
+  });
+  p.then(function(){
+    for(var k in stats){ var s=stats[k], sum=0; for(var st2 in s.pb) sum+=s.pb[st2]; s.collected=Math.round(sum*100)/100; }
+    cls.stats=stats; cls.statsReady=true; clsRender();
+  }).catch(function(e){ cls.statsReady=true; clsRender(); });
+}
+function clsStatOf(stu){
+  var s=(cls.stats&&cls.stats[stu.id])||null;
+  var col=Math.max(s?s.collected:0, Number(stu.collected_score)||0);
+  var boss=Math.max(s?s.boss:0, Number(stu.boss_score)||0);
+  return { collected:col, boss:boss, cap:s?s.cap:0, plays:s?s.plays:0, last:s?s.last:0, has:(s&&s.plays>0)||col>0||boss>0 };
+}
+function clsSummaryHtml(){
+  var students=cls.students||[], nRooms=cls.rooms.length, n=students.length;
+  var played=0, colS=0, colN=0, bossS=0, bossN=0, capN=0;
+  students.forEach(function(stu){ var t=clsStatOf(stu);
+    if(t.has){ played++; }
+    if(t.collected>0){ colS+=t.collected; colN++; }
+    if(t.boss>0){ bossS+=t.boss; bossN++; }
+    if(t.cap>0){ capN++; }
+  });
+  function avg(s,c){ return c?(Math.round(s/c*10)/10):'–'; }
+  function tile(v,l,c){ return '<div style="flex:1;min-width:110px;text-align:center;background:'+c+';border-radius:12px;padding:10px 8px"><div style="font-size:22px;font-weight:800">'+v+'</div><div style="font-size:11.5px;color:#475569">'+l+'</div></div>'; }
+  return '<div class="card" style="margin-bottom:14px"><h2 style="margin-top:0">สรุปข้อมูลผู้เรียน</h2>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap">'+
+      tile(nRooms,'ห้องเรียน','#eff6ff')+
+      tile(n,'นักเรียนทั้งหมด','#eff6ff')+
+      tile(played,'มีข้อมูลการเล่น','#ecfdf5')+
+      tile(avg(colS,colN),'คะแนนเก็บเฉลี่ย','#f0fdf4')+
+      tile(avg(bossS,bossN),'คะแนนสอบเฉลี่ย (30)','#fef9c3')+
+      tile(capN,'ทำภารกิจกาญ 2050 แล้ว','#fdf2f8')+
+    '</div>'+
+    (cls.statsReady?'':'<div class="muted" style="font-size:12px;margin-top:8px"><span class="loading" style="border-color:#2563eb;border-top-color:transparent;width:12px;height:12px"></span> กำลังโหลดคะแนนล่าสุด...</div>')+
+  '</div>';
+}
+function clsOpenScores(id){ cls.openScores=(cls.openScores===id)?null:id; if(cls.openScores) cls.open=null; clsRender(); }
+function clsScoresHtml(r){
+  var studs=(cls.students||[]).filter(function(s){return s.classroom_id===r.id;})
+    .sort(function(a,b){ return (Number(a.student_number)||999)-(Number(b.student_number)||999); });
+  if(!studs.length) return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px"><div class="muted" style="font-size:13px">ยังไม่มีรายชื่อนักเรียนในห้องนี้</div></div>';
+  function d(t){ if(!t) return '–'; var x=new Date(t); return x.getDate()+'/'+(x.getMonth()+1); }
+  var rows=studs.map(function(s){ var t=clsStatOf(s);
+    return '<tr><td>'+esc(s.student_number||'')+'</td><td>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</td>'+
+      '<td style="text-align:center">'+(t.collected>0?t.collected:'–')+'</td>'+
+      '<td style="text-align:center">'+(t.boss>0?t.boss:'–')+'</td>'+
+      '<td style="text-align:center">'+(t.cap>0?(t.cap+'/24'):'–')+'</td>'+
+      '<td style="text-align:center">'+(t.plays||'–')+'</td>'+
+      '<td style="text-align:center">'+d(t.last)+'</td></tr>';
+  }).join('');
+  return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px">'+
+    (cls.statsReady?'':'<div class="muted" style="font-size:12px;margin-bottom:6px"><span class="loading" style="border-color:#2563eb;border-top-color:transparent;width:12px;height:12px"></span> กำลังโหลดคะแนน...</div>')+
+    '<div style="overflow-x:auto"><table class="cls-tbl"><tr><th style="width:52px">เลขที่</th><th>ชื่อ-นามสกุล</th><th style="text-align:center">คะแนนเก็บ</th><th style="text-align:center">คะแนนสอบ (30)</th><th style="text-align:center">กาญ 2050</th><th style="text-align:center">ครั้งที่เล่น</th><th style="text-align:center">ล่าสุด</th></tr>'+rows+'</table></div>'+
+    '<div class="muted" style="font-size:11.5px;margin-top:6px">คะแนนเก็บ = ผลรวมคะแนนดีที่สุดต่อด่าน · คะแนนสอบ = ด่านบอสครั้งที่ดีที่สุด · กาญ 2050 = คะแนนดิบ 6 เกณฑ์ (เต็ม 24)</div>'+
+  '</div>';
 }
 
 /* ---------- เรนเดอร์หลัก ---------- */
@@ -2305,6 +2384,16 @@ function clsRender(){
       '<span class="muted" style="font-size:12px;flex:1">ห้องเรียนของครู: '+cls.rooms.length+' ห้อง</span>'+
     '</div>');
   var h='';
+  // [ตามคำขอ] แนะนำผูก Google เมื่อยังไม่ผูก — ข้อมูลจะได้อยู่ถาวรและเปิดได้ทุกเครื่อง
+  if(!(cls.teacher&&cls.teacher.is_anonymous===false)){
+    h+='<div class="card" style="margin-bottom:14px;background:#eff6ff;border:1px solid #bfdbfe;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px">'+
+      '<span style="font-size:20px">💡</span>'+
+      '<span style="flex:1;min-width:220px;font-size:13px;color:#1e3a8a">ตอนนี้ข้อมูลห้องเรียนผูกกับเบราว์เซอร์เครื่องนี้ชั่วคราว — <b>เข้าสู่ระบบด้วย Google เพื่อให้ข้อมูลอยู่ถาวร</b> และเปิดดูได้จากทุกเครื่อง</span>'+
+      '<button class="btn-primary" style="background:#1d4ed8;padding:8px 16px" onclick="clsLinkGoogle()">🔵 เข้าสู่ระบบด้วย Google</button>'+
+    '</div>';
+  }
+  // สรุปข้อมูลผู้เรียน (บนสุด)
+  h+=clsSummaryHtml();
   // ฟอร์มสร้างห้องใหม่
   var schoolOpts='<option value="">— เลือกโรงเรียน —</option>'+cls.schools.map(function(s){return '<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>';}).join('')+'<option value="__new__">＋ เพิ่มโรงเรียนใหม่...</option>';
   h+='<div class="card" style="margin-bottom:14px"><h2>สร้างห้องเรียนใหม่</h2>'+
@@ -2327,11 +2416,13 @@ function clsRender(){
           '<div class="muted" style="font-size:12px">นักเรียน '+n+' คน'+(r.is_active?'':' · <b style="color:#b91c1c">ปิดใช้งาน</b>')+'</div></div>'+
         '<div style="text-align:center"><div class="muted" style="font-size:11px;margin-bottom:2px">โค้ดเข้าห้อง (บอกนักเรียน)</div><span class="cls-key">'+esc(r.join_key)+'</span></div>'+
         '<div style="display:flex;flex-direction:column;gap:6px">'+
+          '<button class="btn-primary" style="background:#1d4ed8;padding:7px 14px" onclick="clsOpenScores(\''+esc(r.id)+'\')">📊 คะแนนของห้อง</button>'+
           '<button class="btn-primary" style="background:#0e7490;padding:7px 14px" onclick="clsOpenRoster(\''+esc(r.id)+'\')">👥 รายชื่อนักเรียน</button>'+
           '<button class="btn-ghost" style="padding:6px 14px" onclick="clsToggleRoom(\''+esc(r.id)+'\','+(r.is_active?'false':'true')+')">'+(r.is_active?'ปิดห้องชั่วคราว':'เปิดห้อง')+'</button>'+
         '</div>'+
       '</div>'+
       (cls.open===r.id?clsRosterHtml(r):'')+
+      (cls.openScores===r.id?clsScoresHtml(r):'')+
     '</div>';
   });
   clsMain(h);
@@ -2375,7 +2466,7 @@ function clsRenameRoom(id){
 }
 
 /* ---------- รายชื่อนักเรียน ---------- */
-function clsOpenRoster(id){ cls.open=(cls.open===id)?null:id; clsRender(); }
+function clsOpenRoster(id){ cls.open=(cls.open===id)?null:id; if(cls.open) cls.openScores=null; clsRender(); }
 function clsRosterHtml(r){
   return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px">'+
     '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">'+
@@ -2412,7 +2503,7 @@ function clsAddStudent(){
   var ln=(($('cls-st-last')&&$('cls-st-last').value)||'').trim();
   if(!fn){ if(err)err.textContent='กรุณากรอกชื่อ'; return; }
   sbEnsure().then(function(){ return sbFetch('/rest/v1/students',{method:'POST',body:JSON.stringify([{classroom_id:cls.open,student_number:no,first_name:fn,last_name:ln}])}); })
-  .then(function(){ clsBumpCount(1); clsRender(); })
+  .then(function(){ ['cls-st-no','cls-st-first','cls-st-last'].forEach(function(id){ var e=$(id); if(e)e.value=''; }); return clsAfterAuth(); })
   .catch(function(e){ if(err)err.textContent='เพิ่มไม่สำเร็จ: '+(e&&e.message||''); });
 }
 function clsBulkAdd(){
@@ -2430,13 +2521,13 @@ function clsBulkAdd(){
   });
   if(!rows.length){ if(err)err.textContent='อ่านรายชื่อไม่ได้ ตรวจรูปแบบอีกครั้ง'; return; }
   sbEnsure().then(function(){ return sbFetch('/rest/v1/students',{method:'POST',body:JSON.stringify(rows)}); })
-  .then(function(){ clsBumpCount(rows.length); clsRender(); toast('เพิ่มรายชื่อ '+rows.length+' คนแล้ว'); })
+  .then(function(){ toast('เพิ่มรายชื่อ '+rows.length+' คนแล้ว'); return clsAfterAuth(); })
   .catch(function(e){ if(err)err.textContent='เพิ่มไม่สำเร็จ: '+(e&&e.message||''); });
 }
 function clsDelStudent(id){
   if(!confirm('ลบนักเรียนคนนี้ออกจากห้อง?')) return;
   sbEnsure().then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'DELETE'}); })
-  .then(function(){ clsBumpCount(-1); clsRender(); })
+  .then(function(){ return clsAfterAuth(); })
   .catch(function(e){ toast('ลบไม่สำเร็จ: '+(e&&e.message||'')); });
 }
 function clsBumpCount(d){ if(cls.open){ cls.counts[cls.open]=Math.max(0,(cls.counts[cls.open]||0)+d); } }
