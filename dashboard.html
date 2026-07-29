@@ -3066,7 +3066,7 @@ function clsScoresHtml(r){
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#1d4ed8" onclick="clsEditStudent(\''+esc(s.id)+'\')">✏️ แก้ไขข้อมูลนักเรียน</button>'+
       (s.group_ref?'<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#7c3aed" onclick="clsSplitGroup(\''+esc(s.group_ref)+'\')">🔀 แยกกลุ่มนี้เป็นรายคน</button>':'')+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#0e7490" onclick="clsSplitNamed(\''+esc(s.id)+'\')" title="บัญชีเก่าที่กรอกชื่อ 2 คนรวมในช่องเดียว — แยกเป็นนักเรียน 2 คน คัดลอกคะแนน/ประวัติให้ครบทั้งคู่">👥➗ แยกชื่อรวมเป็น 2 คน</button>'+
-      '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#b91c1c" onclick="clsWipeStudent(\''+esc(s.id)+'\',\''+esc((s.first_name||'')+' '+(s.last_name||''))+'\')">🧹 ล้างข้อมูลการเล่นของคนนี้</button></div>';
+      '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#b91c1c" onclick="clsDeleteStudent(\''+esc(s.id)+'\',\''+esc((s.first_name||'')+' '+(s.last_name||''))+'\')">🗑 ลบนักเรียนคนนี้</button></div>';
     det+='</td></tr>';
     return main+det;
   }).join('');
@@ -3092,7 +3092,7 @@ function clsScoresHtml(r){
     '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:11.5px">'+
       '<span class="muted">ระดับ:</span>'+
       [[6,'เหนือความคาดหวัง'],[5,'สามารถ'],[4,'กำลังพัฒนา'],[3,'เริ่มต้น']].map(function(L){ return '<span style="background:'+CLS_LV_CLR[L[0]]+';color:#fff;border-radius:999px;padding:1px 9px;font-weight:700">'+L[0]+' '+L[1]+'</span>'; }).join('')+
-      '<span class="muted" style="margin-left:6px">· จุดส้ม • = ข้อมูลส่วนนั้นยังไม่ครบตามเกณฑ์ · <b>คลิกแถวนักเรียน</b>เพื่อดู 4 ด้านการคิด + แก้ไข/ล้างข้อมูล</span>'+
+      '<span class="muted" style="margin-left:6px">· จุดส้ม • = ข้อมูลส่วนนั้นยังไม่ครบตามเกณฑ์ · <b>คลิกแถวนักเรียน</b>เพื่อดู 4 ด้านการคิด + แก้ไข/ลบ</span>'+
     '</div>'+
   '</div>';
 }
@@ -3276,22 +3276,23 @@ function clsEditStudent(id){
     .then(function(rows){ openForm((rows&&rows[0]&&rows[0].join_pin)||''); })
     .catch(function(){ openForm(''); });
 }
-/* [เฟส 3d ตามคำขอ] ล้างข้อมูลการเล่นของนักเรียน 1 คน (คะแนน/ประวัติ/เซฟเกม) — รายชื่อยังอยู่ เริ่มเล่นใหม่ได้
+/* [แก้ตามครู V.7.64] ปุ่มล้างข้อมูล → ปุ่มลบนักเรียนทั้งคน (รายชื่อ+คะแนน+ประวัติ+เซฟ ลบถาวร ยืนยัน 2 ชั้น)
    ต้องรัน SQL แพตช์ (นโยบายให้ครูลบข้อมูลในห้องตัวเอง) ก่อนจึงใช้ได้ */
-function clsWipeStudent(id,name){
-  if(!confirm('ล้างข้อมูลการเล่นทั้งหมดของ "'+(name||'นักเรียนคนนี้')+'"?\n\n- คะแนน/ประวัติการเล่น/แบบประเมิน/เซฟเกม จะถูกลบถาวร\n- รายชื่อยังอยู่ในห้อง เข้าเล่นใหม่ได้เหมือนคนใหม่')) return;
-  if(!confirm('ยืนยันอีกครั้ง: ลบข้อมูลการเล่นของ "'+(name||'')+'" ถาวร?')) return;
+function clsDeleteStudent(id,name){
+  if(!confirm('ลบนักเรียน "'+(name||'คนนี้')+'" ออกจากห้องถาวร?\n\n- รายชื่อ + คะแนน/ประวัติการเล่น/แบบประเมิน/เซฟเกม จะถูกลบทั้งหมด\n- ถ้าแค่อยากให้เริ่มเล่นใหม่ ใช้ ✏️ แก้ไขข้อมูลแทน — การลบย้อนกลับไม่ได้')) return;
+  if(!confirm('ยืนยันอีกครั้ง: ลบ "'+(name||'')+'" ถาวร?')) return;
   sbEnsure()
     .then(function(){ return sbFetch('/rest/v1/events?student_id=eq.'+id,{method:'DELETE'}); })
     .then(function(){ return sbFetch('/rest/v1/surveys?student_id=eq.'+id,{method:'DELETE'}).catch(function(){}); })
     .then(function(){ return sbFetch('/rest/v1/attempts?student_id=eq.'+id,{method:'DELETE'}).catch(function(){}); })
-    .then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'PATCH',body:JSON.stringify({save_blob:null,collected_score:null,boss_score:null})}); })
-    /* RLS ที่ยังไม่ได้ติดตั้งจะ "ลบไม่ได้แต่ไม่ฟ้อง error" — ตรวจซ้ำว่าลบจริงไหม จะได้บอกครูตรง ๆ */
-    .then(function(){ return sbFetch('/rest/v1/events?student_id=eq.'+id+'&select=id&limit=1'); })
+    .then(function(){ return sbFetch('/rest/v1/competency_results?student_id=eq.'+id,{method:'DELETE'}).catch(function(){}); })
+    .then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'DELETE'}); })
+    /* RLS ที่ยังไม่ได้ติดตั้งจะ "ลบไม่ได้แต่ไม่ฟ้อง error" — ตรวจซ้ำว่าหายจริงไหม จะได้บอกครูตรง ๆ */
+    .then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id+'&select=id&limit=1'); })
     .then(function(left){
-      if(left&&left.length){ toast('⚠️ ลบไม่สำเร็จ — โปรดรัน SQL แพตช์ล่าสุด (สิทธิ์ครูลบข้อมูลในห้องตัวเอง) แล้วลองใหม่'); return; }
-      toast('ล้างข้อมูลการเล่นแล้ว'); return clsAfterAuth(); })
-    .catch(function(e){ toast('ล้างไม่สำเร็จ: '+(e&&e.message||'')+' — ถ้าขึ้นเรื่องสิทธิ์ ให้รัน SQL แพตช์ล่าสุดก่อน'); });
+      if(left&&left.length){ toast('⚠️ ลบไม่สำเร็จ — โปรดรัน SQL แพตช์ล่าสุด (สิทธิ์ครูจัดการห้องตัวเอง) แล้วลองใหม่'); return; }
+      toast('ลบ "'+(name||'')+'" ออกจากห้องแล้ว'); return clsAfterAuth(); })
+    .catch(function(e){ toast('ลบไม่สำเร็จ: '+(e&&e.message||'')+' — ถ้าขึ้นเรื่องสิทธิ์ ให้รัน SQL แพตช์ล่าสุดก่อน'); });
 }
 /* [ตามคำขอครู] แยกบัญชีกลุ่มเดิมเป็นรายคน — คัดลอกประวัติ/คะแนนเดิมให้สมาชิกทุกคน แล้วเลิกผูกกลุ่ม
    หลังแยก: ป้าย "👥 คู่กับ / ใช้คะแนนร่วมกลุ่ม" หายไป แต่ละคนถือคะแนน-ประวัติของตัวเอง เดินหน้าต่ออิสระ */
