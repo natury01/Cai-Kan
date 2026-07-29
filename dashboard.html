@@ -3065,6 +3065,7 @@ function clsScoresHtml(r){
     det+='<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">'+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#1d4ed8" onclick="clsEditStudent(\''+esc(s.id)+'\')">✏️ แก้ไขข้อมูลนักเรียน</button>'+
       (s.group_ref?'<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#7c3aed" onclick="clsSplitGroup(\''+esc(s.group_ref)+'\')">🔀 แยกกลุ่มนี้เป็นรายคน</button>':'')+
+      '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#0e7490" onclick="clsSplitNamed(\''+esc(s.id)+'\')" title="บัญชีเก่าที่กรอกชื่อ 2 คนรวมในช่องเดียว — แยกเป็นนักเรียน 2 คน คัดลอกคะแนน/ประวัติให้ครบทั้งคู่">👥➗ แยกชื่อรวมเป็น 2 คน</button>'+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#b91c1c" onclick="clsWipeStudent(\''+esc(s.id)+'\',\''+esc((s.first_name||'')+' '+(s.last_name||''))+'\')">🧹 ล้างข้อมูลการเล่นของคนนี้</button></div>';
     det+='</td></tr>';
     return main+det;
@@ -3301,6 +3302,46 @@ function clsSplitGroup(gref){
   sbEnsure().then(function(){ return sbFetch('/rest/v1/rpc/rpc_split_group',{method:'POST',body:JSON.stringify({p_group_ref:gref})}); })
   .then(function(n2){ toast('แยกกลุ่มแล้ว — คัดลอกประวัติให้สมาชิก '+(Number(n2)||0)+' คน'); return clsAfterAuth(); })
   .catch(function(e){ toast('แยกกลุ่มไม่สำเร็จ: '+(e&&e.message||'')+' — ถ้าขึ้นว่าไม่พบฟังก์ชัน ให้รัน SQL แพตช์ล่าสุดก่อน'); });
+}
+/* [ตามคำขอครู V.7.64] บัญชีที่ชื่อ 2 คนรวมในแถวเดียว (GroupSize ไม่ได้บันทึกในระบบเดิม) → แยกเป็น 2 คน
+   เดาการแบ่งชื่อให้อัตโนมัติจากช่องว่าง (ครูแก้ได้ก่อนกดยืนยัน) · คนที่ 2 ได้สำเนาคะแนน/ประวัติ/เซฟครบ → จำนวนนักเรียน +1 */
+function clsSplitNamed(id){
+  var s2=(cls.students||[]).filter(function(x){return x.id===id;})[0]; if(!s2) return;
+  var fnT=String(s2.first_name||'').trim().split(/\s+/), lnT=String(s2.last_name||'').trim().split(/\s+/);
+  var g={fn1:fnT[0]||'', fn2:fnT.slice(1).join(' '), ln1:lnT[0]||'', ln2:lnT.slice(1).join(' ')};
+  if(!g.fn2&&!g.ln2){ g.fn2=''; g.ln2=g.ln1; } /* แยกไม่ออกอัตโนมัติ — ให้ครูพิมพ์เอง */
+  var old=document.getElementById('cls-splitn-modal'); if(old) old.remove();
+  function fld(lbl,fid,val,ph){ return '<label style="display:block;margin-top:8px;font-size:12px;font-weight:700;color:#334155">'+lbl+
+    '<input class="cls-in" id="'+fid+'" value="'+esc(val==null?'':String(val))+'" placeholder="'+esc(ph||'')+'" style="display:block;width:100%;margin-top:3px;box-sizing:border-box"></label>'; }
+  var wrap=document.createElement('div');
+  wrap.id='cls-splitn-modal';
+  wrap.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:999;display:flex;align-items:center;justify-content:center;padding:14px;overflow:auto';
+  wrap.innerHTML='<div style="background:#fff;border-radius:14px;padding:16px 20px 18px;width:min(400px,94vw);box-shadow:0 20px 50px rgba(0,0,0,.3)">'+
+    '<b style="font-size:15px">👥➗ แยกชื่อรวมเป็นนักเรียน 2 คน</b>'+
+    '<div class="muted" style="font-size:11.5px;margin-top:4px">จากแถวเดิม: <b>'+esc((s2.first_name||'')+' '+(s2.last_name||''))+'</b> — คนที่ 2 จะได้สำเนาคะแนน/ประวัติ/เซฟเหมือนกันทั้งคู่</div>'+
+    '<div style="background:#f0f9ff;border-radius:9px;padding:7px 11px;margin-top:9px"><b style="font-size:12px;color:#0369a1">คนที่ 1 (แก้แถวเดิม)</b>'+
+      fld('เลขที่','csn-no1',s2.student_number||'')+fld('ชื่อ','csn-fn1',g.fn1)+fld('นามสกุล','csn-ln1',g.ln1)+'</div>'+
+    '<div style="background:#f0fdf4;border-radius:9px;padding:7px 11px;margin-top:8px"><b style="font-size:12px;color:#166534">คนที่ 2 (สร้างใหม่)</b>'+
+      fld('เลขที่','csn-no2','')+fld('ชื่อ','csn-fn2',g.fn2)+fld('นามสกุล','csn-ln2',g.ln2)+'</div>'+
+    '<div id="csn-err" style="color:#b91c1c;font-size:12px;margin-top:6px"></div>'+
+    '<div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">'+
+      '<button class="btn-ghost" style="padding:6px 14px" id="csn-cancel">ยกเลิก</button>'+
+      '<button class="btn-primary" style="background:#0e7490;padding:6px 18px" id="csn-save">👥 แยกเป็น 2 คน</button></div></div>';
+  document.body.appendChild(wrap);
+  document.getElementById('csn-cancel').onclick=function(){ wrap.remove(); };
+  wrap.addEventListener('click',function(ev){ if(ev.target===wrap) wrap.remove(); });
+  document.getElementById('csn-save').onclick=function(){
+    var v=function(fid){ return String((document.getElementById(fid)||{}).value||'').trim(); };
+    var errEl=document.getElementById('csn-err');
+    if(!v('csn-fn1')||!v('csn-fn2')){ errEl.textContent='กรอกชื่อให้ครบทั้ง 2 คนก่อนนะครับ'; return; }
+    errEl.textContent=''; document.getElementById('csn-save').disabled=true;
+    sbEnsure().then(function(){ return sbFetch('/rest/v1/rpc/rpc_split_named',{method:'POST',
+      body:JSON.stringify({p_student:id,p_first1:v('csn-fn1'),p_last1:v('csn-ln1'),p_number1:v('csn-no1'),
+                           p_first2:v('csn-fn2'),p_last2:v('csn-ln2'),p_number2:v('csn-no2')})}); })
+    .then(function(){ wrap.remove(); toast('แยกเป็น 2 คนแล้ว — '+v('csn-fn1')+' และ '+v('csn-fn2')); return clsAfterAuth(); })
+    .catch(function(e){ document.getElementById('csn-save').disabled=false;
+      errEl.textContent='แยกไม่สำเร็จ: '+(e&&e.message||'')+' — ถ้าขึ้นว่าไม่พบฟังก์ชัน ให้รัน SQL แพตช์ล่าสุด (v764)'; });
+  };
 }
 /* [เฟส 3d ตามคำขอ] ลบห้องถาวร — ยืนยัน 2 ชั้น (พิมพ์โค้ดห้อง) เพราะลบแล้วนักเรียน+ข้อมูลการเล่นทั้งห้องหายถาวร */
 function clsDeleteRoom(id){
