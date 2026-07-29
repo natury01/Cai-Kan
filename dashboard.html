@@ -2316,14 +2316,29 @@ function clsAfterAuth(){
     clsStatus(clsErrBox('โหลดข้อมูลห้องเรียนไม่สำเร็จ: '+(e&&e.message||''))+'<div class="card"><button class="btn-primary" onclick="clsInit()" style="background:#1d4ed8">ลองใหม่</button></div>');
   });
 }
+/* [แก้บั๊กสำคัญ V.7.61] Supabase ตัดผลการอ่านที่ ~1000 แถว/คำขอ (เพดาน max-rows ของเซิร์ฟเวอร์ — ใส่ limit สูงกว่านี้ก็ไม่ช่วย)
+   คำตอบรายข้อ (kind=question) มีเป็นหมื่นแถว → เดิมอ่านมาได้แค่ 1000 แรก ทำให้ A และ C ของนักเรียนส่วนใหญ่ "–" ทั้งที่ข้อมูลย้ายมาครบ
+   → sbFetchAll อ่านแบบแบ่งหน้า (order=id + offset) วนจนหมดจริง */
+function sbFetchAll(path){
+  var out=[], off=0, PAGE=1000;
+  var sep=(path.indexOf('?')>=0?'&':'?');
+  function step(){
+    return sbFetch(path+sep+'order=id&limit='+PAGE+'&offset='+off).then(function(rows){
+      rows=rows||[]; out=out.concat(rows);
+      if(rows.length<PAGE) return out;
+      off+=PAGE; return step();
+    });
+  }
+  return step();
+}
 function clsLoadCounts(){
   cls.counts={}; cls.students=[];
   if(!cls.rooms.length) return Promise.resolve();
   var ids=cls.rooms.map(function(r){return r.id;}).join(',');
   var base='id,classroom_id,student_number,first_name,last_name,collected_score,boss_score';
   /* group_ref/external_ref = ข้อมูลกลุ่มบัญชีเดิม — ถ้าฐานข้อมูลยังไม่รันแพตช์ล่าสุด (ไม่มีคอลัมน์) ให้ถอยไปแบบเดิม */
-  return sbFetch('/rest/v1/students?select='+base+',external_ref,group_ref,character_name&classroom_id=in.('+ids+')')
-    .catch(function(){ return sbFetch('/rest/v1/students?select='+base+'&classroom_id=in.('+ids+')'); })
+  return sbFetchAll('/rest/v1/students?select='+base+',external_ref,group_ref,character_name&classroom_id=in.('+ids+')')
+    .catch(function(){ return sbFetchAll('/rest/v1/students?select='+base+'&classroom_id=in.('+ids+')'); })
     .then(function(rows){
       cls.students=rows||[];
       cls.students.forEach(function(s){ cls.counts[s.classroom_id]=(cls.counts[s.classroom_id]||0)+1; });
@@ -2634,7 +2649,7 @@ function clsFillReview(){
   var byId={}; studs.forEach(function(x){ byId[x.id]=x; });
   var ids=studs.map(function(x){ return x.id; });
   if(!ids.length){ var b0=box(); if(b0) b0.innerHTML='<div class="muted" style="font-size:13px">ยังไม่มีนักเรียนในห้องนี้</div>'; return; }
-  sbEnsure().then(function(){ return sbFetch('/rest/v1/events?kind=eq.capstone&select=id,student_id,created_at,raw&student_id=in.('+ids.join(',')+')&limit=10000'); })
+  sbEnsure().then(function(){ return sbFetchAll('/rest/v1/events?kind=eq.capstone&select=id,student_id,created_at,raw&student_id=in.('+ids.join(',')+')'); })
   .then(function(rows){
     var groups={}, order=[];
     (rows||[]).forEach(function(rr){
@@ -2769,8 +2784,8 @@ function clsLoadStats(){
   chunks.forEach(function(ch){
     p=p.then(function(){ return sbEnsure(); }).then(function(){
       return Promise.all([
-        sbFetch('/rest/v1/events?kind=eq.question&select='+SEL_Q+'&student_id=in.('+ch.join(',')+')&limit=100000'),
-        sbFetch('/rest/v1/events?kind=in.(progress,boss,capstone,pilok)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')&limit=100000')
+        sbFetchAll('/rest/v1/events?kind=eq.question&select='+SEL_Q+'&student_id=in.('+ch.join(',')+')'),
+        sbFetchAll('/rest/v1/events?kind=in.(progress,boss,capstone,pilok)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')')
       ]);
     }).then(function(rr){
       (rr[0]||[]).forEach(function(e){

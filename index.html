@@ -1686,6 +1686,8 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
           <div class="tv-lb-header">
             <div class="tv-lb-title">🏆 กระดานอันดับนักสำรวจกาญจนบุรี</div>
             <div class="tv-lb-subtitle">อัปเดตอัตโนมัติทุก 1 นาที</div>
+            <!-- [ตามคำขอครู] เลือกขอบเขตอันดับ: ห้องเรียน / ชั้น (เช่น ป.4 ทุกห้อง) / โรงเรียน / ทั้งหมด -->
+            <div id="lb-scope-bar" style="display:flex;gap:calc(var(--vw)*0.5);justify-content:center;margin-top:calc(var(--vw)*0.6);flex-wrap:wrap"></div>
           </div>
           <div id="leaderboard-list" class="tv-lb-list">
             <div class="tv-lb-empty">กำลังโหลด...</div>
@@ -2439,7 +2441,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
    ตัวอย่าง: ไฟล์ CAI_KAN_NEW2_72.html ออกวันที่ 22/07/2569 → V.7.2 + 2569 07 22 = "V.7.225690722"
    เหตุที่ท้ายเรียง ปี-เดือน-วัน: ตัวเลขจะโตตามเวลาเสมอ เทียบได้ทันทีว่าเครื่องไหนรุ่นใหม่กว่า (มาตรฐาน build number)
    ทุกครั้งที่แก้ไฟล์ออกรุ่นใหม่ ให้ขยับเลขรุ่น+วันที่นี้พร้อมเลขท้ายชื่อไฟล์เสมอ จะได้ตรวจจากหน้าจอได้ไม่ต้องเดา */
-const GAME_VERSION = 'V.7.60-IX2050-2569.36'; /* [เฟส 3f] AI ตรวจคำตอบเขียนกาญ 2050 กลับมาแล้ว: (1) เกมตรวจสดด้วย heuristic-v1 (พอร์ตจาก .gs — deterministic ไม่ต้องมีคีย์/เซิร์ฟเวอร์) (2) หน้า 🏫 มีปุ่ม 📝 ตรวจคำตอบเขียน: โชว์คำตอบ 3 ข้อ + คะแนน AI แนะนำ + ครูให้คะแนนจริง 0-4/ข้อ + คอมเมนต์ → รวม 36 (เกม 24 + เขียน 12) บันทึกลง events.raw (รองรับกลุ่ม — บันทึกครบทุกสำเนา) (3) ✨ ตรวจซ้ำด้วย Gemini (ครูใส่คีย์เอง เก็บในเครื่อง) (4) login เดิมวินิจฉัยสาเหตุ: PIN ผิด/ยังไม่ย้ายข้อมูล/ยังไม่รัน SQL (rpc_legacy_check) (5) ช่องโค้ดไม่ prefill — ใช้ตัวอย่าง เช่น G5AWKW (6) สรุปรวมมีตัวกรอง ทุกห้อง/รายห้อง */ /* [เฟส 3e] ตัด Google Sheets ออกจากเกม 100% — sheetGet/sheetPost ไม่ยิง Apps Script อีกแล้ว (บันทึกทุกอย่างผ่าน SBTee→Supabase, เซฟเกม rpc_set_save/get_save, login เดิม rpc_legacy_login, กระดานอันดับรายห้อง rpc_leaderboard, สถิติข้อสอบครู rpc_question_stats) · ปิดแท็บสมัครสมาชิกเดิม (เข้าทางห้องเรียน) · เข้าห้องเรียนไม่สมัครบัญชีเงียบฝั่ง Sheets แล้ว · 📊 เปิดหน้าห้องเรียน (Dashboard ระบบใหม่) · ปิด Apps Script ได้เมื่อ migrate ครบ */ /* [2569.31 ตามข้อสังเกตครู 7 ข้อ] (1) Dashboard V.2 แยก 🏆 ผลสัมฤทธิ์ กับ 🧠 สมรรถนะ ชัดเจน — ส่วนที่ 1/ส่วนที่ 2 + การ์ดแยกชุด + ตารางจัดกลุ่มคอลัมน์ 2 ชั้นพร้อมสีพื้น (2) สรุปข้อมูลผู้เรียนหน้าห้องเรียนแบ่ง 3 ส่วน ทั่วไป/ผลสัมฤทธิ์/สมรรถนะ (3) ตารางคะแนนของห้อง: ตัดคอลัมน์กาญ/24 (ย้ายลงรายละเอียด) + หัวตาราง 2 ชั้นแบ่งสีกลุ่ม + ระดับเป็นป้ายสี 6ม่วง/5เขียว/4ส้ม/3เทา + แถบสลับสี + คำอธิบายระดับท้ายตาราง (4) แก้คะแนนเพี้ยน: clamp สเกลเก่า (หลักร้อย) เหมือน .gs + บัญชีกลุ่มเดิม 1 username หลายคน — migration v2.36 สร้างแถวสมาชิกคนที่ 2-3 + group_ref เชื่อมกลุ่ม (มี migrateGroupMembers() สำหรับคนที่ย้ายไปแล้ว) และหน้าห้องเรียนแชร์สถิติให้สมาชิกกลุ่มเดียวกัน (5) ป้าย 👥 คู่กับใคร ใต้ชื่อนักเรียน (จาก group_ref เดิม หรือข้อมูลกลุ่มรอบเล่นล่าสุด) (6) เปลี่ยนคู่ได้อิสระ — คะแนนผูกกับตัวนักเรียนรายคน best ต่อด่าน (7) แก้ไขข้อมูลนักเรียนได้จากหน้าคะแนนของห้อง (ปุ่ม ✏️ ในแถวรายละเอียด) + rpc_legacy_login คืนสมาชิกกลุ่มครบ ให้ login บัญชีกลุ่มเดิมลงคะแนนครบทุกคน | [เฟส 3d 2569.30] หน้าห้องเรียนครบตาม Dashboard V.2: (1) พอร์ตสูตร HOTS v2 (A20/B30/C25/D25 + CTC/STM/CRT/PRB + ระดับ 3-6 + pilok solver) มาคิดจาก events ใน Supabase ตรง — ตาราง เก็บ/สอบ/A/B/C/D/รวม/ระดับ/กาญ24/เล่น/ล่าสุด + คลิกแถวดู 4 ด้านการคิด/สิ่งที่ขาด/Strict · สรุปบนสุดเพิ่ม สมรรถนะเฉลี่ย + ระดับ 5-6 + แถบเฉลี่ยรายแหล่ง (2) ครูเจ้าของห้อง = admin ของห้องตัวเอง: ✏️ แก้ข้อมูลนักเรียน+PIN · 🧹 ล้างข้อมูลการเล่นรายคน (ตรวจ RLS แล้วแจ้งถ้ายังไม่รันแพตช์) · 🗑 ลบห้องถาวร (ยืนยันพิมพ์โค้ดห้อง) (3) dropdown โรงเรียน→ห้องเรียนหน้า login: โรงเรียนเดียวเลือกให้อัตโนมัติ+โหลดห้องทันที · โชว์จำนวนห้อง · ข้อความ error ชี้สาเหตุ (ยังไม่รัน SQL แพตช์) · SQL รวมไฟล์เดียว supabase_patch_all_v754.sql | [เฟส 3c 2569.29] เกมคุย Supabase ตรง (Sheets เหลือเป็นตัวสำรอง): (1) login บัญชีเดิมผ่าน rpc_legacy_login — เข้าได้ทันที+กู้เซฟ+ผูกห้องเรียนอัตโนมัติ (2) เซฟเกม (ProfileBlob) ขึ้น Supabase ผ่าน rpc_set_save พร้อมคะแนนสรุป (คะแนนเก็บ=ผลรวม normScore ดีที่สุดต่อด่าน · คะแนนสอบ=ด่าน 8) — กลุ่ม 2-3 คนลงครบทุกสมาชิก (3) กระดานอันดับรายห้องจาก rpc_leaderboard เมื่อผูกห้องเรียนอยู่ (เห็นเฉพาะเพื่อนร่วมห้อง) ถอยกลับ Sheets อัตโนมัติเมื่อมีปัญหา (4) เข้าห้องเรียนแล้วดึงเซฟจาก rpc_get_save มาผสานก่อนเข้าเกม (รอสูงสุด 4 วิ) (5) Sheets ล่มไม่กั้นการเข้าเล่น — ผูก session ในเครื่อง เล่นต่อได้ ข้อมูลยังลง Supabase ครบ | [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
+const GAME_VERSION = 'V.7.62-IX2050-2569.38'; /* [เฟส 3f] AI ตรวจคำตอบเขียนกาญ 2050 กลับมาแล้ว: (1) เกมตรวจสดด้วย heuristic-v1 (พอร์ตจาก .gs — deterministic ไม่ต้องมีคีย์/เซิร์ฟเวอร์) (2) หน้า 🏫 มีปุ่ม 📝 ตรวจคำตอบเขียน: โชว์คำตอบ 3 ข้อ + คะแนน AI แนะนำ + ครูให้คะแนนจริง 0-4/ข้อ + คอมเมนต์ → รวม 36 (เกม 24 + เขียน 12) บันทึกลง events.raw (รองรับกลุ่ม — บันทึกครบทุกสำเนา) (3) ✨ ตรวจซ้ำด้วย Gemini (ครูใส่คีย์เอง เก็บในเครื่อง) (4) login เดิมวินิจฉัยสาเหตุ: PIN ผิด/ยังไม่ย้ายข้อมูล/ยังไม่รัน SQL (rpc_legacy_check) (5) ช่องโค้ดไม่ prefill — ใช้ตัวอย่าง เช่น G5AWKW (6) สรุปรวมมีตัวกรอง ทุกห้อง/รายห้อง */ /* [เฟส 3e] ตัด Google Sheets ออกจากเกม 100% — sheetGet/sheetPost ไม่ยิง Apps Script อีกแล้ว (บันทึกทุกอย่างผ่าน SBTee→Supabase, เซฟเกม rpc_set_save/get_save, login เดิม rpc_legacy_login, กระดานอันดับรายห้อง rpc_leaderboard, สถิติข้อสอบครู rpc_question_stats) · ปิดแท็บสมัครสมาชิกเดิม (เข้าทางห้องเรียน) · เข้าห้องเรียนไม่สมัครบัญชีเงียบฝั่ง Sheets แล้ว · 📊 เปิดหน้าห้องเรียน (Dashboard ระบบใหม่) · ปิด Apps Script ได้เมื่อ migrate ครบ */ /* [2569.31 ตามข้อสังเกตครู 7 ข้อ] (1) Dashboard V.2 แยก 🏆 ผลสัมฤทธิ์ กับ 🧠 สมรรถนะ ชัดเจน — ส่วนที่ 1/ส่วนที่ 2 + การ์ดแยกชุด + ตารางจัดกลุ่มคอลัมน์ 2 ชั้นพร้อมสีพื้น (2) สรุปข้อมูลผู้เรียนหน้าห้องเรียนแบ่ง 3 ส่วน ทั่วไป/ผลสัมฤทธิ์/สมรรถนะ (3) ตารางคะแนนของห้อง: ตัดคอลัมน์กาญ/24 (ย้ายลงรายละเอียด) + หัวตาราง 2 ชั้นแบ่งสีกลุ่ม + ระดับเป็นป้ายสี 6ม่วง/5เขียว/4ส้ม/3เทา + แถบสลับสี + คำอธิบายระดับท้ายตาราง (4) แก้คะแนนเพี้ยน: clamp สเกลเก่า (หลักร้อย) เหมือน .gs + บัญชีกลุ่มเดิม 1 username หลายคน — migration v2.36 สร้างแถวสมาชิกคนที่ 2-3 + group_ref เชื่อมกลุ่ม (มี migrateGroupMembers() สำหรับคนที่ย้ายไปแล้ว) และหน้าห้องเรียนแชร์สถิติให้สมาชิกกลุ่มเดียวกัน (5) ป้าย 👥 คู่กับใคร ใต้ชื่อนักเรียน (จาก group_ref เดิม หรือข้อมูลกลุ่มรอบเล่นล่าสุด) (6) เปลี่ยนคู่ได้อิสระ — คะแนนผูกกับตัวนักเรียนรายคน best ต่อด่าน (7) แก้ไขข้อมูลนักเรียนได้จากหน้าคะแนนของห้อง (ปุ่ม ✏️ ในแถวรายละเอียด) + rpc_legacy_login คืนสมาชิกกลุ่มครบ ให้ login บัญชีกลุ่มเดิมลงคะแนนครบทุกคน | [เฟส 3d 2569.30] หน้าห้องเรียนครบตาม Dashboard V.2: (1) พอร์ตสูตร HOTS v2 (A20/B30/C25/D25 + CTC/STM/CRT/PRB + ระดับ 3-6 + pilok solver) มาคิดจาก events ใน Supabase ตรง — ตาราง เก็บ/สอบ/A/B/C/D/รวม/ระดับ/กาญ24/เล่น/ล่าสุด + คลิกแถวดู 4 ด้านการคิด/สิ่งที่ขาด/Strict · สรุปบนสุดเพิ่ม สมรรถนะเฉลี่ย + ระดับ 5-6 + แถบเฉลี่ยรายแหล่ง (2) ครูเจ้าของห้อง = admin ของห้องตัวเอง: ✏️ แก้ข้อมูลนักเรียน+PIN · 🧹 ล้างข้อมูลการเล่นรายคน (ตรวจ RLS แล้วแจ้งถ้ายังไม่รันแพตช์) · 🗑 ลบห้องถาวร (ยืนยันพิมพ์โค้ดห้อง) (3) dropdown โรงเรียน→ห้องเรียนหน้า login: โรงเรียนเดียวเลือกให้อัตโนมัติ+โหลดห้องทันที · โชว์จำนวนห้อง · ข้อความ error ชี้สาเหตุ (ยังไม่รัน SQL แพตช์) · SQL รวมไฟล์เดียว supabase_patch_all_v754.sql | [เฟส 3c 2569.29] เกมคุย Supabase ตรง (Sheets เหลือเป็นตัวสำรอง): (1) login บัญชีเดิมผ่าน rpc_legacy_login — เข้าได้ทันที+กู้เซฟ+ผูกห้องเรียนอัตโนมัติ (2) เซฟเกม (ProfileBlob) ขึ้น Supabase ผ่าน rpc_set_save พร้อมคะแนนสรุป (คะแนนเก็บ=ผลรวม normScore ดีที่สุดต่อด่าน · คะแนนสอบ=ด่าน 8) — กลุ่ม 2-3 คนลงครบทุกสมาชิก (3) กระดานอันดับรายห้องจาก rpc_leaderboard เมื่อผูกห้องเรียนอยู่ (เห็นเฉพาะเพื่อนร่วมห้อง) ถอยกลับ Sheets อัตโนมัติเมื่อมีปัญหา (4) เข้าห้องเรียนแล้วดึงเซฟจาก rpc_get_save มาผสานก่อนเข้าเกม (รอสูงสุด 4 วิ) (5) Sheets ล่มไม่กั้นการเข้าเล่น — ผูก session ในเครื่อง เล่นต่อได้ ข้อมูลยังลง Supabase ครบ | [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
 /* [รอบ 49 Capstone] รหัสประจำ "รอบการเปิดเกม" (Session) — ใช้ผูกข้อมูลวิจัยทุกชีต (Progress/QuestionLog/BossResults/CapstoneResults)
    อยู่ใน sessionStorage: เปิดแท็บใหม่/รีเฟรช = ได้ session ใหม่, สลับหน้าในแท็บเดิม = session เดิม (ไม่ใช่ข้อมูลระบุตัวตน) */
 const SESSION_ID = (() => {
@@ -2580,7 +2582,8 @@ const BGM_THEMES = {
   nature:     { notes: [587, 659, 784, 880, 988, 1175], pattern: [0, 1, 2, 3, 2, 4, 3, 1], beat: 0.48, lead: 'sine',     bassEvery: 2 }, // ธรรมชาติพลิ้วไหว (ด่าน 4 น้ำตก)
   mon:        { notes: [523, 587, 698, 784, 880],       pattern: [0, 1, 2, 3, 4, 3, 2, 1], beat: 0.54, lead: 'triangle', bassEvery: 2 }, // กลิ่นวัฒนธรรมมอญ (ด่าน 7)
   somber:     { notes: [294, 330, 349, 392, 440],       pattern: [0, 1, 0, 2, 1, 0],       beat: 0.72, lead: 'sine',     bassEvery: 2 }, // หนักแน่นรำลึก (ช่องเขาขาด)
-  mine:       { notes: [392, 440, 523, 587, 659],       pattern: [0, 0, 2, 1, 3, 1],       beat: 0.46, lead: 'square',   bassEvery: 1 }  // จังหวะขยันเหมืองแร่ (ปิล๊อก)
+  mine:       { notes: [392, 440, 523, 587, 659],       pattern: [0, 0, 2, 1, 3, 1],       beat: 0.46, lead: 'square',   bassEvery: 1 },  // จังหวะขยันเหมืองแร่ (ปิล๊อก)
+  capstone:   { notes: [392, 440, 494, 587, 659],       pattern: [0, 2, 1, 3, 2, 4, 3, 1], beat: 0.58, lead: 'triangle', bassEvery: 2 }  // [ตามคำขอครู] เมืองอนาคตครุ่นคิด-มีความหวัง (ด่านกาญ 2050)
 };
 const AUDIO = {
   ctx: null,
@@ -15118,7 +15121,7 @@ const StageBalance2050 = {
   _phaseNow() { return this.PHASE_OF[this._stepId()]; },
 
   start() {
-    AUDIO.stopBGM();
+    AUDIO.playBGM('capstone'); // [ตามคำขอครู] เพลงประจำด่านกาญ 2050 — เทคนิคเดิม (ธีมใน BGM_THEMES, เบา ไม่กวนสมาธิวางแผน)
     QuizTimer.stop(); // ด่านนี้ไม่มีการจับเวลาคำถามใดๆ (ความเป็นธรรมการวัด)
     document.getElementById('game-canvas').style.zIndex = ''; // ด่านนี้เป็น DOM ล้วน — คืน canvas ให้พื้นหลังปกติ
     document.getElementById('btn-stage-exit').classList.add('hidden'); // ใช้ปุ่มออกของตัวเอง (มีบันทึกร่างก่อนออก)
@@ -22055,6 +22058,24 @@ function setAuthButtonsBusy(busy) {
 // [ใหม่ เพื่อรองรับผู้เล่นจำนวนมาก] แคชกระดานอันดับฝั่งเครื่อง 45 วิ — Lobby/Leaderboard/สถานะบนแผนที่ใช้ผลร่วมกัน
 // เดิมทุกหน้าดึงตรงจากชีตทุกครั้ง (15 เครื่อง × หลายหน้า = ยิงถี่จน Apps Script คิวยาว → หน่วง/หลุด)
 let _lbCache = null, _lbCacheAt = 0, _lbInflight = null;
+/* [ตามคำขอครู] ขอบเขตกระดานอันดับ — room=ห้องเรียน · grade=ชั้นเดียวกัน (เช่น ป.4 ทุกห้อง) · school=ทั้งโรงเรียน · all=ทุกคน */
+let _lbScope = 'room';
+const LB_SCOPES = [['room', '🚪 ห้องเรียน'], ['grade', '🎓 ชั้นเดียวกัน'], ['school', '🏫 โรงเรียน'], ['all', '🌏 ทั้งหมด']];
+function setLbScope(sc) {
+  if (_lbScope === sc) return;
+  _lbScope = sc;
+  _lbCache = null; _lbCacheAt = 0; _lbInflight = null; // ขอบเขตใหม่ = ดึงใหม่
+  renderLbScopeBar();
+  renderLeaderboard();
+}
+function renderLbScopeBar() {
+  const bar = document.getElementById('lb-scope-bar'); if (!bar) return;
+  const b = (typeof SBTee !== 'undefined' && SBTee.bind) ? SBTee.bind() : null;
+  if (!b || !b.join_key) { bar.innerHTML = ''; return; } // ยังไม่ผูกห้อง = ยังเลือกไม่ได้
+  bar.innerHTML = LB_SCOPES.map(([k, label]) =>
+    '<button onclick="setLbScope(\'' + k + '\')" style="font-family:inherit;cursor:pointer;border-radius:999px;padding:calc(var(--vw)*0.3) calc(var(--vw)*1);font-size:calc(var(--vw)*0.95);font-weight:800;border:2px solid ' +
+    (_lbScope === k ? '#ffd76a;background:#ffd76a;color:#4a2c00' : 'rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#ffe9b8') + '">' + label + '</button>').join('');
+}
 function getLeaderboardCached(maxAgeMs) {
   maxAgeMs = maxAgeMs == null ? 45000 : maxAgeMs;
   const now = Date.now();
@@ -22062,21 +22083,25 @@ function getLeaderboardCached(maxAgeMs) {
   if (_lbInflight) return _lbInflight; // มีคำขอกำลังวิ่งอยู่ — เกาะไปด้วย ไม่ยิงซ้ำ
   // [เฟส 3c] ผูกห้องเรียนอยู่ → ใช้กระดานอันดับ "รายห้อง" จาก Supabase (เร็วกว่า + เห็นเฉพาะเพื่อนร่วมห้องตัวเอง) · มีปัญหาเมื่อไรถอยกลับไปดึงจาก Sheets อัตโนมัติ
   const _bnd = (typeof SBTee !== 'undefined' && SBTee.bind) ? SBTee.bind() : null;
+  const _mapLbRows = rows => rows
+    .filter(r => (Number(r.collected) || 0) > 0 || (Number(r.boss) || 0) > 0) // โชว์เฉพาะคนที่เริ่มเล่นแล้ว (เหมือนกระดานเดิม)
+    .map(r => {
+      const sid = String(r.sid || '');
+      const mine = _bnd.member_ids && _bnd.member_ids.indexOf(sid) >= 0;
+      let nm = (r.cname && String(r.cname).trim()) || ((r.first_name || '') + ' ' + (r.last_name || '')).trim(); /* [ชื่อในเกม] ใช้ชื่อที่นักเรียนตั้งก่อน */
+      if (_lbScope !== 'room' && r.room_name) nm += ' · ' + r.room_name; /* ขอบเขตกว้าง → ติดชื่อห้องให้รู้ว่าใครห้องไหน */
+      return {
+        username: mine ? _bnd.username : ('c' + sid.replace(/-/g, '').slice(0, 7)), // ชื่อบัญชีคงที่จากรหัสนักเรียน (สูตรเดียวกับ clsjUser)
+        characterName: nm,
+        totalScore: Number(r.collected) || 0, bossScore: Number(r.boss) || 0, badgeIds: ''
+      };
+    });
   const _sbReq = (_bnd && _bnd.join_key)
-    ? SBTee._rpc('rpc_leaderboard', { p_join_key: _bnd.join_key }).then(t => {
-        let rows = []; try { rows = JSON.parse(t || '[]'); } catch (e) {}
-        return rows
-          .filter(r => (Number(r.collected) || 0) > 0 || (Number(r.boss) || 0) > 0) // โชว์เฉพาะคนที่เริ่มเล่นแล้ว (เหมือนกระดานเดิม)
-          .map(r => {
-            const sid = String(r.sid || '');
-            const mine = _bnd.member_ids && _bnd.member_ids.indexOf(sid) >= 0;
-            return {
-              username: mine ? _bnd.username : ('c' + sid.replace(/-/g, '').slice(0, 7)), // ชื่อบัญชีคงที่จากรหัสนักเรียน (สูตรเดียวกับ clsjUser)
-              characterName: (r.cname && String(r.cname).trim()) || ((r.first_name || '') + ' ' + (r.last_name || '')).trim(), /* [ชื่อในเกม] ใช้ชื่อที่นักเรียนตั้งก่อน */
-              totalScore: Number(r.collected) || 0, bossScore: Number(r.boss) || 0, badgeIds: ''
-            };
-          });
-      })
+    ? (_lbScope === 'room'
+        ? SBTee._rpc('rpc_leaderboard', { p_join_key: _bnd.join_key })
+        : SBTee._rpc('rpc_leaderboard_scope', { p_join_key: _bnd.join_key, p_scope: _lbScope })
+            .catch(() => SBTee._rpc('rpc_leaderboard', { p_join_key: _bnd.join_key })) /* SQL แพตช์ยังไม่รัน → ถอยเป็นรายห้อง */
+      ).then(t => { let rows = []; try { rows = JSON.parse(t || '[]'); } catch (e) {} return _mapLbRows(rows); })
     : Promise.reject(new Error('ยังไม่ได้ผูกห้องเรียน'));
   _lbInflight = _sbReq
     .catch(() => { window._lbNeedJoin = !(_bnd && _bnd.join_key); return []; }) /* [เฟส 3e] ไม่มี Sheets ให้ถอยแล้ว — กระดานเป็นรายห้องจาก Supabase เท่านั้น */
@@ -22158,6 +22183,7 @@ function _lbRowHtml(row, rank, myU) {
 // [รวมแล้ว Task #94] เดิมแยกเป็น renderLeaderboard() (การ์ดเล็ก ไม่แบ่งหน้า ตัดที่ 10 อันดับ) กับ renderTVLeaderboard() (เต็มจอ แบ่งหน้าครบทุกคน) — ตอนนี้เหลือฟังก์ชันเดียวนี้ ใช้กับ #leaderboard-screen ทุกทางเข้า (ล็อบบี้/แผนที่โลก/โหมดทีวีจากหน้าล็อกอิน)
 // ดึงข้อมูลซ้ำอัตโนมัติทุก 60-70 วิขณะเปิดค้างไว้ (ดู startLeaderboardAutoRefresh) แบ่งหน้า 10 อันดับ/หน้า ดูได้ครบทุกคนจริง ไม่มีแถบเลื่อน ไม่ต้องล็อกอินก็ดูได้ (เข้าทางปุ่มโหมดทีวีจากหน้าล็อกอิน)
 async function renderLeaderboard() {
+  try { renderLbScopeBar(); } catch (e) {}
   const listEl = document.getElementById('leaderboard-list');
   const pagerEl = document.getElementById('lb-pager');
   if (!listEl) return;
@@ -26794,14 +26820,29 @@ function clsAfterAuth(){
     clsStatus(clsErrBox('โหลดข้อมูลห้องเรียนไม่สำเร็จ: '+(e&&e.message||''))+'<div class="card"><button class="btn-primary" onclick="clsInit()" style="background:#1d4ed8">ลองใหม่</button></div>');
   });
 }
+/* [แก้บั๊กสำคัญ V.7.61] Supabase ตัดผลการอ่านที่ ~1000 แถว/คำขอ (เพดาน max-rows ของเซิร์ฟเวอร์ — ใส่ limit สูงกว่านี้ก็ไม่ช่วย)
+   คำตอบรายข้อ (kind=question) มีเป็นหมื่นแถว → เดิมอ่านมาได้แค่ 1000 แรก ทำให้ A และ C ของนักเรียนส่วนใหญ่ "–" ทั้งที่ข้อมูลย้ายมาครบ
+   → sbFetchAll อ่านแบบแบ่งหน้า (order=id + offset) วนจนหมดจริง */
+function sbFetchAll(path){
+  var out=[], off=0, PAGE=1000;
+  var sep=(path.indexOf('?')>=0?'&':'?');
+  function step(){
+    return sbFetch(path+sep+'order=id&limit='+PAGE+'&offset='+off).then(function(rows){
+      rows=rows||[]; out=out.concat(rows);
+      if(rows.length<PAGE) return out;
+      off+=PAGE; return step();
+    });
+  }
+  return step();
+}
 function clsLoadCounts(){
   cls.counts={}; cls.students=[];
   if(!cls.rooms.length) return Promise.resolve();
   var ids=cls.rooms.map(function(r){return r.id;}).join(',');
   var base='id,classroom_id,student_number,first_name,last_name,collected_score,boss_score';
   /* group_ref/external_ref = ข้อมูลกลุ่มบัญชีเดิม — ถ้าฐานข้อมูลยังไม่รันแพตช์ล่าสุด (ไม่มีคอลัมน์) ให้ถอยไปแบบเดิม */
-  return sbFetch('/rest/v1/students?select='+base+',external_ref,group_ref,character_name&classroom_id=in.('+ids+')')
-    .catch(function(){ return sbFetch('/rest/v1/students?select='+base+'&classroom_id=in.('+ids+')'); })
+  return sbFetchAll('/rest/v1/students?select='+base+',external_ref,group_ref,character_name&classroom_id=in.('+ids+')')
+    .catch(function(){ return sbFetchAll('/rest/v1/students?select='+base+'&classroom_id=in.('+ids+')'); })
     .then(function(rows){
       cls.students=rows||[];
       cls.students.forEach(function(s){ cls.counts[s.classroom_id]=(cls.counts[s.classroom_id]||0)+1; });
@@ -27112,7 +27153,7 @@ function clsFillReview(){
   var byId={}; studs.forEach(function(x){ byId[x.id]=x; });
   var ids=studs.map(function(x){ return x.id; });
   if(!ids.length){ var b0=box(); if(b0) b0.innerHTML='<div class="muted" style="font-size:13px">ยังไม่มีนักเรียนในห้องนี้</div>'; return; }
-  sbEnsure().then(function(){ return sbFetch('/rest/v1/events?kind=eq.capstone&select=id,student_id,created_at,raw&student_id=in.('+ids.join(',')+')&limit=10000'); })
+  sbEnsure().then(function(){ return sbFetchAll('/rest/v1/events?kind=eq.capstone&select=id,student_id,created_at,raw&student_id=in.('+ids.join(',')+')'); })
   .then(function(rows){
     var groups={}, order=[];
     (rows||[]).forEach(function(rr){
@@ -27247,8 +27288,8 @@ function clsLoadStats(){
   chunks.forEach(function(ch){
     p=p.then(function(){ return sbEnsure(); }).then(function(){
       return Promise.all([
-        sbFetch('/rest/v1/events?kind=eq.question&select='+SEL_Q+'&student_id=in.('+ch.join(',')+')&limit=100000'),
-        sbFetch('/rest/v1/events?kind=in.(progress,boss,capstone,pilok)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')&limit=100000')
+        sbFetchAll('/rest/v1/events?kind=eq.question&select='+SEL_Q+'&student_id=in.('+ch.join(',')+')'),
+        sbFetchAll('/rest/v1/events?kind=in.(progress,boss,capstone,pilok)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')')
       ]);
     }).then(function(rr){
       (rr[0]||[]).forEach(function(e){
