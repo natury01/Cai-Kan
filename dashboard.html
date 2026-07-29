@@ -2576,6 +2576,184 @@ var CV2 = (function(){
   return { compute: compute, LV_LABEL: LV_LABEL, W: W };
 })();
 
+/* ===== [เฟส 3f] ตัวตรวจคำตอบเขียน กาญ 2050 แบบเกณฑ์คำสำคัญ (heuristic-v1 — พอร์ตตรงจาก .gs รอบ 63)
+   ให้ 0-4 ต่อข้อ: เกี่ยวข้องกับสถานการณ์ · มีเหตุผล/เชื่อมโยงเหตุ-ผล · สาระ/ความยาวพอ · ไม่ลอกโจทย์
+   deterministic (ข้อความเดิม = คะแนนเดิมเป๊ะ) · ไม่ต้องมีคีย์/เน็ต · เป็นตัวคัดกรอง — ครูตัดสินขั้นสุดท้ายเสมอ ===== */
+var HS_DOMAIN = ['ขยะ', 'น้ำเสีย', 'มลพิษ', 'น้ำป่า', 'น้ำท่วม', 'ท่วม', 'ป่า', 'ต้นน้ำ', 'นักท่องเที่ยว', 'ท่องเที่ยว', 'ขีดรองรับ', 'เขื่อน', 'ระดับน้ำ', 'รายได้', 'ชุมชน', 'ประมง', 'สัตว์น้ำ', 'สิ่งแวดล้อม', 'เศรษฐกิจ', 'ธรรมชาติ', 'ทรัพยากร', 'น้ำ'];
+var HS_MEASURE = ['เตือนภัย', 'ระบบเตือน', 'ฟื้นฟู', 'ปลูกป่า', 'อบรม', 'มัคคุเทศก์', 'รณรงค์', 'ให้ความรู้', 'จัดการ', 'บำบัด', 'ป้องกัน', 'ดูแล', 'รักษา', 'แก้ปัญหา', 'แผน', 'มาตรการ', 'งบ'];
+var HS_VALUE = ['ปลอดภัย', 'ความปลอดภัย', 'ชีวิต', 'เสี่ยง', 'จุดเสี่ยง', 'อันตราย', 'สำคัญ', 'จำเป็น'];
+var HS_CONNECT = ['เพราะ', 'เนื่องจาก', 'จึง', 'ดังนั้น', 'เพื่อ', 'จะได้', 'หาก', 'ถ้า', 'เมื่อ'];
+var HS_EFFECT = ['ทำให้', 'ส่งผล', 'ผลกระทบ', 'กระทบ', 'นำไปสู่', 'เกิด', 'ลดลง', 'เพิ่มขึ้น', 'เสียหาย', 'ช่วยให้'];
+function _hsHits(t, arr) { var n = 0; for (var i = 0; i < arr.length; i++) if (t.indexOf(arr[i]) !== -1) n++; return n; }
+function _hsNorm(s) { return String(s == null ? '' : s).replace(/\s+/g, '').replace(/[.,!?…"'“”‘’()\-—:;ๆฯ]/g, ''); }
+function _hsCopied(ansN, qN) {
+  if (!ansN || ansN.length < 10 || !qN) return false;
+  if (qN.indexOf(ansN) !== -1) return true;
+  for (var i = 0; i + 18 <= ansN.length; i += 6) if (qN.indexOf(ansN.substr(i, 18)) !== -1) return true;
+  return false;
+}
+function _hsScoreOne(text, qText, extraKw) {
+  var t = String(text || '').trim(), tn = _hsNorm(t);
+  if (tn.length < 8) return { s: 0, flag: 'REVIEW', why: 'ไม่มีคำตอบ/สั้นเกินไป' };
+  if (_hsCopied(tn, _hsNorm(qText))) return { s: (tn.length > _hsNorm(qText).length * 1.15 ? 1 : 0), flag: 'REVIEW', why: 'คล้ายคัดลอกโจทย์' };
+  var rel = _hsHits(t, HS_DOMAIN) + _hsHits(t, HS_MEASURE) + Math.min(1, _hsHits(t, HS_VALUE)) + (extraKw ? _hsHits(t, extraKw) : 0);
+  var con = _hsHits(t, HS_CONNECT), eff = _hsHits(t, HS_EFFECT);
+  var pts = Math.min(2.0, rel * 0.8) + Math.min(1.0, con * 0.5) + Math.min(1.0, eff * 0.5);
+  if (tn.length < 15) pts = Math.min(pts, 1);
+  else if (tn.length < 30) pts = Math.min(pts, 2.5);
+  if (rel < 1) pts = Math.min(pts, 1);
+  var s2 = Math.max(0, Math.min(4, Math.round(pts)));
+  return { s: s2, flag: (s2 <= 1 || rel < 1) ? 'REVIEW' : 'OK', why: 'คำสำคัญ ' + rel + ' · คำเชื่อมเหตุผล ' + con + ' · คำแสดงผล ' + eff };
+}
+function _heuristicScoreReflections(r1, r2, r3) {
+  var a = _hsScoreOne(r1, 'ปัญหาที่สำคัญที่สุดของกาญจนบุรีปี 2050 คืออะไร เพราะอะไร', ['ปัญหา', 'สำคัญ', 'ที่สุด']);
+  var b = _hsScoreOne(r2, 'เหตุใดจึงเลือกแผนชุดนี้ อธิบายการจัดลำดับความสำคัญ', ['เลือก', 'แผน', 'จัดลำดับ', 'ความสำคัญ', 'เหตุผล']);
+  var c = _hsScoreOne(r3, 'เมื่องบลด ฝนเพิ่ม ปรับอะไรบ้าง เพราะเหตุใด', ['งบ', 'ลด', 'ฝน', 'ปรับ', 'เปลี่ยน', 'ตัด', 'คง', 'เก็บ', 'จำเป็น']);
+  var flag = (a.flag === 'REVIEW' || b.flag === 'REVIEW' || c.flag === 'REVIEW') ? 'REVIEW' : 'OK';
+  return { s1: a.s, s2: b.s, s3: c.s, flag: flag, model: 'heuristic-v1',
+    rationale: '[ตรวจอัตโนมัติแบบเกณฑ์คำสำคัญ] ข้อ1: ' + a.why + ' | ข้อ2: ' + b.why + ' | ข้อ3: ' + c.why + (flag === 'REVIEW' ? ' · มีข้อควรให้ครูตรวจเพิ่ม' : '') };
+}
+
+/* ========== [เฟส 3f] 📝 ตรวจคำตอบเขียน กาญ 2050 (แทนหน้าตรวจใน Dashboard เดิม) ==========
+   - คะแนน AI แนะนำ: ใช้ที่เกมตรวจไว้ (heuristic-v1) · แถวเก่าไม่มี → คำนวณสดให้
+   - ครูให้คะแนนจริง 0-4 ต่อข้อ + คอมเมนต์ → เก็บลง raw ของ events (คะแนนรวม 36 = ปรนัย 24 + อัตนัย 12)
+   - ✨ ตรวจด้วย Gemini (ตัวเลือก): ครูใส่ API key ครั้งเดียว เก็บในเครื่องครูเท่านั้น */
+var CLSR_Q=['ข้อ 1 · ปัญหาที่สำคัญที่สุดของกาญจนบุรีปี 2050 คืออะไร เพราะอะไร (ระบุ+เชื่อมโยงปัญหา)',
+            'ข้อ 2 · เหตุใดจึงเลือกแผนชุดนี้ อธิบายการจัดลำดับความสำคัญ (ให้เหตุผลเชิงวิพากษ์)',
+            'ข้อ 3 · เมื่องบลด/ฝนเพิ่ม ปรับแผนอย่างไร เพราะเหตุใด (ปรับตัวเมื่อสถานการณ์เปลี่ยน)'];
+var CLSR_RUBRIC='เกณฑ์ให้คะแนน 0-4 (ผู้ตอบเป็นนักเรียนประถมศึกษาปีที่ 4 — ให้เกณฑ์เหมาะสมกับวัย ไม่คาดหวังภาษาวิชาการ):\n4 = ระบุประเด็นถูกต้อง + อธิบายเหตุผลชัดเจน + เชื่อมโยงเหตุ-ผลหรือผลกระทบต่อเนื่องได้เอง\n3 = ระบุประเด็นถูกต้อง + มีเหตุผลประกอบ แต่การเชื่อมโยงยังสั้นหรือทั่วไป\n2 = ระบุประเด็นได้บางส่วน เหตุผลยังคลุมเครือหรือซ้ำคำถาม\n1 = เขียนเกี่ยวข้องกับสถานการณ์เล็กน้อย แต่ไม่ตอบคำถาม\n0 = ไม่เกี่ยวข้อง/คัดลอกโจทย์/ข้อความไร้ความหมาย\nบริบทสถานการณ์: ภารกิจวางแผนเมืองกาญจนบุรีปี 2050 สมดุลระหว่างสิ่งแวดล้อม ความปลอดภัย เศรษฐกิจชุมชน การท่องเที่ยว และทรัพยากรน้ำ มีเหตุพลิกผันคืองบถูกตัดจาก 100 เหลือ 70 หน่วยและฝนมากขึ้น\nคำถามข้อ 1: ปัญหาที่สำคัญที่สุดของกาญจนบุรีปี 2050 คืออะไร เพราะอะไร\nคำถามข้อ 2: เหตุใดจึงเลือกแผนชุดนี้ อธิบายการจัดลำดับความสำคัญ\nคำถามข้อ 3: เมื่องบลด/ฝนเพิ่ม ปรับอะไรบ้าง เพราะเหตุใด';
+function clsOpenReview(id){ cls.openReview=(cls.openReview===id)?null:id; if(cls.openReview){ cls.open=null; cls.openScores=null; } clsRender(); if(cls.openReview) clsFillReview(); }
+function clsReviewShell(r){
+  return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px" id="cls-review-box">'+
+    '<span class="loading" style="border-color:#7c3aed;border-top-color:transparent"></span> กำลังโหลดคำตอบเขียน...</div>';
+}
+function clsFillReview(){
+  if(!cls.openReview) return;
+  var box=function(){ return $('cls-review-box'); };
+  var studs=(cls.students||[]).filter(function(x){ return x.classroom_id===cls.openReview; });
+  var byId={}; studs.forEach(function(x){ byId[x.id]=x; });
+  var ids=studs.map(function(x){ return x.id; });
+  if(!ids.length){ var b0=box(); if(b0) b0.innerHTML='<div class="muted" style="font-size:13px">ยังไม่มีนักเรียนในห้องนี้</div>'; return; }
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/events?kind=eq.capstone&select=id,student_id,created_at,raw&student_id=in.('+ids.join(',')+')&limit=10000'); })
+  .then(function(rows){
+    var groups={}, order=[];
+    (rows||[]).forEach(function(rr){
+      var raw=rr.raw||{};
+      var key=String(raw.sessionId||'')+'|'+String(raw.attemptNo||'')+'|'+String(raw.reflection1||'').slice(0,40);
+      if(!groups[key]){ groups[key]={ids:[],names:[],raw:raw,evId:rr.id,t:Date.parse(rr.created_at)||0}; order.push(key); }
+      groups[key].ids.push(rr.id);
+      var st=byId[rr.student_id]; if(st){ var nm=((st.first_name||'')+' '+(st.last_name||'')).trim(); if(groups[key].names.indexOf(nm)<0) groups[key].names.push(nm); }
+    });
+    var list=order.map(function(k){ var g=groups[k], raw=g.raw;
+      var hasAi=(raw.aiScore1!=null&&raw.aiScore1!=='');
+      var ai=hasAi?{s1:Number(raw.aiScore1)||0,s2:Number(raw.aiScore2)||0,s3:Number(raw.aiScore3)||0,flag:raw.aiFlag||'',rationale:raw.aiRationale||'',model:raw.aiModel||'heuristic-v1',live:true}
+                  :(function(){ var h=_heuristicScoreReflections(raw.reflection1||'',raw.reflection2||'',raw.reflection3||''); h.live=false; return h; })();
+      return { ids:g.ids, names:g.names.join(' , '), att:raw.attemptNo||'', t:g.t,
+        raw24:Math.max(0,Math.min(24,Number(raw.rawTotal24)||0)), r:[raw.reflection1||'',raw.reflection2||'',raw.reflection3||''],
+        ai:ai, reviewed:!!raw.teacherReviewedAt, flag:ai.flag,
+        t1:(raw.teacherScore1!=null&&raw.teacherScore1!=='')?Number(raw.teacherScore1):null,
+        t2:(raw.teacherScore2!=null&&raw.teacherScore2!=='')?Number(raw.teacherScore2):null,
+        t3:(raw.teacherScore3!=null&&raw.teacherScore3!=='')?Number(raw.teacherScore3):null,
+        comment:raw.teacherComment||'', rawFull:raw, grp:!!(raw._group&&raw._group.size>1) };
+    });
+    list.sort(function(a,b){
+      if(a.reviewed!==b.reviewed) return a.reviewed?1:-1;
+      var af=a.flag==='REVIEW'?0:1, bf=b.flag==='REVIEW'?0:1;
+      if(af!==bf) return af-bf;
+      return String(a.names).localeCompare(String(b.names),'th');
+    });
+    cls._review=list;
+    var b=box(); if(!b) return;
+    if(!list.length){ b.innerHTML='<div class="muted" style="font-size:13px">ยังไม่มีนักเรียนคนไหนทำด่านกาญ 2050 ในห้องนี้</div>'; return; }
+    var pending=list.filter(function(x){ return !x.reviewed; }).length;
+    var h='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+      '<b style="font-size:14px">📝 ตรวจคำตอบเขียน ด่านกาญ 2050</b>'+
+      '<span class="cls-chip" style="background:#fef3c7;color:#92400e">รอตรวจ '+pending+' / '+list.length+'</span>'+
+      '<span class="muted" style="font-size:11.5px">คะแนน AI เป็นตัวช่วยคัดกรอง — ครูให้คะแนนจริง 0-4 ต่อข้อ (รวม 36 = เล่นเกม 24 + เขียน 12) · ✨ = ตรวจซ้ำด้วย Gemini (ใส่คีย์ครั้งเดียว)</span></div>';
+    h+=list.map(function(e,i){
+      var stat=e.reviewed?'<span class="cls-chip" style="background:#dcfce7;color:#166534">✅ ตรวจแล้ว</span>'
+        :(e.flag==='REVIEW'?'<span class="cls-chip" style="background:#fee2e2;color:#b91c1c">🚩 ควรตรวจใกล้ชิด</span>':'<span class="cls-chip" style="background:#e0e7ff;color:#3730a3">รอตรวจ</span>');
+      var qa=CLSR_Q.map(function(q,qi){
+        var ans=e.r[qi], aiS=[e.ai.s1,e.ai.s2,e.ai.s3][qi];
+        var tv=[e.t1,e.t2,e.t3][qi]; if(tv==null) tv=aiS;
+        return '<div style="background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 11px;margin-top:6px">'+
+          '<div style="font-size:11.5px;color:#475569;font-weight:700">'+esc(q)+'</div>'+
+          '<div style="font-size:13px;margin:4px 0;white-space:pre-wrap">'+(ans?esc(ans):'<span class="muted">(ไม่ได้ตอบ)</span>')+'</div>'+
+          '<div style="display:flex;gap:10px;align-items:center;font-size:12px">'+
+            '<span class="muted">AI แนะนำ: <b style="color:#7c3aed">'+aiS+'</b>/4'+(e.ai.live?'':' <span style="font-size:10px">(คำนวณสด)</span>')+'</span>'+
+            '<label>คะแนนครู <input id="cvw-t'+qi+'-'+i+'" type="number" min="0" max="4" step="1" value="'+tv+'" style="width:52px;padding:3px 6px;border:1.5px solid #cbd5e1;border-radius:7px;font-family:inherit"> /4</label>'+
+          '</div></div>';
+      }).join('');
+      return '<div style="background:#f8fafc;border:1px solid var(--line);border-left:4px solid '+(e.reviewed?'#16a34a':(e.flag==='REVIEW'?'#dc2626':'#6366f1'))+';border-radius:11px;padding:10px 13px;margin-bottom:10px">'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+          '<b>'+esc(e.names||'ไม่ทราบชื่อ')+'</b>'+(e.grp?' <span class="cls-chip" style="background:#ede9fe;color:#6d28d9">👥 กลุ่ม</span>':'')+
+          '<span class="muted" style="font-size:11.5px">ครั้งที่ '+esc(String(e.att||'?'))+' · คะแนนเล่นเกม '+e.raw24+'/24</span>'+stat+'</div>'+
+        qa+
+        '<div style="font-size:11.5px;color:#64748b;margin-top:6px">🤖 '+esc(e.ai.rationale||'')+'</div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:7px">'+
+          '<input id="cvw-cm-'+i+'" placeholder="คอมเมนต์ถึงนักเรียน (ไม่บังคับ)" value="'+esc(e.comment||'')+'" style="flex:1;min-width:200px;padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:8px;font-family:inherit;font-size:12.5px">'+
+          '<button class="btn-primary" style="background:#16a34a;padding:5px 14px;font-size:12.5px" onclick="clsSaveReview('+i+')">💾 บันทึกคะแนนครู</button>'+
+          '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#7c3aed" onclick="clsGeminiReview('+i+')">✨ ตรวจด้วย Gemini</button>'+
+        '</div>'+
+        '<div id="cvw-st-'+i+'" style="font-size:12px;margin-top:5px"></div>'+
+      '</div>';
+    }).join('');
+    b.innerHTML=h;
+  })
+  .catch(function(e){ var b=box(); if(b) b.innerHTML='<div class="err" style="display:block">โหลดคำตอบไม่สำเร็จ: '+esc(e&&e.message||'')+'</div>'; });
+}
+function clsSaveReview(i){
+  var e=cls._review&&cls._review[i]; if(!e) return;
+  var g04=function(id){ var v=Number(($(id)||{}).value); if(isNaN(v)) v=0; return Math.max(0,Math.min(4,Math.round(v))); };
+  var t1=g04('cvw-t0-'+i), t2=g04('cvw-t1-'+i), t3=g04('cvw-t2-'+i);
+  var cm=String((($('cvw-cm-'+i)||{}).value)||'').slice(0,900);
+  var final36=Math.max(0,Math.min(36,e.raw24+t1+t2+t3));
+  var merged=Object.assign({},e.rawFull,{
+    teacherScore1:t1,teacherScore2:t2,teacherScore3:t3,teacherComment:cm,
+    teacherReviewedAt:new Date().toISOString(),teacherReviewedBy:(cls.teacher&&(cls.teacher.email||cls.teacher.display_name))||'ครู',
+    teacherReviewPending:false,finalTotal36:final36,finalPercent:Math.round(final36/36*10000)/100,
+    aiScore1:e.ai.s1,aiScore2:e.ai.s2,aiScore3:e.ai.s3,aiFlag:e.ai.flag,aiRationale:e.ai.rationale,aiModel:e.ai.model||'heuristic-v1'
+  });
+  var stEl=$('cvw-st-'+i); if(stEl) stEl.innerHTML='<span class="loading" style="width:12px;height:12px;border-color:#16a34a;border-top-color:transparent"></span> กำลังบันทึก...';
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/events?id=in.('+e.ids.join(',')+')',{method:'PATCH',body:JSON.stringify({raw:merged})}); })
+  .then(function(){
+    e.reviewed=true; e.t1=t1; e.t2=t2; e.t3=t3; e.comment=cm; e.rawFull=merged;
+    if(stEl) stEl.innerHTML='<span style="color:#16a34a;font-weight:700">✅ บันทึกแล้ว — คะแนนรวม '+final36+'/36</span>';
+    toast('บันทึกคะแนน '+ (e.names||'') +' แล้ว ('+final36+'/36)');
+  })
+  .catch(function(err){ if(stEl) stEl.innerHTML='<span style="color:#b91c1c">บันทึกไม่สำเร็จ: '+esc(err&&err.message||'')+' — ถ้าติดสิทธิ์ ให้รัน SQL แพตช์ล่าสุด</span>'; });
+}
+function clsGeminiReview(i){
+  var e=cls._review&&cls._review[i]; if(!e) return;
+  var key=''; try{ key=localStorage.getItem('cai_gemini_key')||''; }catch(err){}
+  if(!key){
+    key=prompt('วาง Gemini API key ของครู (ขอฟรีที่ aistudio.google.com/apikey — เก็บไว้ในเครื่องครูเท่านั้น ใส่ครั้งเดียว)')||'';
+    key=key.trim(); if(!key) return;
+    try{ localStorage.setItem('cai_gemini_key',key); }catch(err){}
+  }
+  var stEl=$('cvw-st-'+i); if(stEl) stEl.innerHTML='<span class="loading" style="width:12px;height:12px;border-color:#7c3aed;border-top-color:transparent"></span> ✨ Gemini กำลังตรวจ...';
+  var prompt2='คุณเป็นผู้ช่วยครูประถม ให้คะแนนคำตอบอัตนัย 3 ข้อของนักเรียน ป.4 ตามเกณฑ์ต่อไปนี้อย่างเคร่งครัด\n'+CLSR_RUBRIC+
+    '\n\nคำตอบข้อ 1: «'+e.r[0]+'»\nคำตอบข้อ 2: «'+e.r[1]+'»\nคำตอบข้อ 3: «'+e.r[2]+'»\n\n'+
+    'ตอบกลับเป็น JSON เท่านั้น รูปแบบ: {"s1":0-4,"s2":0-4,"s3":0-4,"flag":"OK|REVIEW","rationale":"เหตุผลสั้นๆ ภาษาไทยไม่เกิน 3 ประโยค ระบุจุดเด่น/จุดที่ครูควรดูเป็นพิเศษ"}\n'+
+    'ใช้ flag="REVIEW" เมื่อ: คะแนนข้อใดต่ำกว่า 2, ข้อความสั้นผิดปกติ, สงสัยว่าคัดลอก, หรือมีเนื้อหาที่ครูควรใส่ใจ';
+  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',{
+    method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
+    body:JSON.stringify({contents:[{parts:[{text:prompt2}]}],generationConfig:{temperature:0,responseMimeType:'application/json'}})
+  }).then(function(r){ return r.text().then(function(t){ if(!r.ok) throw new Error('Gemini HTTP '+r.status+' '+t.slice(0,120)); return JSON.parse(t); }); })
+  .then(function(data){
+    var text=data&&data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts&&data.candidates[0].content.parts[0]&&data.candidates[0].content.parts[0].text;
+    var out=JSON.parse(text);
+    var c=function(v){ v=Number(v); return isNaN(v)?0:Math.max(0,Math.min(4,Math.round(v))); };
+    e.ai={s1:c(out.s1),s2:c(out.s2),s3:c(out.s3),flag:out.flag==='REVIEW'?'REVIEW':'OK',rationale:String(out.rationale||'').slice(0,900),model:'gemini-2.0-flash',live:true};
+    [0,1,2].forEach(function(qi){ var el=$('cvw-t'+qi+'-'+i); if(el) el.value=[e.ai.s1,e.ai.s2,e.ai.s3][qi]; });
+    if(stEl) stEl.innerHTML='<span style="color:#7c3aed">✨ Gemini: '+e.ai.s1+' / '+e.ai.s2+' / '+e.ai.s3+' — '+esc(e.ai.rationale)+'</span> <span class="muted">(กด 💾 เพื่อบันทึก)</span>';
+  })
+  .catch(function(err){
+    if(/401|403|API key/i.test(String(err&&err.message))){ try{ localStorage.removeItem('cai_gemini_key'); }catch(e2){} }
+    if(stEl) stEl.innerHTML='<span style="color:#b91c1c">Gemini ตรวจไม่สำเร็จ: '+esc(err&&err.message||'')+' (คีย์ผิดจะถูกล้าง — กด ✨ เพื่อใส่ใหม่)</span>';
+  });
+}
+
 /* [รวม Dashboard] โหลดข้อมูลการเล่นของนักเรียนทุกห้อง → สรุปคะแนนรายคน (คะแนนเก็บ/สอบ/กาญ 2050) */
 function clsLoadStats(){
   cls.stats=cls.stats||{}; cls.statsReady=false;
@@ -2621,6 +2799,17 @@ function clsLoadStats(){
       });
     });
   });
+  /* [เทียบข้อมูลเดิม] ดึงผลสรุป V.2 อ้างอิงที่ย้ายมาจากชีต (migrateV2Summary → run_id=LEGACY-SHEETS) */
+  p=p.then(function(){
+    var lch=[]; for(var i2=0;i2<ids.length;i2+=150) lch.push(ids.slice(i2,i2+150));
+    var lp=Promise.resolve();
+    lch.forEach(function(ch2){
+      lp=lp.then(function(){ return sbFetch('/rest/v1/competency_results?select=student_id,a,b,c,d,total,level,ctc,stm,crt,prb,data_status&run_id=eq.LEGACY-SHEETS&student_id=in.('+ch2.join(',')+')'); })
+        .then(function(rows2){ (rows2||[]).forEach(function(r2){ S(r2.student_id).legacy=r2; }); })
+        .catch(function(){});
+    });
+    return lp;
+  });
   p.then(function(){
     for(var k in stats){ var s=stats[k], sum=0; for(var st2 in s.pb) sum+=s.pb[st2]; s.collected=Math.round(sum*100)/100;
       /* [ตรวจสอบข้อ 2] คะแนนสอบ = สูตรชีต Users เดิมเป๊ะ: เฉพาะครั้งที่ 1-2 เลือกสูงสุด (แถวเก่าไม่มีเลขครั้ง → 2 แถวแรกตามเวลา) */
@@ -2650,7 +2839,7 @@ function clsStatOf(stu){
   /* [ตรวจสอบข้อ 2] คะแนนสอบ: มีประวัติสอบใน events → ใช้ค่าตามกติกาครั้ง 1-2 (ตรงชีต Users เดิม) · ไม่มี → ใช้คะแนนสรุปที่ย้ายมา */
   var boss=(s&&s.bossN>0)?s.boss:(Number(stu.boss_score)||0);
   return { collected:col, boss:boss, cap:s?s.cap:0, plays:s?s.plays:0, last:s?s.last:0,
-    v2:(s&&s.v2)||null, shared:!!(s&&s.shared), gmem:(s&&s.gmem)||null, has:(s&&s.plays>0)||col>0||boss>0 };
+    v2:(s&&s.v2)||null, legacy:(s&&s.legacy)||null, shared:!!(s&&s.shared), gmem:(s&&s.gmem)||null, has:(s&&s.plays>0)||col>0||boss>0 };
 }
 /* [ข้อ 5] ใครจับคู่กับใคร — จากบัญชีกลุ่มเดิม (group_ref เดียวกัน) หรือจากข้อมูลกลุ่มที่แนบมากับการเล่นรอบล่าสุด */
 function clsPartnersOf(s,t){
@@ -2665,8 +2854,12 @@ function clsPartnersOf(s,t){
   }
   return [];
 }
+function clsSumFilter(v){ cls.sumFilter=v||''; clsRender(); }
 function clsSummaryHtml(){
-  var students=cls.students||[], nRooms=cls.rooms.length, n=students.length;
+  /* [ตามคำขอครู] ตัวกรองสรุปรวม: ทุกห้อง หรือเจาะรายห้อง */
+  var students=cls.students||[], nRooms=cls.rooms.length;
+  if(cls.sumFilter){ students=students.filter(function(x){ return x.classroom_id===cls.sumFilter; }); nRooms=1; }
+  var n=students.length;
   var played=0, colS=0, colN=0, bossS=0, bossN=0, capN=0;
   var v2S=0, v2N=0, lv5=0, lv6strict=0, lvC={3:0,4:0,5:0,6:0}, srcS={A:0,B:0,C:0,D:0}, srcN={A:0,B:0,C:0,D:0};
   var cmpS={CTC:0,STM:0,CRT:0,PRB:0}, cmpN={CTC:0,STM:0,CRT:0,PRB:0};
@@ -2736,7 +2929,13 @@ function clsSummaryHtml(){
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">'+tiles+'</div></div>';
   }
   return '<div class="card" style="margin-bottom:14px;padding:12px 16px">'+
-    '<b style="font-size:14.5px">สรุปข้อมูลผู้เรียน</b>'+
+    '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+
+      '<b style="font-size:14.5px">สรุปข้อมูลผู้เรียน</b>'+
+      '<select class="cls-in" style="padding:4px 9px;font-size:12px" onchange="clsSumFilter(this.value)">'+
+        '<option value="">ทุกห้อง ('+cls.rooms.length+')</option>'+
+        cls.rooms.map(function(r2){ return '<option value="'+esc(r2.id)+'"'+(cls.sumFilter===r2.id?' selected':'')+'>'+esc(r2.name)+'</option>'; }).join('')+
+      '</select>'+
+    '</div>'+
     '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin-top:7px">'+
       grp('👨‍🏫','ข้อมูลทั่วไป',
         mini(nRooms,'ห้องเรียน','#fff')+mini(n,'นักเรียน','#fff')+mini(played,'มีข้อมูลเล่น','#fff'),
@@ -2769,13 +2968,14 @@ function clsDiagHtml(){
     var colC=Number(stu.collected_score)||0, colB=Number(stu.boss_score)||0;
     if(colC>0&&Math.abs((s.collected||0)-colC)>1) mism.push(nm+' (เก็บ: ประวัติ '+s.collected+' / สรุปเดิม '+colC+')');
     else if(colB>0&&s.bossN>0&&Math.abs((s.boss||0)-colB)>1) mism.push(nm+' (สอบ: ประวัติ '+s.boss+' / สรุปเดิม '+colB+')');
+    else if(s.legacy&&s.legacy.total!=null&&s.v2&&s.v2.dataStatus!=='NO_DATA'&&Math.abs(s.v2.total-Number(s.legacy.total))>2) mism.push(nm+' (สมรรถนะ: ใหม่ '+s.v2.total+' / เดิม '+(Math.round(Number(s.legacy.total)*10)/10)+')');
   });
   if(!mism.length) return '';
   return '<div style="margin-top:10px;padding:9px 12px;background:#fffbeb;border:1px solid #fcd34d;border-radius:9px;font-size:12px;color:#92400e">'+
     '⚠️ <b>คะแนนจากประวัติการเล่นไม่ตรงกับคะแนนสรุปที่ย้ายมา '+mism.length+' คน</b>: '+esc(mism.slice(0,4).join(' · '))+(mism.length>4?' · ...':'')+
     '<br>สาเหตุที่พบบ่อย: รัน migrateToSupabase ยังไม่จบทุกเฟส (ต้องขึ้น 🎉) ทำให้บางชีต (Progress/BossResults/QuestionLog) ยังไม่ถูกย้าย · หรือบัญชีเดิมซ้ำหลายบัญชี — ระหว่างนี้ตารางแสดงค่าที่สูงกว่าไว้ก่อน</div>';
 }
-function clsOpenScores(id){ cls.openScores=(cls.openScores===id)?null:id; if(cls.openScores) cls.open=null; clsRender(); }
+function clsOpenScores(id){ cls.openScores=(cls.openScores===id)?null:id; if(cls.openScores){ cls.open=null; cls.openReview=null; } clsRender(); }
 /* [เฟส 3d] เซลล์คะแนนแหล่ง A/B/C/D — มีจุด • เมื่อข้อมูลยังไม่ครบตามเกณฑ์ (ชี้เพื่อดูสาเหตุ) */
 function clsV2Cell(v,st,name,bg){
   var num=(v==null)?'<span class="muted">–</span>':(Math.round(v*10)/10);
@@ -2837,6 +3037,15 @@ function clsScoresHtml(r){
         (t.cap>0?' · ด่านกาญ 2050 คะแนนดิบ '+t.cap+'/24':'')+
         '</div>';
     } else det+='<div class="muted" style="font-size:12.5px">ยังไม่มีข้อมูลการเล่นพอสรุปสมรรถนะ</div>';
+    /* [เทียบข้อมูลเดิม] แถวอ้างอิงจากระบบ Google Sheet — โชว์เสมอ (สำคัญที่สุดตอนข้อมูลใหม่หาย/ย้ายไม่ครบ) */
+    if(t.legacy){ var L=t.legacy, nv=function(x){ return x==null?'–':(Math.round(Number(x)*10)/10); };
+      var hasNew=(v&&v.dataStatus!=='NO_DATA');
+      var dTot=(L.total!=null&&hasNew)?Math.round((v.total-Number(L.total))*10)/10:null;
+      det+='<div style="font-size:11.5px;color:#64748b;margin-top:6px;background:#fff;border:1px dashed #cbd5e1;border-radius:8px;padding:5px 9px">'+
+        '📜 <b>ค่าอ้างอิงจากฐานข้อมูลเดิม (Google Sheet)</b>: A '+nv(L.a)+' · B '+nv(L.b)+' · C '+nv(L.c)+' · D '+nv(L.d)+' · รวม <b>'+nv(L.total)+'</b> · ระดับ '+nv(L.level)+
+        (dTot!=null?(' · ต่างจากที่คิดใหม่ '+(dTot>0?'+':'')+dTot+(Math.abs(dTot)>2?' <b style="color:#b45309">← ควรตรวจ (ข้อมูลบางชีตอาจย้ายไม่ครบ)</b>':' ✓ ใกล้เคียงกัน')):
+         ' · <b style="color:#b45309">ประวัติการเล่นฝั่งใหม่ยังว่าง — รัน migrateToSupabase ให้ครบทุกเฟส (ต้องขึ้น 🎉)</b>')+
+        '</div>'; }
     /* [ข้อ 7] แก้ไขข้อมูลนักเรียนได้จากหน้าคะแนนโดยตรง */
     det+='<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">'+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#1d4ed8" onclick="clsEditStudent(\''+esc(s.id)+'\')">✏️ แก้ไขข้อมูลนักเรียน</button>'+
@@ -2921,12 +3130,14 @@ function clsRender(){
         '<div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;width:100%;margin-top:7px">'+ /* [ตามคำขอครู] ปุ่มแนวนอน ขนาดเล็กแบบชิป */
           '<button class="btn-primary" style="background:#1d4ed8;padding:3px 11px;font-size:12px;border-radius:8px" onclick="clsOpenScores(\''+esc(r.id)+'\')">📊 คะแนนของห้อง</button>'+
           '<button class="btn-primary" style="background:#0e7490;padding:3px 11px;font-size:12px;border-radius:8px" onclick="clsOpenRoster(\''+esc(r.id)+'\')">👥 รายชื่อนักเรียน</button>'+
+          '<button class="btn-primary" style="background:#7c3aed;padding:3px 11px;font-size:12px;border-radius:8px" onclick="clsOpenReview(\''+esc(r.id)+'\')">📝 ตรวจคำตอบเขียน</button>'+
           '<button class="btn-ghost" style="padding:2px 11px;font-size:12px;border-radius:8px" onclick="clsToggleRoom(\''+esc(r.id)+'\','+(r.is_active?'false':'true')+')">'+(r.is_active?'ปิดห้องชั่วคราว':'เปิดห้อง')+'</button>'+
           '<button class="btn-ghost" style="padding:2px 11px;font-size:12px;border-radius:8px;color:#b91c1c" onclick="clsDeleteRoom(\''+esc(r.id)+'\')">🗑 ลบห้อง</button>'+
         '</div>'+
       '</div>'+
       (cls.open===r.id?clsRosterHtml(r):'')+
       (cls.openScores===r.id?clsScoresHtml(r):'')+
+      (cls.openReview===r.id?clsReviewShell(r):'')+
     '</div>';
   });
   clsMain(h);
@@ -2970,7 +3181,7 @@ function clsRenameRoom(id){
 }
 
 /* ---------- รายชื่อนักเรียน ---------- */
-function clsOpenRoster(id){ cls.open=(cls.open===id)?null:id; if(cls.open) cls.openScores=null; clsRender(); }
+function clsOpenRoster(id){ cls.open=(cls.open===id)?null:id; if(cls.open){ cls.openScores=null; cls.openReview=null; } clsRender(); }
 function clsRosterHtml(r){
   return '<div style="border-top:1px dashed var(--line);margin-top:12px;padding-top:12px">'+
     '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">'+
