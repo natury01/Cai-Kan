@@ -3231,28 +3231,49 @@ function clsFillRoster(){
 }
 /* [เฟส 3d ตามคำขอ] ครูเจ้าของห้องแก้ข้อมูลนักเรียนได้เอง (เลขที่/ชื่อ/นามสกุล/PIN) — สิทธิ์คุมด้วย RLS ห้องของตัวเองเท่านั้น */
 function clsEditStudent(id){
-  /* [ข้อ 7] เรียกได้ทั้งจากหน้ารายชื่อ (มี PIN ในมือ) และหน้าคะแนนของห้อง (ต้องดึง PIN เพิ่มก่อน) */
+  /* [แก้ตามครู V.7.63] เดิมใช้ prompt ต่อกัน 5 อัน — เบราว์เซอร์บล็อก dialog ที่เด้งติดกัน เลยแก้ได้แค่ช่องแรก (เลขที่)
+     → เปลี่ยนเป็นฟอร์มเดียว เห็น/แก้ครบทุกช่องพร้อมกัน */
   var s=(cls.roster||[]).filter(function(x){return x.id===id;})[0]
      ||(cls.students||[]).filter(function(x){return x.id===id;})[0];
   if(!s) return;
-  function go(pin0){
-    var no=prompt('เลขที่', s.student_number||''); if(no==null) return;
-    var fn=prompt('ชื่อ', s.first_name||''); if(fn==null) return;
-    if(!String(fn).trim()){ toast('ชื่อห้ามว่าง'); return; }
-    var ln=prompt('นามสกุล', s.last_name||''); if(ln==null) return;
-    var gn=prompt('🎮 ชื่อในเกม (เว้นว่าง = ใช้ชื่อจริง)', s.character_name||''); if(gn==null) return;
-    var pin=prompt('PIN เข้าห้อง 4-6 หลัก (เว้นว่าง = ไม่ใช้ PIN)', pin0||''); if(pin==null) return;
-    pin=String(pin).trim();
-    if(pin&&!/^\d{4,6}$/.test(pin)){ toast('PIN ต้องเป็นตัวเลข 4-6 หลัก'); return; }
-    sbEnsure().then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'PATCH',
-      body:JSON.stringify({student_number:String(no).trim(),first_name:String(fn).trim(),last_name:String(ln).trim(),character_name:String(gn).trim().slice(0,20)||null,join_pin:pin||null})}); })
-    .then(function(){ toast('บันทึกการแก้ไขแล้ว'); return clsAfterAuth(); })
-    .catch(function(e){ toast('แก้ไขไม่สำเร็จ: '+(e&&e.message||'')); });
+  function openForm(pin0){
+    var old=document.getElementById('cls-edit-modal'); if(old) old.remove();
+    function fld(lbl,fid,val,ph){ return '<label style="display:block;margin-top:9px;font-size:12px;font-weight:700;color:#334155">'+lbl+
+      '<input class="cls-in" id="'+fid+'" value="'+esc(val==null?'':String(val))+'" placeholder="'+esc(ph||'')+'" style="display:block;width:100%;margin-top:3px;box-sizing:border-box"></label>'; }
+    var wrap=document.createElement('div');
+    wrap.id='cls-edit-modal';
+    wrap.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:999;display:flex;align-items:center;justify-content:center;padding:14px';
+    wrap.innerHTML='<div style="background:#fff;border-radius:14px;padding:16px 20px 18px;width:min(370px,94vw);box-shadow:0 20px 50px rgba(0,0,0,.3)">'+
+      '<b style="font-size:15px">✏️ แก้ไขข้อมูลนักเรียน</b>'+
+      fld('เลขที่','ce-no',s.student_number||'')+
+      fld('ชื่อ','ce-fn',s.first_name||'')+
+      fld('นามสกุล','ce-ln',s.last_name||'')+
+      fld('🎮 ชื่อในเกม','ce-gn',s.character_name||'','เว้นว่าง = ใช้ชื่อจริง')+
+      fld('PIN เข้าห้อง (ตัวเลข 4-6 หลัก)','ce-pin',pin0||'','เว้นว่าง = ไม่ใช้ PIN')+
+      '<div id="ce-err" style="color:#b91c1c;font-size:12px;margin-top:6px"></div>'+
+      '<div style="display:flex;gap:8px;margin-top:13px;justify-content:flex-end">'+
+        '<button class="btn-ghost" style="padding:6px 14px" id="ce-cancel">ยกเลิก</button>'+
+        '<button class="btn-primary" style="background:#16a34a;padding:6px 18px" id="ce-save">💾 บันทึก</button></div></div>';
+    document.body.appendChild(wrap);
+    document.getElementById('ce-cancel').onclick=function(){ wrap.remove(); };
+    wrap.addEventListener('click',function(ev){ if(ev.target===wrap) wrap.remove(); });
+    document.getElementById('ce-save').onclick=function(){
+      var v=function(fid){ return String((document.getElementById(fid)||{}).value||'').trim(); };
+      var no=v('ce-no'), fn=v('ce-fn'), ln=v('ce-ln'), gn=v('ce-gn').slice(0,20), pin=v('ce-pin');
+      var errEl=document.getElementById('ce-err');
+      if(!fn){ errEl.textContent='ชื่อห้ามว่าง'; return; }
+      if(pin&&!/^\d{4,6}$/.test(pin)){ errEl.textContent='PIN ต้องเป็นตัวเลข 4-6 หลัก'; return; }
+      errEl.textContent=''; document.getElementById('ce-save').disabled=true;
+      sbEnsure().then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id,{method:'PATCH',
+        body:JSON.stringify({student_number:no,first_name:fn,last_name:ln,character_name:gn||null,join_pin:pin||null})}); })
+      .then(function(){ wrap.remove(); toast('บันทึกการแก้ไข '+fn+' แล้ว'); return clsAfterAuth(); })
+      .catch(function(e){ document.getElementById('ce-save').disabled=false; errEl.textContent='บันทึกไม่สำเร็จ: '+(e&&e.message||''); });
+    };
   }
-  if('join_pin' in s) go(s.join_pin||'');
+  if('join_pin' in s) openForm(s.join_pin||'');
   else sbEnsure().then(function(){ return sbFetch('/rest/v1/students?id=eq.'+id+'&select=join_pin'); })
-    .then(function(rows){ go((rows&&rows[0]&&rows[0].join_pin)||''); })
-    .catch(function(){ go(''); });
+    .then(function(rows){ openForm((rows&&rows[0]&&rows[0].join_pin)||''); })
+    .catch(function(){ openForm(''); });
 }
 /* [เฟส 3d ตามคำขอ] ล้างข้อมูลการเล่นของนักเรียน 1 คน (คะแนน/ประวัติ/เซฟเกม) — รายชื่อยังอยู่ เริ่มเล่นใหม่ได้
    ต้องรัน SQL แพตช์ (นโยบายให้ครูลบข้อมูลในห้องตัวเอง) ก่อนจึงใช้ได้ */
