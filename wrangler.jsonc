@@ -1,0 +1,30 @@
+{
+  // ============================================================
+  // เกมผจญภัยกาญจนบุรี — ตั้งค่าสำหรับ "ทางเลือก ข" (ย้ายไฟล์เข้าโฟลเดอร์แล้ว)
+  //
+  // ใช้ไฟล์นี้เมื่อ repo มีโครงแบบนี้:
+  //   Cai-Kan/
+  //   ├── wrangler.jsonc        ← ไฟล์นี้ (เปลี่ยนชื่อเป็น wrangler.jsonc ตอนอัปโหลด)
+  //   └── kan-adventure/
+  //       ├── index.html
+  //       └── dashboard.html
+  //
+  // ★ ทางเลือก ข ไม่ต้องใช้ worker.js — โครงโฟลเดอร์ตรงกับ path อยู่แล้ว
+  //   ถ้าเผลออัปโหลด worker.js ไปแล้ว ให้ลบทิ้ง หรือปล่อยไว้ก็ได้ (ไม่มีผล เพราะไม่มี "main")
+  // ============================================================
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  "name": "kan-adventure",
+  "compatibility_date": "2026-08-01",
+
+  "routes": [
+    { "pattern": "gameplearn.com/kan-adventure", "zone_name": "gameplearn.com" },
+    { "pattern": "gameplearn.com/kan-adventure/*", "zone_name": "gameplearn.com" }
+  ],
+
+  "assets": {
+    // "./" = root ของ repo (โฟลเดอร์ kan-adventure อยู่ข้างใน = path บนเว็บ)
+    "directory": "./",
+    "not_found_handling": "404-page"
+  }
+}
