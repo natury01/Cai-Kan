@@ -1,0 +1,29 @@
+{
+  // ============================================================
+  // เกมผจญภัยกาญจนบุรี — ตั้งค่าให้เสิร์ฟที่ https://gameplearn.com/kan-adventure/
+  // วางไฟล์นี้ที่ root ของ repo Cai-Kan (ระดับเดียวกับ index.html)
+  // ★ ไฟล์นี้เติมค่าให้เรียบร้อยแล้ว — ใช้ได้เลย ไม่ต้องแก้อะไร
+  // ============================================================
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  // [จุดที่ 1] ชื่อ Worker — ตั้งใหม่ได้ตามเกม (ห้ามซ้ำกับ Worker อื่นในบัญชี)
+  "name": "kan-adventure",
+  "compatibility_date": "2026-08-01",
+
+  // worker.js ทำหน้าที่ตัดคำว่า /kan-adventure ออกจาก URL
+  // เพื่อให้ index.html ที่อยู่ root ของ repo ถูกเสิร์ฟได้โดย "ไม่ต้องย้ายไฟล์"
+  "main": "worker.js",
+
+  // [จุดที่ 2] path บนเว็บ — ใส่ 2 บรรทัด: แบบมี / ท้าย และไม่มี
+  "routes": [
+    { "pattern": "gameplearn.com/kan-adventure", "zone_name": "gameplearn.com" },
+    { "pattern": "gameplearn.com/kan-adventure/*", "zone_name": "gameplearn.com" }
+  ],
+
+  "assets": {
+    // [จุดที่ 3] โฟลเดอร์ที่เก็บไฟล์เกม — "./" = ไฟล์อยู่ที่ root ของ repo (ของเดิม ไม่ต้องย้าย)
+    "directory": "./",
+    // binding นี้ทำให้ worker.js เรียกไฟล์ static ได้ผ่าน env.ASSETS
+    "binding": "ASSETS"
+  }
+}
