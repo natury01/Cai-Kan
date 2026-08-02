@@ -290,7 +290,7 @@
         <div style="font-size:22px">📐</div>
         <div style="flex:1;min-width:220px">
           <div style="font-weight:800;color:#6d28d9;font-size:15px">ตัวชี้วัดและสมรรถนะหลักของแต่ละด่าน</div>
-          <div style="font-size:12px;color:#5b21b6">สรุปจากวิธีคิดชุดเดียวกับ Dashboard V.2 (หลักฐาน 4 แหล่ง A20 · B30 · C25 · D25 = 100 → สมรรถนะ 4 ด้าน CTC/STM/CRT/PRB → ระดับ 3-6)</div>
+          <div style="font-size:12px;color:#5b21b6">ตัวชี้วัดหลักสูตรแกนกลาง ป.4 + สมรรถนะหลัก 6 ด้าน (CBE) รายด่าน · การคิดขั้นสูงใช้หลักฐาน 4 แหล่ง A20 · B30 · C25 · D25 = 100 → 4 ด้านการคิด (CTC/STM/CRT/PRB) → ระดับ 3-6</div>
         </div>
         <button class="btn-ghost" id="ind-back">← กลับ</button>
       </div>
@@ -2236,9 +2236,15 @@ function sbAnonSignup(){
 
 /* ---------- เปิด/ปิดหน้า ---------- */
 function openClassroomPage(){
-  var p1=$('page-v1'),p2=$('page-v2'),pc=$('page-cls');
-  if(p1)p1.classList.add('hidden'); if(p2)p2.classList.add('hidden'); if(pc)pc.classList.remove('hidden');
+  var p1=$('page-v1'),p2=$('page-v2'),pc=$('page-cls'),pi=$('page-ind');
+  if(p1)p1.classList.add('hidden'); if(p2)p2.classList.add('hidden');
+  if(pi)pi.classList.add('hidden'); /* [V.7.70 ข้อ 2] มาจากหน้าตัวชี้วัดก็ต้องปิดหน้านั้นด้วย */
+  if(pc)pc.classList.remove('hidden');
   var rb=document.querySelector('.ro-banner'); if(rb)rb.style.display='none'; // แถบ "โหมดอ่านอย่างเดียว" ไม่เกี่ยวกับหน้าห้องเรียน — ซ่อน
+  /* [V.7.70 ข้อ 2 ตามที่ครูขอ] กดปุ่ม "ห้องเรียน" เมื่อไร ต้องกลับมาที่ "หน้ารายการห้อง/เพิ่มห้อง" เสมอ
+     เดิมถ้าเปิดค้างไว้ที่ตารางคะแนน/รายชื่อ/ตรวจคำตอบเขียนของห้องใดห้องหนึ่ง กดปุ่มแล้วยังค้างอยู่หน้าเดิม
+     เหมือนปุ่มกดไม่ติด — ปิดหน้าย่อยที่ค้างทั้งหมดก่อนวาดใหม่ */
+  try{ cls.open=null; cls.openScores=null; cls.openReview=null; }catch(e){}
   clsInit();
 }
 function closeClassroomPage(){ var pc=$('page-cls'); if(pc)pc.classList.add('hidden'); var rb=document.querySelector('.ro-banner'); if(rb)rb.style.display=''; showPage('v2'); }
@@ -2926,10 +2932,17 @@ var CORE6ENG = (function(){
     }
     out.NS=domainScore(NS_STAGES,['EE','ST'],'ข้อ/ภารกิจด้านทรัพยากร-สิ่งแวดล้อม + เกณฑ์กาญ 2050 (EE·ST)');
     out.CZ=domainScore(CZ_STAGES,['SD','PA'],'ข้อ/ภารกิจด้านส่วนรวม-อนุรักษ์ + เกณฑ์กาญ 2050 (SD·PA)');
-    var rv=(ev.c||[]).filter(function(r){ return has(r.trv)&&(has(r.tw1)||has(r.tw2)||has(r.tw3)); })
+    /* [V.7.70 ข้อ 8 · ด้านการสื่อสาร] ใช้ "คะแนนการสื่อสาร" ที่ครูให้แยกช่อง (commScore1-3)
+       ถ้าเป็นข้อมูลเก่าที่ตรวจไว้ก่อนมีช่องนี้ ถอยไปใช้คะแนนการคิดแทนชั่วคราว พร้อมบอกครูตรงหน้าจอ */
+    var rv=(ev.c||[]).filter(function(r){ return has(r.trv)&&(has(r.cw1)||has(r.cw2)||has(r.cw3)||has(r.tw1)||has(r.tw2)||has(r.tw3)); })
                      .sort(function(a,b){ return (b.t||0)-(a.t||0); })[0];
-    if(rv){ var sum=num(rv.tw1)+num(rv.tw2)+num(rv.tw3);
-      out.CM={ st:'score', pct:Math.round(sum/12*1000)/10, level:lvOf(sum/12*100), n:3, src:'คำตอบเขียน 3 ข้อ (ครูตรวจ 0-4 ต่อข้อ)' };
+    if(rv){
+      var useComm=(has(rv.cw1)||has(rv.cw2)||has(rv.cw3));
+      var sum=useComm ? (num(rv.cw1)+num(rv.cw2)+num(rv.cw3)) : (num(rv.tw1)+num(rv.tw2)+num(rv.tw3));
+      out.CM={ st:'score', pct:Math.round(sum/12*1000)/10, level:lvOf(sum/12*100), n:3,
+        src: useComm ? 'คำตอบเขียน 3 ข้อ · ช่อง 💬 การสื่อสาร ที่ครูให้ (0-4 ต่อข้อ รวม 12)'
+                     : 'คำตอบเขียน 3 ข้อ — ยังไม่มีคะแนนช่อง 💬 การสื่อสาร จึงใช้คะแนนการคิดแทนชั่วคราว (เปิดหน้า 📝 แล้วกดบันทึกอีกครั้งเพื่อให้คะแนนแยกด้าน)' };
+      if(!useComm) out.CM.note='ข้อมูลตรวจก่อนเวอร์ชันนี้';
     } else {
       out.CM={ st:((ev.c||[]).length?'pending':'partial'), pct:null, n:0, need:1,
         src:'คำตอบเขียน 3 ข้อในด่านกาญ 2050 — '+((ev.c||[]).length?'รอครูตรวจ (ปุ่ม 📝 ตรวจคำตอบเขียน)':'ยังไม่ได้ทำด่านกาญ 2050') };
@@ -2951,8 +2964,20 @@ var CORE6ENG = (function(){
     out.SM=pack(nDone?smPct:null, nDone, 3,
       'ดัชนีพฤติกรรม: เล่นครบ '+nDone+'/'+TOTAL_STAGES+' ด่าน'+(improve!=null?(' · พัฒนาการจากครั้งแรกเฉลี่ย '+Math.round(improve*100)+'%'):''));
     if(out.SM.st==='score') out.SM.note='ข้อมูลเชิงพฤติกรรม (ไม่ใช่คะแนนวิชาการ)';
+    /* [V.7.70 ข้อ 8 · ด้านการทำงานเป็นทีม] เพื่อนร่วมทีมประเมินกันเองในเกม 3 ข้อ (ข้อละ 0-4 รวม 12)
+       เฉลี่ยจากเพื่อนทุกคนที่ประเมินให้ — ตรงหลัก CBE ที่แนะนำการประเมินแบบพหุภาคี */
     var grpN=(stat&&stat.gmem&&stat.gmem.length>1)?stat.gmem.length:0;
-    out.TW={ st:'none', pct:null, src:grpN?('ร่วมเล่นเป็นกลุ่ม '+grpN+' คนต่อเครื่อง (บันทึกการมีส่วนร่วม ไม่ใช่คุณภาพการทำงานร่วม)'):'ไม่พบข้อมูลการเล่นเป็นกลุ่ม' };
+    var pr=(ev.pr||[]);
+    if(pr.length){
+      var tot12=0; pr.forEach(function(r){ tot12+=Math.max(0,Math.min(12,num(r.p1)+num(r.p2)+num(r.p3))); });
+      var avg12=tot12/pr.length, pct=avg12/12*100;
+      out.TW={ st:'score', pct:Math.round(pct*10)/10, level:lvOf(pct), n:pr.length,
+        src:'เพื่อนร่วมทีมประเมิน '+pr.length+' คน · เฉลี่ย '+(Math.round(avg12*10)/10)+'/12 (ช่วยคิด · ทำหน้าที่จนสำเร็จ · รับฟังเมื่อคิดต่าง)' };
+    } else {
+      out.TW={ st:(grpN?'pending':'none'), pct:null,
+        src:grpN?('เล่นเป็นกลุ่ม '+grpN+' คนต่อเครื่อง — รอเพื่อนร่วมทีมประเมิน (ปุ่ม 🤝 บนแผนที่ในเกม)')
+                :'ไม่พบข้อมูลการเล่นเป็นกลุ่ม จึงไม่มีหลักฐานด้านนี้' };
+    }
     return out;
   }
   return { compute:compute, MIN_ITEMS:MIN_ITEMS };
@@ -3036,6 +3061,10 @@ function clsFillReview(){
         t1:(raw.teacherScore1!=null&&raw.teacherScore1!=='')?Number(raw.teacherScore1):null,
         t2:(raw.teacherScore2!=null&&raw.teacherScore2!=='')?Number(raw.teacherScore2):null,
         t3:(raw.teacherScore3!=null&&raw.teacherScore3!=='')?Number(raw.teacherScore3):null,
+        /* [V.7.70 ข้อ 8 · ด้านการสื่อสาร] คะแนน "การสื่อสาร" แยกช่องจากคะแนน "การคิด" ตามที่ครูเลือก */
+        c1:(raw.commScore1!=null&&raw.commScore1!=='')?Number(raw.commScore1):null,
+        c2:(raw.commScore2!=null&&raw.commScore2!=='')?Number(raw.commScore2):null,
+        c3:(raw.commScore3!=null&&raw.commScore3!=='')?Number(raw.commScore3):null,
         comment:raw.teacherComment||'', rawFull:raw, grp:!!(raw._group&&raw._group.size>1) };
     });
     list.sort(function(a,b){
@@ -3051,19 +3080,25 @@ function clsFillReview(){
     var h='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
       '<b style="font-size:14px">📝 ตรวจคำตอบเขียน ด่านกาญ 2050</b>'+
       '<span class="cls-chip" style="background:#fef3c7;color:#92400e">รอตรวจ '+pending+' / '+list.length+'</span>'+
-      '<span class="muted" style="font-size:11.5px">คะแนน AI เป็นตัวช่วยคัดกรอง — ครูให้คะแนนจริง 0-4 ต่อข้อ (รวม 36 = เล่นเกม 24 + เขียน 12) · ✨ = ตรวจซ้ำด้วย Gemini (ใส่คีย์ครั้งเดียว)</span></div>';
+      '<span class="muted" style="font-size:11.5px">คะแนน AI เป็นตัวช่วยคัดกรอง — ครูให้คะแนนจริง 0-4 ต่อข้อ · '+
+      '<b style="color:#7c3aed">🧠 การคิด</b> เข้าสมรรถนะการคิดขั้นสูง (รวม 36 = เล่นเกม 24 + เขียน 12) · '+
+      '<b style="color:#0369a1">💬 การสื่อสาร</b> เข้าสมรรถนะการสื่อสารแยกต่างหาก (รวม 12) — ให้คะแนนคนละมุม ไม่นับซ้ำกัน · ✨ = ตรวจซ้ำด้วย Gemini</span></div>';
     h+=list.map(function(e,i){
       var stat=e.reviewed?'<span class="cls-chip" style="background:#dcfce7;color:#166534">✅ ตรวจแล้ว</span>'
         :(e.flag==='REVIEW'?'<span class="cls-chip" style="background:#fee2e2;color:#b91c1c">🚩 ควรตรวจใกล้ชิด</span>':'<span class="cls-chip" style="background:#e0e7ff;color:#3730a3">รอตรวจ</span>');
       var qa=CLSR_Q.map(function(q,qi){
         var ans=e.r[qi], aiS=[e.ai.s1,e.ai.s2,e.ai.s3][qi];
         var tv=[e.t1,e.t2,e.t3][qi]; if(tv==null) tv=aiS;
+        /* ค่าตั้งต้นของช่องการสื่อสาร: ยังไม่เคยให้ = ให้เท่ากับคะแนนการคิดไว้ก่อน ครูปรับได้ (ไม่ปล่อยว่างให้ลืมกรอก) */
+        var cv=[e.c1,e.c2,e.c3][qi]; if(cv==null) cv=tv;
         return '<div style="background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 11px;margin-top:6px">'+
           '<div style="font-size:11.5px;color:#475569;font-weight:700">'+esc(q)+'</div>'+
           '<div style="font-size:13px;margin:4px 0;white-space:pre-wrap">'+(ans?esc(ans):'<span class="muted">(ไม่ได้ตอบ)</span>')+'</div>'+
           '<div style="display:flex;gap:10px;align-items:center;font-size:12px">'+
             '<span class="muted">AI แนะนำ: <b style="color:#7c3aed">'+aiS+'</b>/4'+(e.ai.live?'':' <span style="font-size:10px">(คำนวณสด)</span>')+'</span>'+
-            '<label>คะแนนครู <input id="cvw-t'+qi+'-'+i+'" type="number" min="0" max="4" step="1" value="'+tv+'" style="width:52px;padding:3px 6px;border:1.5px solid #cbd5e1;border-radius:7px;font-family:inherit"> /4</label>'+
+            '<label title="คุณภาพของการคิด: ระบุประเด็นถูก · ให้เหตุผล · เชื่อมโยงเหตุ-ผล — คะแนนนี้เข้าสมรรถนะการคิดขั้นสูง (แหล่ง D)">🧠 การคิด <input id="cvw-t'+qi+'-'+i+'" type="number" min="0" max="4" step="1" value="'+tv+'" style="width:52px;padding:3px 6px;border:1.5px solid #cbd5e1;border-radius:7px;font-family:inherit"> /4</label>'+
+            /* [V.7.70 ข้อ 8] ช่องที่ 2: คุณภาพการสื่อสาร — เข้าสมรรถนะ "การสื่อสาร" ไม่ไปรวมกับการคิด */
+            '<label title="คุณภาพการสื่อสาร: เรียบเรียงเข้าใจง่าย ลำดับความคิดชัด เลือกคำเหมาะกับผู้อ่าน — คะแนนนี้เข้าสมรรถนะการสื่อสาร ไม่นับซ้ำในการคิดขั้นสูง" style="color:#0369a1">💬 การสื่อสาร <input id="cvw-c'+qi+'-'+i+'" type="number" min="0" max="4" step="1" value="'+cv+'" style="width:52px;padding:3px 6px;border:1.5px solid #7dd3fc;border-radius:7px;font-family:inherit"> /4</label>'+
           '</div></div>';
       }).join('');
       return '<div style="background:#f8fafc;border:1px solid var(--line);border-left:4px solid '+(e.reviewed?'#16a34a':(e.flag==='REVIEW'?'#dc2626':'#6366f1'))+';border-radius:11px;padding:10px 13px;margin-bottom:10px">'+
@@ -3088,10 +3123,13 @@ function clsSaveReview(i){
   var e=cls._review&&cls._review[i]; if(!e) return;
   var g04=function(id){ var v=Number(($(id)||{}).value); if(isNaN(v)) v=0; return Math.max(0,Math.min(4,Math.round(v))); };
   var t1=g04('cvw-t0-'+i), t2=g04('cvw-t1-'+i), t3=g04('cvw-t2-'+i);
+  var k1=g04('cvw-c0-'+i), k2=g04('cvw-c1-'+i), k3=g04('cvw-c2-'+i); /* [V.7.70] คะแนนการสื่อสาร */
   var cm=String((($('cvw-cm-'+i)||{}).value)||'').slice(0,900);
   var final36=Math.max(0,Math.min(36,e.raw24+t1+t2+t3));
   var merged=Object.assign({},e.rawFull,{
     teacherScore1:t1,teacherScore2:t2,teacherScore3:t3,teacherComment:cm,
+    /* [V.7.70 ข้อ 8] คะแนนการสื่อสารเก็บแยกคีย์ ไม่แตะคีย์เดิม — คะแนน HOTS/finalTotal36 จึงไม่เปลี่ยนแม้แต่นิดเดียว */
+    commScore1:k1,commScore2:k2,commScore3:k3,commTotal12:(k1+k2+k3),
     teacherReviewedAt:new Date().toISOString(),teacherReviewedBy:(cls.teacher&&(cls.teacher.email||cls.teacher.display_name))||'ครู',
     teacherReviewPending:false,finalTotal36:final36,finalPercent:Math.round(final36/36*10000)/100,
     aiScore1:e.ai.s1,aiScore2:e.ai.s2,aiScore3:e.ai.s3,aiFlag:e.ai.flag,aiRationale:e.ai.rationale,aiModel:e.ai.model||'heuristic-v1'
@@ -3099,8 +3137,8 @@ function clsSaveReview(i){
   var stEl=$('cvw-st-'+i); if(stEl) stEl.innerHTML='<span class="loading" style="width:12px;height:12px;border-color:#16a34a;border-top-color:transparent"></span> กำลังบันทึก...';
   sbEnsure().then(function(){ return sbFetch('/rest/v1/events?id=in.('+e.ids.join(',')+')',{method:'PATCH',body:JSON.stringify({raw:merged})}); })
   .then(function(){
-    e.reviewed=true; e.t1=t1; e.t2=t2; e.t3=t3; e.comment=cm; e.rawFull=merged;
-    if(stEl) stEl.innerHTML='<span style="color:#16a34a;font-weight:700">✅ บันทึกแล้ว — คะแนนรวม '+final36+'/36</span>';
+    e.reviewed=true; e.t1=t1; e.t2=t2; e.t3=t3; e.c1=k1; e.c2=k2; e.c3=k3; e.comment=cm; e.rawFull=merged;
+    if(stEl) stEl.innerHTML='<span style="color:#16a34a;font-weight:700">✅ บันทึกแล้ว — การคิดรวม '+final36+'/36 · การสื่อสาร '+(k1+k2+k3)+'/12</span>';
     toast('บันทึกคะแนน '+ (e.names||'') +' แล้ว ('+final36+'/36)');
   })
   .catch(function(err){ if(stEl) stEl.innerHTML='<span style="color:#b91c1c">บันทึกไม่สำเร็จ: '+esc(err&&err.message||'')+' — ถ้าติดสิทธิ์ ให้รัน SQL แพตช์ล่าสุด</span>'; });
@@ -3143,16 +3181,16 @@ function clsLoadStats(){
   if(!ids.length){ cls.statsReady=true; clsRender(); return; }
   var chunks=[]; for(var i=0;i<ids.length;i+=150) chunks.push(ids.slice(i,i+150));
   var stats={};
-  function S(id){ return stats[id]||(stats[id]={pb:{},boss:0,bossN:0,cap:0,plays:0,last:0,ev:{q:[],p:[],c:[],k:[],b:[]}}); }
+  function S(id){ return stats[id]||(stats[id]={pb:{},boss:0,bossN:0,cap:0,plays:0,last:0,ev:{q:[],p:[],c:[],k:[],b:[],pr:[]}}); }
   /* [เฟส 3d] ดึงข้อมูลละเอียดพอคิดสูตร Dashboard V.2 (A/B/C/D) ได้ครบ — แยก 2 คำขอ: คำถามรายข้อ (แถวเยอะ ฟิลด์น้อย) กับที่เหลือ (แถวน้อย ฟิลด์เยอะ) */
   var SEL_Q='student_id,stage_id,question_id,correct,credit,created_at,att:raw->>attemptNo,sess:raw->>sessionId,cw:raw->>creditWeight,asb:raw->>assistedBy';
-  var SEL_O='student_id,kind,stage_id,score,created_at,att:raw->>attemptNo,attC:raw->>AttemptNo,cmp:raw->>completed,fst:raw->>isFirstAttempt,c24:raw->>rawTotal24,PD:raw->>problemDecomposition,EE:raw->>evidenceEvaluation,ST:raw->>systemsThinking,SD:raw->>solutionDesign,CD:raw->>creativeDevelopment,PA:raw->>planAdaptation,w5:raw->>pilokWeighted5,w5C:raw->>PilokWeighted5,grid:raw->>gridJSON,en:raw->>energySpent,dc:raw->>actualDigCount,gm:raw->_group->>members,tw1:raw->>teacherScore1,tw2:raw->>teacherScore2,tw3:raw->>teacherScore3,trv:raw->>teacherReviewedAt';
+  var SEL_O='student_id,kind,stage_id,score,created_at,att:raw->>attemptNo,attC:raw->>AttemptNo,cmp:raw->>completed,fst:raw->>isFirstAttempt,c24:raw->>rawTotal24,PD:raw->>problemDecomposition,EE:raw->>evidenceEvaluation,ST:raw->>systemsThinking,SD:raw->>solutionDesign,CD:raw->>creativeDevelopment,PA:raw->>planAdaptation,w5:raw->>pilokWeighted5,w5C:raw->>PilokWeighted5,grid:raw->>gridJSON,en:raw->>energySpent,dc:raw->>actualDigCount,gm:raw->_group->>members,tw1:raw->>teacherScore1,tw2:raw->>teacherScore2,tw3:raw->>teacherScore3,trv:raw->>teacherReviewedAt,cw1:raw->>commScore1,cw2:raw->>commScore2,cw3:raw->>commScore3,p1:raw->>peerTeam,p2:raw->>peerRole,p3:raw->>peerListen,pby:raw->>peerBy';
   var p=Promise.resolve();
   chunks.forEach(function(ch){
     p=p.then(function(){ return sbEnsure(); }).then(function(){
       return Promise.all([
         sbFetchAll('/rest/v1/events?kind=eq.question&select='+SEL_Q+'&student_id=in.('+ch.join(',')+')'),
-        sbFetchAll('/rest/v1/events?kind=in.(progress,boss,capstone,pilok)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')')
+        sbFetchAll('/rest/v1/events?kind=in.(progress,boss,capstone,pilok,peer)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')')
       ]);
     }).then(function(rr){
       (rr[0]||[]).forEach(function(e){
@@ -3177,7 +3215,13 @@ function clsLoadStats(){
         else if(e.kind==='boss'){ if(sc>30) sc=30; s.ev.b.push({sc:sc,att:att,t:t}); }
         else if(e.kind==='capstone'){ if(sc>s.cap)s.cap=sc;
           s.ev.c.push({c24:(e.c24!=null&&e.c24!=='')?e.c24:sc,att:att,fst:e.fst,cmp:e.cmp,t:t,PD:e.PD,EE:e.EE,ST:e.ST,SD:e.SD,CD:e.CD,PA:e.PA,
-            tw1:e.tw1,tw2:e.tw2,tw3:e.tw3,trv:e.trv}); }
+            tw1:e.tw1,tw2:e.tw2,tw3:e.tw3,trv:e.trv,cw1:e.cw1,cw2:e.cw2,cw3:e.cw3}); }
+        /* [V.7.70] เพื่อนประเมินเพื่อน — 1 แถวต่อผู้ประเมิน 1 คน เก็บเฉพาะครั้งล่าสุดของผู้ประเมินคนเดิม */
+        else if(e.kind==='peer'){ s.plays--; /* ไม่นับเป็น "ครั้งเล่นเกม" */
+          var pk=String(e.pby||'?'), oldPr=null;
+          s.ev.pr.forEach(function(x){ if(x.by===pk) oldPr=x; });
+          if(oldPr){ if(t>=oldPr.t){ oldPr.p1=e.p1; oldPr.p2=e.p2; oldPr.p3=e.p3; oldPr.t=t; } }
+          else s.ev.pr.push({by:pk,p1:e.p1,p2:e.p2,p3:e.p3,t:t}); }
         else if(e.kind==='pilok'){ s.ev.k.push({w5:(e.w5!=null&&e.w5!=='')?e.w5:((e.w5C!=null&&e.w5C!=='')?e.w5C:(sc>0?sc:null)),att:att,grid:e.grid,en:e.en,dc:e.dc,t:t}); }
       });
     });
@@ -3323,7 +3367,7 @@ function clsCore6Detail(t){
 }
 /* [ตามคำขอครู V.7.69 ข้อ 5] ตารางจำนวนนักเรียนรายระดับ (3·4·5·6) ของสมรรถนะหลักทั้ง 6 ด้าน
    ด้านที่ยังไม่มีหลักฐานพอ → นับไว้ในช่อง "ข้อมูลยังไม่พอ" · ด้านที่ระบบไม่ประเมิน → บอกตรง ๆ */
-function clsCore6MatrixHtml(students){
+function clsCore6MatrixHtml(students, htAvg, htN){
   students=students||[];
   var LV=[3,4,5,6], LVN={3:'เริ่มต้น',4:'กำลังพัฒนา',5:'สามารถ',6:'เหนือความคาดหวัง'};
   var agg={}; CORE6.forEach(function(c){ agg[c[0]]={3:0,4:0,5:0,6:0,partial:0,none:0,n:0}; });
@@ -3355,7 +3399,11 @@ function clsCore6MatrixHtml(students){
       '<td style="text-align:center;color:#94a3b8">'+a.partial+'</td></tr>';
   }).join('');
   return '<div style="margin-top:9px;border:1px solid var(--line);border-radius:10px;overflow:hidden">'+
-    '<div style="background:#f5f3ff;padding:6px 11px;font-size:11.5px;font-weight:800;color:#5b21b6">📊 จำนวนนักเรียนรายระดับ · สมรรถนะหลัก 6 ด้าน <span style="font-weight:600">(ผลระหว่างเรียน)</span></div>'+
+    '<div style="background:#f5f3ff;padding:6px 11px;font-size:11.5px;font-weight:800;color:#5b21b6;display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+
+      '<span style="flex:1;min-width:190px">📊 จำนวนนักเรียนรายระดับ · สมรรถนะหลัก 6 ด้าน <span style="font-weight:600">(ผลระหว่างเรียน · ระดับ 3-6 = ช่วงชั้น ป.4-6 ตาม CBE)</span></span>'+
+      /* [V.7.70 ข้อ 4] ค่าเฉลี่ย HOTS ที่เคยอยู่ในการ์ดที่ถอดออก ย้ายมาไว้ตรงนี้ ข้อมูลไม่หาย */
+      (htAvg!=null&&htAvg!=='-'?'<span style="background:#fff;border:1px solid #ddd6fe;border-radius:999px;padding:2px 10px;font-size:11px;color:#5b21b6">การคิดขั้นสูงเฉลี่ยทั้งห้อง <b>'+esc(String(htAvg))+'</b> / 100 · จาก '+(Number(htN)||0)+' คน</span>':'')+
+    '</div>'+
     '<div style="overflow-x:auto"><table class="cls-tbl cls-core6-tbl"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div></div>';
 }
 /* [ข้อ 8+9] แถบสมรรถนะหลัก 6 ด้าน — ด้านที่ไม่ได้ประเมินแสดงชัดเจน · ด้านการคิดขั้นสูงกดดูรายละเอียดได้ */
@@ -3379,6 +3427,41 @@ function clsCore6Html(){
           '<div class="muted" style="font-size:11px;line-height:1.5">'+esc(note)+'</div></div>'+
         badge(st)+'</div>';
     }).join('')+'</div>';
+}
+/* [V.7.70 ข้อ 8] เกณฑ์การประเมินสมรรถนะหลัก 6 ด้าน แบบละเอียดพร้อมนำไปใช้
+   การ์ดต่อ 1 ด้าน: หลักฐานที่ใช้ · ใครเป็นผู้ประเมิน · เกณฑ์ให้คะแนน (ถ้ามี) · ตารางระดับ 3-6 · พฤติกรรมบ่งชี้ CBE ป.4-6 · ข้อควรระวัง */
+function clsCore6Rubric(){
+  var head='<div class="muted" style="font-size:12.5px;line-height:1.7;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:10px">'+
+    '<b>ระดับสมรรถนะตามกรอบ CBE</b> ไล่ 1-10 และ<b>คาบเกี่ยวกันระหว่างช่วงชั้น</b> — ป.1-3 = ระดับ 1-4 · <b style="color:#7c3aed">ป.4-6 = ระดับ 3-6</b> · ม.1-3 = ระดับ 5-8 · ม.4-6 = ระดับ 7-10<br>'+
+    'บทเรียนชุดนี้เป็นชั้น ป.4 จึงประเมินในช่วง <b>ระดับ 3-6</b> คือ '+
+    [3,4,5,6].map(function(L){ return '<b style="color:'+CORE6_LVCLR[L]+'">'+L+' '+CORE6_LVNAME[L]+'</b>'; }).join(' · ')+
+    ' โดยระดับ <b>5 สามารถ</b> คือเกณฑ์ที่คาดหวังของช่วงชั้นนี้<br>'+
+    'จุดตัดใช้ชุดเดียวกันทุกด้านเพื่อให้อ่านเทียบกันได้: <b>≥80 = ระดับ 6 · 65-79 = 5 · 50-64 = 4 · ต่ำกว่า 50 = 3</b> · '+
+    'ด้านที่หลักฐานไม่ถึงเกณฑ์ขั้นต่ำจะขึ้นว่า <b>"ข้อมูลยังไม่พอ"</b> แทนการเดาระดับ</div>';
+  return head + CORE6.map(function(c){
+    var k=c[0], R=CORE6_RUBRIC[k]||{}, clickable=(k==='HT');
+    var lvTbl='<table style="width:100%;border-collapse:collapse;font-size:11.5px;margin-top:7px;table-layout:fixed">'+
+      '<colgroup><col style="width:24%"><col></colgroup><tbody>'+
+      [3,4,5,6].map(function(L){
+        return '<tr><td style="padding:4px 7px;border-top:1px solid var(--line);vertical-align:top;text-align:left;font-weight:800;color:'+CORE6_LVCLR[L]+'">ระดับ '+L+' '+CORE6_LVNAME[L]+(L===5?' <span style="font-weight:600;font-size:10px">(เกณฑ์ที่คาดหวัง)</span>':'')+'</td>'+
+          '<td style="padding:4px 7px;border-top:1px solid var(--line);vertical-align:top;text-align:left">'+esc((R.lv||{})[L]||'—')+'</td></tr>'; }).join('')+
+      '</tbody></table>';
+    var line=function(label,val,clr){ return val?('<div style="font-size:11.5px;line-height:1.6;margin-top:4px"><b style="color:'+(clr||'#334155')+'">'+label+'</b> '+val+'</div>'):''; };
+    return '<div style="border:1px solid var(--line);border-left:5px solid '+c[2]+';border-radius:10px;padding:9px 12px;margin-bottom:9px;background:#fff">'+
+      '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
+        '<b style="font-size:13.5px;color:'+c[2]+';flex:1;min-width:170px">'+esc(c[1])+'</b>'+
+        (clickable?'<button class="btn-ghost" style="padding:2px 10px;font-size:11.5px" onclick="clsOpenHotsDetail()">▸ ดูรายละเอียด 4 ด้านย่อย</button>':'')+
+      '</div>'+
+      line('หลักฐานที่ใช้ —', R.ev) +
+      line('ผู้ประเมิน —', R.who) +
+      (R.scale?line('เกณฑ์ให้คะแนน —', R.scale):'') +
+      (R.how?line('วิธีประเมิน —', R.how):'') +
+      lvTbl +
+      line('อ้างอิง CBE —', R.cbe, '#6d28d9') +
+      (R.keep?'<div style="font-size:11.5px;margin-top:5px;background:#f5f3ff;color:#5b21b6;border-radius:7px;padding:4px 8px"><b>หมายเหตุ</b> '+esc(R.keep)+'</div>':'')+
+      (R.warn?'<div style="font-size:11.5px;margin-top:5px;background:#fffbeb;color:#92400e;border-radius:7px;padding:4px 8px"><b>ข้อควรระวัง</b> '+esc(R.warn)+'</div>':'')+
+    '</div>';
+  }).join('');
 }
 /* [ข้อ 9] กดที่ "การคิดขั้นสูง" → เปิดรายละเอียด 4 ด้านย่อย + วิธีประเมินโดยละเอียด */
 function clsOpenHotsDetail(){
@@ -3528,14 +3611,13 @@ function clsSummaryHtml(){
       grp('🏆','ผลสัมฤทธิ์การเรียน (คะแนนเกม)',
         mini(avg(colS,colN),'เก็บเฉลี่ย (เต็ม '+CLS_MAX_COLLECTED+')','#fff')+mini(avg(bossS,bossN),'สอบเฉลี่ย (เต็ม '+CLS_MAX_BOSS+')','#fff')+mini(bossN,'สอบแล้ว (คน)','#fff'),
         '#fff7ed','#f59e0b','#9a3412')+
-      grp('🧠','สมรรถนะการคิดขั้นสูง (HOTS) · ประเมินเป็นคะแนน',
-        mini(avg(v2S,v2N),'เฉลี่ย (100)','#fff')+
-        '<div style="flex:1;min-width:150px;background:#fff;border-radius:9px;padding:5px 8px"><div style="font-size:10px;color:#475569;margin-bottom:2px">จำนวนผู้เรียนตามระดับ</div>'+clsLevelChart(lvC,v2N)+'</div>',
-        '#ecfdf5','#047857','#065f46')+
     '</div>'+
-    /* [ตามคำขอครู V.7.68 ข้อ 8+9] สมรรถนะหลัก 6 ด้าน (CBE) — ด้านที่ไม่ได้ประเมินบอกตรง ๆ · กด "การคิดขั้นสูง" เพื่อดูรายละเอียดการประเมิน */
-    clsCore6MatrixHtml(students)+
-    clsCore6Html()+
+    /* [V.7.70 ข้อ 4 ตามที่ครูขอ] เอาการ์ดสรุป HOTS (เฉลี่ย + แท่งระดับ) ออก แล้วให้ "ตารางสมรรถนะหลัก 6 ด้าน" มาอยู่ตรงนี้แทน
+       เหตุผล: การคิดขั้นสูงเป็น 1 ใน 6 ด้านอยู่แล้ว ตารางเดียวเห็นครบกว่า และไม่ต้องอ่านตัวเลขซ้ำ 2 ที่
+       ค่าเฉลี่ย HOTS ของห้องไม่ได้หายไป — ย้ายไปอยู่บนหัวตาราง 6 ด้าน
+       [V.7.70 ข้อ 3] แถบ "สมรรถนะหลัก 6 ด้าน (หลักสูตรฐานสมรรถนะ)" แบบรายการยาวถูกถอดออกจากหน้านี้
+       เพราะซ้ำกับหน้า 📐 ตัวชี้วัด/สมรรถนะ ซึ่งมีเกณฑ์เต็มอยู่แล้ว */
+    clsCore6MatrixHtml(students, avg(v2S,v2N), v2N)+
     '<details id="cls-hots-detail" style="margin-top:8px">'+
       '<summary style="cursor:pointer;font-weight:700;font-size:12px;color:#1d4ed8">📈 รายละเอียดการประเมินการคิดขั้นสูง: 4 แหล่งหลักฐาน · เรดาร์ 4 ด้านการคิด · เกณฑ์ระดับ 6</summary>'+
       srcBars+radarBlock+
@@ -4247,10 +4329,24 @@ function clsExportCsv(){
 }
 
 /* ---- ข้อ 8: หน้าตัวชี้วัด & สมรรถนะหลัก (วิธีคิดชุดเดียวกับ Dashboard V.2) ---- */
-var IND_STAGE_NAME={ '1':'ด่าน 1 สะพานข้ามแม่น้ำแคว','2':'ด่าน 2 สุสานทหารสัมพันธมิตร','3':'ด่าน 3 ถ้ำกระแซ','4':'ด่าน 4 น้ำตกเอราวัณ & เขื่อนศรีนครินทร์',
-  '5':'ด่าน 5 เขื่อนวชิราลงกรณ & น้ำพุร้อนหินดาด','6':'ด่าน 6 ต้นจามจุรียักษ์','7':'ด่าน 7 สะพานมอญ & เมืองบาดาล & เจดีย์สามองค์','8':'ด่าน 8 บททดสอบรวบยอด (บอส)',
-  'hellfire':'ด่านช่องเขาขาด','pilok':'ด่านเหมืองปิล๊อก-อีต่อง','mg1':'มินิเกม เรียงเหตุการณ์ประวัติศาสตร์','mg2':'มินิเกม บริหารน้ำในเขื่อน','mg3':'มินิเกม จัดวางแผนที่กาญจนบุรี',
-  'balance2050':'ด่านกาญจนบุรี 2050 (ภารกิจรวบยอด)' };
+/* [V.7.70 · เพิ่มเติมข้อ 2 ตามที่ครูขอ] เลขด่านต้องเรียงตาม "เส้นทางบนแผนที่โลก" ที่นักเรียนเดินจริง
+   ลำดับนี้ตรงกับเงื่อนไขปลดล็อกใน isStageUnlocked() ทุกประการ (1→2→ต้นจามจุรี→ถ้ำกระแซ→ช่องเขาขาด→...)
+   สำคัญ: นี่คือ "เลขที่ใช้แสดงผล" เท่านั้น — รหัสด่านจริงในฐานข้อมูล (1,2,3,6,hellfire,mg1,...) ไม่เปลี่ยนแม้แต่ตัวเดียว
+   ข้อมูลวิจัยที่เก็บมาแล้วจึงต่อเนื่อง 100% */
+var IND_ORDER=['1','2','6','3','hellfire','mg1','4','5','pilok','mg2','7','mg3','balance2050','8'];
+var IND_STAGE_NAME={
+  '1':'สะพานข้ามแม่น้ำแคว', '2':'สุสานทหารสัมพันธมิตร', '6':'ต้นจามจุรียักษ์', '3':'ถ้ำกระแซ',
+  'hellfire':'ช่องเขาขาด', 'mg1':'มินิเกม เรียงเหตุการณ์ประวัติศาสตร์',
+  '4':'น้ำตกเอราวัณ & เขื่อนศรีนครินทร์', '5':'เขื่อนวชิราลงกรณ & น้ำพุร้อนหินดาด',
+  'pilok':'เหมืองปิล๊อก-อีต่อง', 'mg2':'มินิเกม จัดการน้ำในเขื่อน',
+  '7':'สะพานมอญ & เมืองบาดาล & เจดีย์สามองค์', 'mg3':'มินิเกม จัดวางแผนที่กาญจนบุรี',
+  'balance2050':'กาญจนบุรี 2050: พิทักษ์สมดุล', '8':'ปีศาจข้อสอบ (แบบทดสอบหลังเรียน)' };
+/* ป้ายชื่อเต็ม "ด่านที่ N ชื่อด่าน" — ใช้ร่วมกันทุกตาราง/ทุกคำอธิบาย จะได้ไม่เรียกชื่อกันคนละอย่าง */
+function indStageLabel(k){
+  k=String(k); var i=IND_ORDER.indexOf(k), nm=IND_STAGE_NAME[k]||k;
+  return (i>=0 ? ('ด่านที่ '+(i+1)+' ') : '') + nm;
+}
+function indStageNo(k){ var i=IND_ORDER.indexOf(String(k)); return i>=0 ? (i+1) : 99; }
 var IND_COMP_NAME={ CTC:'การคิดวิเคราะห์เชื่อมโยง (Critical & Connected Thinking)', STM:'การคิดเชิงระบบ (Systems Thinking)',
   CRT:'การคิดสร้างสรรค์ (Creative Thinking)', PRB:'การแก้ปัญหา (Problem Solving)' };
 var IND_COMP_CLR={ CTC:'#0ea5e9', STM:'#22c55e', CRT:'#f59e0b', PRB:'#ef4444' };
@@ -4284,13 +4380,71 @@ var CORE6=[
 /* สถานะการประเมินของแต่ละสมรรถนะในบทเรียนชุดนี้:
    'score' = ประเมินเป็นคะแนน · 'observe' = มีในกิจกรรมแต่ยังไม่ให้คะแนน · 'none' = ไม่มีการประเมิน */
 var CORE6_STATUS={
-  HT:{st:'score',   note:'ประเมินเต็มรูปแบบ: หลักฐาน 4 แหล่ง A20·B30·C25·D25 → 4 ด้านการคิด (CTC/STM/CRT/PRB) → ระดับ 3-6'},
-  NS:{st:'observe', note:'เนื้อหาทั้งเกมว่าด้วยทรัพยากร/สิ่งแวดล้อมกาญจนบุรีและการพัฒนาที่ยั่งยืน (ด่าน 4·5·6·มินิเกมน้ำ·กาญ 2050) — สอนและฝึก แต่ยังไม่ได้ให้คะแนนแยกด้านนี้'},
-  CZ:{st:'observe', note:'มีสถานการณ์ตัดสินใจเพื่อส่วนรวม/การอนุรักษ์มรดกท้องถิ่น (ด่าน 2·6·กาญ 2050) — ยังไม่ได้ให้คะแนนแยกด้านนี้'},
-  CM:{st:'observe', note:'มีการเขียนอธิบายเหตุผล 3 ข้อในด่านกาญ 2050 (ครูตรวจ 12 คะแนน) แต่คะแนนนั้นนับรวมเป็นการคิดขั้นสูง ไม่ได้แยกเป็นด้านการสื่อสาร'},
-  TW:{st:'observe', note:'รองรับการเล่นเป็นกลุ่ม 2-3 คนต่อเครื่อง (ปรึกษากันก่อนตัดสินใจ) — ยังไม่ได้ให้คะแนนแยกด้านนี้'},
-  SM:{st:'none',    note:'ไม่มีการประเมินในบทเรียนชุดนี้ (ระบบเก็บจำนวนครั้งที่เล่นซ้ำ/พัฒนาการไว้ แต่ยังไม่ได้ออกแบบเกณฑ์ให้คะแนนด้านนี้)'}
+  HT:{st:'score', note:'ประเมินเต็มรูปแบบ: หลักฐาน 4 แหล่ง A20·B30·C25·D25 → 4 ด้านการคิด (CTC/STM/CRT/PRB) → ระดับ 3-6 (เกณฑ์เดิม ไม่เปลี่ยนแปลง)'},
+  NS:{st:'score', note:'ข้อสอบ/ภารกิจด่านทรัพยากร-สิ่งแวดล้อม (ด่านที่ 3·7·8·9·10) + เกณฑ์ EE·ST ของด่านที่ 13 กาญจนบุรี 2050'},
+  CZ:{st:'score', note:'ข้อสอบ/ภารกิจด่านมรดก-ส่วนรวม (ด่านที่ 2·3·5·11) + เกณฑ์ SD·PA ของด่านที่ 13 กาญจนบุรี 2050'},
+  CM:{st:'score', note:'ครูให้คะแนน "การสื่อสาร" ของคำตอบเขียน 3 ข้อในด่านที่ 13 แยกช่องจากคะแนน "การคิด" (ข้อละ 0-4 รวม 12)'},
+  TW:{st:'score', note:'เพื่อนร่วมทีมประเมินกันเองในเกม 3 ข้อตามองค์ประกอบของ CBE (ข้อละ 0-4 รวม 12) — เฉพาะนักเรียนที่เล่นเป็นกลุ่ม'},
+  SM:{st:'score', note:'ดัชนีพฤติกรรมการเรียนรู้ที่ระบบบันทึกเอง: ความครบของด่านที่ทำสำเร็จ 50% + พัฒนาการจากการกลับมาเล่นซ้ำ 50%'}
 };
+
+/* ══════════════════════════════════════════════════════════════════════════
+   [V.7.70 ข้อ 8 ตามที่ครูขอ] เกณฑ์การประเมินสมรรถนะหลัก 6 ด้าน — พร้อมนำไปใช้จริง
+   อ้างอิงกรอบหลักสูตรฐานสมรรถนะ (CBE Thailand)
+   ระดับสมรรถนะของ CBE ไล่ 1-10 และคาบเกี่ยวกันระหว่างช่วงชั้น:
+     ป.1-3 = ระดับ 1-4 · ป.4-6 = ระดับ 3-6 · ม.1-3 = ระดับ 5-8 · ม.4-6 = ระดับ 7-10
+   บทเรียนชุดนี้เป็น ป.4 จึงใช้ช่วง "ระดับ 3-6" ตรงกับสเกลเดิมของเกมพอดี
+     3 เริ่มต้น · 4 กำลังพัฒนา · 5 สามารถ (= เกณฑ์ที่คาดหวังของช่วงชั้น) · 6 เหนือความคาดหวัง
+   จุดตัดใช้ชุดเดียวกันทุกด้านเพื่อให้อ่านเทียบกันได้: ≥80 = 6 · 65-79 = 5 · 50-64 = 4 · <50 = 3
+   ══════════════════════════════════════════════════════════════════════════ */
+var CORE6_RUBRIC={
+  SM:{ ev:'ร่องรอยการเรียนรู้ที่ระบบบันทึกเอง — จำนวนด่านที่ทำสำเร็จ (50%) + พัฒนาการจากการกลับมาเล่นซ้ำ (50%)',
+    who:'ระบบ (อัตโนมัติ · ไม่ต้องให้ครูกรอก)',
+    cbe:'พฤติกรรมบ่งชี้ ป.4-6: บอกสิ่งที่ตนทำได้ดี · กำกับตนเองตามกิจวัตรภายใต้การติดตามบ้าง · บอกอารมณ์ของตนเอง · ระบุสาเหตุของปัญหา',
+    lv:{3:'ทำสำเร็จไม่ถึงครึ่งของด่านทั้งหมด และยังไม่กลับมาแก้ไขงานเดิม',
+        4:'ทำสำเร็จเกินครึ่ง เริ่มกลับมาเล่นซ้ำในบางด่านเพื่อแก้คะแนน',
+        5:'ทำสำเร็จเกือบครบทุกด่านด้วยตนเอง และกลับมาเล่นซ้ำจนคะแนนดีขึ้นจริง',
+        6:'ทำครบทุกด่าน และพัฒนาคะแนนขึ้นชัดเจนหลายด่านโดยไม่ต้องมีคนคอยกระตุ้น'},
+    warn:'เป็นดัชนีเชิงพฤติกรรมจากร่องรอยการเล่น ไม่ครอบคลุมเรื่องการจัดการอารมณ์ — ครูควรใช้ประกอบการสังเกตในชั้นเรียน ไม่ใช้ตัดสินลำพัง' },
+  HT:{ ev:'หลักฐาน 4 แหล่ง: A ข้อวิเคราะห์ระหว่างด่าน (20) · B ภารกิจ/มินิเกม (30) · C แบบทดสอบหลังเรียน (25) · D เกณฑ์ผลงานกาญจนบุรี 2050 (25)',
+    who:'ระบบ (อัตโนมัติ) — ยกเว้นคำตอบเขียน 3 ข้อในแหล่ง D ที่ครูตรวจ',
+    cbe:'องค์ประกอบตาม CBE 4 ด้าน: คิดอย่างมีวิจารณญาณ (CTC) · คิดเชิงระบบ (STM) · คิดสร้างสรรค์ (CRT) · คิดแก้ปัญหา (PRB)',
+    lv:{3:'คะแนนรวมต่ำกว่า 50 — ยังตอบตามความจำ ยังไม่แสดงการวิเคราะห์',
+        4:'50-64 — วิเคราะห์ได้บางสถานการณ์ แต่ยังไม่สม่ำเสมอทุกด้าน',
+        5:'65-79 — วิเคราะห์และให้เหตุผลได้ในสถานการณ์ที่ไม่ซับซ้อน ครบเกือบทุกด้าน',
+        6:'≥80 และต้องมีหลักฐานครบทั้ง 4 แหล่ง + ทั้ง 4 ด้านการคิด ≥ 65 ทุกด้าน'},
+    keep:'เกณฑ์ชุดนี้เป็นการประเมินหลักของงานวิจัย — ไม่มีการเปลี่ยนแปลงใด ๆ ในรอบนี้',
+    how:'วิธีประเมินโดยย่อ: นักเรียนเล่นตามปกติ → ระบบเก็บคำตอบรายข้อและผลภารกิจ → จับคู่แต่ละข้อเข้ากับ 1 ใน 4 ด้านการคิด → ถ่วงน้ำหนักเป็นคะแนนเต็ม 100 → ตัดระดับ 3-6' },
+  CM:{ ev:'คำตอบเขียนอธิบายเหตุผล 3 ข้อ ในด่านที่ 13 กาญจนบุรี 2050 — ครูให้คะแนน "การสื่อสาร" แยกช่องจากคะแนน "การคิด" ข้อละ 0-4 (รวม 12)',
+    who:'ครู (หน้า 📝 ตรวจคำตอบเขียน ของแต่ละห้อง)',
+    cbe:'พฤติกรรมบ่งชี้ ป.4-6: ส่งสารเรื่องราวใกล้ตัวผ่านภาษา โดยเลือกให้เหมาะกับบุคคลและกาลเทศะ · อ่าน/ฟังแล้วตอบได้ตรงประเด็น',
+    scale:'เกณฑ์ให้คะแนนรายข้อ (0-4): 0 = ไม่ตอบหรือตอบไม่ตรงคำถาม · 1 = เขียนสั้นมากจนจับใจความไม่ได้ · 2 = พอสื่อความได้แต่ยังวกวน ขาดคำเชื่อม · 3 = เรียบเรียงเข้าใจง่าย ลำดับความคิดชัดเจน · 4 = เรียบเรียงดีมาก มีตัวอย่างหรือคำเชื่อมที่ทำให้ผู้อ่านเข้าใจทันที',
+    lv:{3:'รวม 0-5 คะแนน',4:'รวม 6-7 คะแนน',5:'รวม 8-9 คะแนน',6:'รวม 10-12 คะแนน'} },
+  TW:{ ev:'เพื่อนร่วมทีมประเมินกันเองในเกม 3 ข้อ ตาม 3 องค์ประกอบของ CBE (ข้อละ 0-4 รวม 12) — เฉลี่ยจากเพื่อนทุกคนที่ประเมิน',
+    who:'เพื่อนร่วมทีม (peer assessment) — CBE แนะนำการประเมินแบบพหุภาคี',
+    cbe:'พฤติกรรมบ่งชี้ ป.4-6: เป็นสมาชิกที่รับผิดชอบบทบาทของตนเองและช่วยเหลือเพื่อนในทีม ปฏิบัติต่อผู้อื่นอย่างเป็นมิตร',
+    scale:'3 ข้อที่เพื่อนตอบ: (1) ช่วยคิดและเสนอความเห็นให้ทีม [เป็นสมาชิกทีมที่ดี/ภาวะผู้นำ] · (2) ทำหน้าที่ที่ตกลงกันไว้จนสำเร็จ [ร่วมมือรวมพลังอย่างเป็นระบบ] · (3) รับฟังเมื่อคิดต่างกัน ไม่เอาแต่ใจ [สร้างความสัมพันธ์และจัดการความขัดแย้ง]',
+    lv:{3:'รวม 0-5 คะแนน',4:'รวม 6-7 คะแนน',5:'รวม 8-9 คะแนน',6:'รวม 10-12 คะแนน'},
+    warn:'ประเมินได้เฉพาะนักเรียนที่เล่นเป็นกลุ่ม 2-3 คนต่อเครื่อง · เด็ก ป.4 อาจให้คะแนนตามความสนิท ครูควรดูประกอบการสังเกตจริง' },
+  CZ:{ ev:'ข้อสอบ/ภารกิจในด่านที่ 2 สุสานทหารสัมพันธมิตร · ด่านที่ 3 ต้นจามจุรียักษ์ · ด่านที่ 5 ช่องเขาขาด · ด่านที่ 11 สะพานมอญ &amp; เจดีย์สามองค์ + เกณฑ์ SD (ออกแบบทางออกเพื่อส่วนรวม) และ PA (ปรับแผนเมื่อมีเสียงคัดค้าน) ของด่านที่ 13',
+    who:'ระบบ (อัตโนมัติจากการเล่น)',
+    cbe:'พฤติกรรมบ่งชี้ ป.4-6: รับผิดชอบตามบทบาทหน้าที่ของตน · เข้าร่วมกิจกรรมเพื่อส่วนรวม · รู้เคารพสิทธิเสรีภาพของผู้อื่น',
+    lv:{3:'ต่ำกว่า 50% — เลือกทางที่คิดถึงตัวเองหรือผลระยะสั้นเป็นหลัก',
+        4:'50-64% — เริ่มคิดถึงส่วนรวม แต่ยังไม่ให้เหตุผลรองรับ',
+        5:'65-79% — เลือกทางที่คำนึงถึงส่วนรวมและมรดกท้องถิ่นได้สม่ำเสมอ',
+        6:'≥80% — คำนึงถึงส่วนรวม อธิบายเหตุผลได้ และปรับแผนเมื่อมีผู้เห็นต่าง'},
+    warn:'ต้องมีหลักฐานอย่างน้อย 4 ชิ้น ไม่งั้นระบบขึ้นว่า "ข้อมูลยังไม่พอ" แทนการเดาระดับ' },
+  NS:{ ev:'ข้อสอบ/ภารกิจในด่านที่ 3 ต้นจามจุรียักษ์ · 7 น้ำตกเอราวัณ &amp; เขื่อนศรีนครินทร์ · 8 เขื่อนวชิราลงกรณ &amp; น้ำพุร้อนหินดาด · 9 เหมืองปิล๊อก-อีต่อง · 10 มินิเกมจัดการน้ำในเขื่อน + เกณฑ์ EE (ประเมินหลักฐานผลกระทบ) และ ST (คิดเชิงระบบเรื่องความยั่งยืน) ของด่านที่ 13',
+    who:'ระบบ (อัตโนมัติจากการเล่น)',
+    cbe:'พฤติกรรมบ่งชี้ ป.4-6: เก็บข้อมูลด้วยเครื่องมืออย่างง่ายแล้วลงข้อสรุปอธิบายสาเหตุ · ระบุปัญหาจากสถานการณ์ใกล้ตัวในชุมชน · ช่างสงสัยและตั้งคำถาม',
+    lv:{3:'ต่ำกว่า 50% — ยังไม่เชื่อมโยงการใช้ทรัพยากรกับผลที่ตามมา',
+        4:'50-64% — บอกผลกระทบได้บ้าง แต่ยังไม่ครบด้าน',
+        5:'65-79% — อธิบายความสัมพันธ์ระหว่างการใช้ทรัพยากรกับผลกระทบได้ในสถานการณ์ไม่ซับซ้อน',
+        6:'≥80% — เชื่อมโยงหลายปัจจัยและเสนอทางเลือกที่สมดุลระหว่างการใช้กับการรักษา'},
+    warn:'ต้องมีหลักฐานอย่างน้อย 4 ชิ้น ไม่งั้นระบบขึ้นว่า "ข้อมูลยังไม่พอ" แทนการเดาระดับ' }
+};
+var CORE6_LVNAME={3:'เริ่มต้น',4:'กำลังพัฒนา',5:'สามารถ',6:'เหนือความคาดหวัง'};
+var CORE6_LVCLR={3:'#94a3b8',4:'#f59e0b',5:'#16a34a',6:'#7c3aed'};
 /* ค่าตั้งต้นรายด่าน: ตัวชี้วัด + สมรรถนะหลักที่เนื้อหาด่านนั้นเกี่ยวข้อง (ผู้ดูแลแก้ได้) */
 var IND_DEFAULTS={
   '1':{ind:['ส 4.1 ป.4/3','ส 4.2 ป.4/2','ส 5.1 ป.4/2'],comps:['HT','CZ']},
@@ -4333,8 +4487,8 @@ function indBuild(){
 }
 function indRender(){
   var by=indBuild();
-  var order=['1','2','3','4','5','6','7','hellfire','pilok','mg1','mg2','mg3','8','balance2050'];
-  var keys=order.filter(function(k){ return by[k]; }).concat(Object.keys(by).filter(function(k){ return order.indexOf(k)<0; }));
+  /* [V.7.70 ข้อ 7 + เพิ่มเติมข้อ 2] เรียงตามเส้นทางบนแผนที่ — ด่านบอส (แบบทดสอบหลังเรียน) อยู่ล่างสุดตามลำดับนี้เอง */
+  var keys=IND_ORDER.filter(function(k){ return by[k]; }).concat(Object.keys(by).filter(function(k){ return IND_ORDER.indexOf(k)<0; }));
   var W=CV2.W;
   var chip=function(c,n){ return '<span style="display:inline-block;background:'+IND_COMP_CLR[c]+'22;color:'+IND_COMP_CLR[c]+';border:1px solid '+IND_COMP_CLR[c]+'55;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800;margin:1px 2px">'+c+' × '+n+'</span>'; };
 
@@ -4350,18 +4504,21 @@ function indRender(){
       var scored=(CORE6_STATUS[c[0]]||{}).st==='score';
       return '<span title="'+esc(c[1])+'" style="display:inline-block;background:'+c[2]+(scored?'26':'14')+';color:'+c[2]+';border:1px solid '+c[2]+(scored?'88':'44')+';border-radius:999px;padding:1px 8px;font-size:11px;font-weight:'+(scored?'800':'600')+';margin:1px 2px">'+(scored?'★ ':'')+esc(c[1])+'</span>'; }).join('')||'<span class="muted">—</span>';
     return '<tr>'+
-      '<td style="font-weight:700;white-space:nowrap;vertical-align:top">'+esc(IND_STAGE_NAME[k]||k)+'</td>'+
-      '<td style="vertical-align:top">'+(canEdit
-        ? '<input class="cls-in" id="ind-i-'+esc(k)+'" value="'+esc(indTxt)+'" placeholder="เช่น ส 5.2 ป.4/1 · ส 5.2 ป.4/3" style="width:100%;min-width:210px;font-size:11.5px">'+
-          '<div style="font-size:10.5px;margin-top:2px" class="muted">คั่นหลายตัวชี้วัดด้วย ·</div>'
+      '<td style="font-weight:700;vertical-align:top;text-align:left;word-break:break-word">'+esc(indStageLabel(k))+'</td>'+
+      /* [V.7.70 ข้อ 5 ตามที่ครูขอ] ใส่ "คำอธิบายตัวชี้วัด" ด้วยเสมอ — เดิมผู้ดูแลเห็นแค่ช่องกรอกรหัส
+         ต้องเปิดหนังสือหลักสูตรเทียบเองว่ารหัสนั้นคืออะไร ตอนนี้ขึ้นคำอธิบายเต็มใต้ช่องกรอกให้เลย */
+      '<td style="vertical-align:top;text-align:left">'+(canEdit
+        ? '<input class="cls-in" id="ind-i-'+esc(k)+'" value="'+esc(indTxt)+'" placeholder="เช่น ส 5.2 ป.4/1 · ส 5.2 ป.4/3" style="width:100%;min-width:0;box-sizing:border-box;font-size:11.5px">'+
+          '<div style="font-size:10.5px;margin:2px 0 3px" class="muted">คั่นหลายตัวชี้วัดด้วย ·</div>'+
+          '<div style="border-left:2px solid #e2e8f0;padding-left:7px">'+indHtml+'</div>'
         : indHtml)+'</td>'+
-      '<td style="vertical-align:top">'+(canEdit
-        ? '<div id="ind-c-'+esc(k)+'" style="display:flex;flex-wrap:wrap;gap:2px 9px;max-width:250px">'+
+      '<td style="vertical-align:top;text-align:left">'+(canEdit
+        ? '<div id="ind-c-'+esc(k)+'" style="display:flex;flex-wrap:wrap;gap:2px 9px">'+
             CORE6.map(function(c){ return '<label style="font-size:11px;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;color:'+c[2]+'" title="'+esc(c[1])+'">'+
               '<input type="checkbox" value="'+c[0]+'"'+(compSel.indexOf(c[0])>=0?' checked':'')+' style="width:14px;height:14px">'+esc(CORE6_SHORT[c[0]]||c[1])+'</label>'; }).join('')+
           '</div>'
         : core)+'</td>'+
-      (canEdit?'<td style="white-space:nowrap;vertical-align:top"><button class="btn-ghost" title="บันทึกตัวชี้วัด+สมรรถนะของด่านนี้" style="padding:3px 9px;font-size:13px" onclick="indSave(\''+esc(k)+'\')">💾</button><div class="muted" id="ind-st-'+esc(k)+'" style="font-size:10.5px"></div></td>':'<td></td>')+
+      (canEdit?'<td style="vertical-align:top;text-align:left"><button class="btn-ghost" title="บันทึกตัวชี้วัด+สมรรถนะของด่านนี้" style="padding:3px 9px;font-size:13px" onclick="indSave(\''+esc(k)+'\')">💾</button><div class="muted" id="ind-st-'+esc(k)+'" style="font-size:10.5px;word-break:break-word"></div></td>':'')+
     '</tr>';
   }).join('');
 
@@ -4390,8 +4547,36 @@ function indRender(){
     if(st.C) ev.push('C · ข้อวิเคราะห์ในด่านบอส '+st.C+' ข้อ');
     if(st.D) ev.push('D · เกณฑ์ผลงานกาญ 2050 '+st.D+' เกณฑ์');
     var comps=Object.keys(st.comps).sort().map(function(c){ return chip(c,st.comps[c]); }).join('')||'<span class="muted">—</span>';
-    return '<tr><td style="font-weight:700;white-space:nowrap">'+esc(IND_STAGE_NAME[k]||k)+'</td>'+
+    return '<tr><td style="font-weight:700;text-align:left;word-break:break-word">'+esc(indStageLabel(k))+'</td>'+
       '<td style="font-size:11.5px">'+esc(ev.join(' · '))+'</td><td>'+comps+'</td></tr>';
+  }).join('');
+
+  /* [V.7.70 ข้อ 6] ข้อมูลตารางรายละเอียดหลักฐาน 4 แหล่ง — นับจากแผนผังจริงของเครื่องคิดคะแนน (CV2) ไม่ได้พิมพ์มือ */
+  var SRC_META={
+    A:{ name:'ข้อวิเคราะห์ระหว่างเล่นด่าน', unit:'ข้อ', w:W.A,
+        how:'สัดส่วนข้อที่ตอบถูกจากข้อวิเคราะห์ทั้งหมดที่ทำไป × '+W.A+' (ตอบครั้งแรกของแต่ละข้อ)' },
+    B:{ name:'ภารกิจ/มินิเกมเชิงปฏิบัติ', unit:'ภารกิจ', w:W.B,
+        how:'คะแนนแต่ละภารกิจถ่วงน้ำหนักตามความยาก รวมแล้วเทียบเป็น '+W.B+' คะแนน' },
+    C:{ name:'ข้อวิเคราะห์ในแบบทดสอบหลังเรียน', unit:'ข้อ', w:W.C,
+        how:'สัดส่วนข้อที่ตอบถูกในด่านบอส × '+W.C+' (วัดว่าคิดเป็นหลังเรียนครบแล้วหรือยัง)' },
+    D:{ name:'เกณฑ์ผลงานกาญจนบุรี 2050', unit:'เกณฑ์', w:W.D,
+        how:'คะแนน 6 เกณฑ์ผลงาน (ครูตรวจคำตอบเขียน 3 ข้อ รวมอยู่ในนี้) เทียบเป็น '+W.D+' คะแนน' }
+  };
+  var srcStages={A:[],B:[],C:[],D:[]}, srcCount={A:0,B:0,C:0,D:0};
+  keys.forEach(function(k){ ['A','B','C','D'].forEach(function(sk){
+    if(by[k] && by[k][sk]){ srcCount[sk]+=by[k][sk]; srcStages[sk].push(indStageNo(k)); } }); });
+  var rowsABCD=['A','B','C','D'].map(function(sk){
+    var m=SRC_META[sk], list=srcStages[sk].sort(function(a,b){return a-b;});
+    var where=list.length ? ('ด่านที่ '+list.join(', ')) : '—';
+    if(sk==='C') where='ด่านที่ '+indStageNo('8')+' '+IND_STAGE_NAME['8'];
+    if(sk==='D') where='ด่านที่ '+indStageNo('balance2050')+' '+IND_STAGE_NAME['balance2050'];
+    return '<tr>'+
+      '<td style="text-align:center;font-weight:900;font-size:15px;color:#047857">'+sk+'</td>'+
+      '<td style="font-weight:700">'+esc(m.name)+'</td>'+
+      '<td style="font-size:11.5px">'+esc(where)+'</td>'+
+      '<td style="text-align:center;font-weight:800">'+srcCount[sk]+' '+esc(m.unit)+'</td>'+
+      '<td style="text-align:center;font-weight:800;color:#047857">'+m.w+'</td>'+
+      '<td style="font-size:11.5px">'+esc(m.how)+'</td></tr>';
   }).join('');
 
   $('ind-main').innerHTML=
@@ -4399,12 +4584,25 @@ function indRender(){
       '<h2>ตารางที่ 1 · ตัวชี้วัดและสมรรถนะหลักของแต่ละด่าน</h2>'+
       '<div class="muted" style="font-size:12px;margin-bottom:8px">ตัวชี้วัดอ้างอิงหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พ.ศ. 2551 (สาระภูมิศาสตร์ฉบับปรับปรุง พ.ศ. 2560) ชั้น ป.4 · สมรรถนะหลักตามกรอบหลักสูตรฐานสมรรถนะ (CBE) '+
         (cls.isAdmin?'— บัญชีของคุณเป็น <b>ผู้ดูแลระบบ</b> จึงแก้ไขและบันทึกได้':'— แก้ไขได้เฉพาะ<b>ผู้ดูแลระบบ</b> (ครูทั่วไปดูได้)')+'</div>'+
-      '<div style="overflow-x:auto"><table class="cls-tbl"><thead><tr><th>ด่าน / ภารกิจ</th><th style="min-width:230px">ตัวชี้วัด (ป.4)</th><th style="min-width:170px">สมรรถนะหลัก (CBE 6 ด้าน)</th><th></th></tr></thead><tbody>'+rows1+'</tbody></table></div>'+
+      /* [V.7.70 เพิ่มเติมข้อ 1] ตารางที่ 1 ชิดซ้าย กว้างพอดีจอ ไม่มีแถบเลื่อนซ้ายขวา
+         ใช้ table-layout:fixed + กำหนดสัดส่วนคอลัมน์ + ตัดคำได้ แทนการปล่อยให้ตารางดันจนล้น */
+      '<table class="cls-tbl ind-tbl1" style="width:100%;table-layout:fixed;text-align:left">'+
+        '<colgroup><col style="width:23%"><col style="width:41%"><col style="width:'+(cls.isAdmin?'28%':'36%')+'">'+(cls.isAdmin?'<col style="width:8%">':'')+'</colgroup>'+
+        '<thead><tr><th style="text-align:left">ด่าน / ภารกิจ</th><th style="text-align:left">ตัวชี้วัด (ป.4) และคำอธิบาย</th><th style="text-align:left">สมรรถนะหลัก (CBE 6 ด้าน)</th>'+(cls.isAdmin?'<th></th>':'')+'</tr></thead>'+
+        '<tbody>'+rows1+'</tbody></table>'+
     '</div>'+
     '<div class="card" style="margin-bottom:12px">'+
       '<h2>ตารางที่ 2 · สมรรถนะการคิดขั้นสูง (HOTS) — องค์ประกอบย่อยและหลักฐาน</h2>'+
       '<div style="overflow-x:auto"><table class="cls-tbl"><thead><tr><th style="width:60px;text-align:center">รหัส</th><th>สมรรถนะการคิดขั้นสูงด้าน</th><th style="min-width:200px">หลักฐาน (A · B · C · D)</th></tr></thead><tbody>'+rows2+'</tbody></table></div>'+
       '<div class="muted" style="font-size:12px;margin-top:8px">น้ำหนักรวม: A '+W.A+' · B '+W.B+' · C '+W.C+' · D '+W.D+' = 100 คะแนน → ระดับ 6 (≥80) · 5 (65-79) · 4 (50-64) · 3 (&lt;50) · ระดับ 6 ต้องมีหลักฐานครบ 4 แหล่งและทุกด้าน ≥ 65</div>'+
+      /* [V.7.70 ข้อ 6 ตามที่ครูขอ] ตารางรายละเอียดหลักฐาน A·B·C·D แบบละเอียด ต่อท้ายตารางที่ 2 */
+      '<h3 style="margin:16px 0 4px;font-size:14px">รายละเอียดหลักฐาน 4 แหล่ง (A · B · C · D)</h3>'+
+      '<div class="muted" style="font-size:12px;margin-bottom:7px">ทุกแหล่งเก็บอัตโนมัติจากการเล่นจริง ยกเว้นแหล่ง D ส่วนคำตอบเขียน 3 ข้อ ที่ครูเป็นผู้ตรวจให้คะแนน</div>'+
+      '<div style="overflow-x:auto"><table class="cls-tbl"><thead><tr>'+
+        '<th style="width:56px;text-align:center">แหล่ง</th><th style="min-width:150px">เก็บจากอะไร</th>'+
+        '<th style="min-width:190px">อยู่ในด่านใดบ้าง</th><th style="width:78px;text-align:center">จำนวน</th>'+
+        '<th style="width:66px;text-align:center">น้ำหนัก</th><th style="min-width:180px">วิธีคิดคะแนน</th>'+
+      '</tr></thead><tbody>'+rowsABCD+'</tbody></table></div>'+
     '</div>'+
     '<div class="card" style="margin-bottom:12px">'+
       '<h2>ตารางที่ 3 · หลักฐานและด้านการคิดขั้นสูงที่วัดในแต่ละด่าน</h2>'+
@@ -4412,8 +4610,8 @@ function indRender(){
     '</div>'+
     /* [ข้อ 6] เกณฑ์การประเมินสมรรถนะหลัก 6 ด้าน ย้ายมาไว้ในหน้านี้ด้วย */
     '<div class="card" style="margin-bottom:12px">'+
-      '<h2>เกณฑ์การประเมินสมรรถนะหลัก 6 ด้าน</h2>'+
-      clsCore6Html()+
+      '<h2>ตารางที่ 4 · เกณฑ์การประเมินสมรรถนะหลัก 6 ด้าน (CBE) — พร้อมนำไปใช้</h2>'+
+      clsCore6Rubric()+
       '<div class="muted" style="font-size:12px;margin-top:8px">ระดับที่แสดงในระบบเป็น <b>ผลระหว่างเรียน (formative)</b> — ใช้ติดตามพัฒนาการระหว่างภาคเรียนได้ ส่วนการตัดสินผลปลายภาคควรดูข้อมูลให้ครบก่อน · ด้านที่หลักฐานยังไม่พอจะขึ้นว่า "ข้อมูลยังไม่พอสรุป" แทนตัวเลข</div>'+
     '</div>';
 }
