@@ -192,6 +192,12 @@
      แก้ด้วย overflow-wrap:anywhere (ยอมตัดกลางคำเมื่อจำเป็น) + word-break สำรองสำหรับเบราว์เซอร์เก่า
      (<html lang="th"> ตั้งไว้แล้ว เบราว์เซอร์ใหม่จะตัดคำไทยตามพจนานุกรมให้สวยกว่านี้อีก) */
   .cls-tbl td, .cls-tbl th{overflow-wrap:anywhere;word-break:break-word}
+  /* [V.7.79 ตามที่ครูขอ] แถวนักเรียนที่กำลังเปิดดูรายละเอียด ต้องเห็นชัดว่าเป็นของใคร
+     เดิมแถวไม่เปลี่ยนสีเลย พอเลื่อนดูข้อมูลข้างล่างจึงไม่รู้ว่าเป็นของนักเรียนคนไหน */
+  .cls-stu-row.sel > td{background:#e0e7ff !important;box-shadow:inset 0 -2px 0 #4f46e5}
+  .cls-stu-row.sel > td:first-child{box-shadow:inset 5px 0 0 #4f46e5, inset 0 -2px 0 #4f46e5}
+  .cls-stu-row.sel > td:nth-child(2){font-weight:800;color:#312e81}
+  .cls-stu-row:hover > td{background:#f1f5ff}
   .ind-tbl1 td, .ind-tbl1 th, .ind-tbl3 td, .ind-tbl3 th{white-space:normal}
   .cls-tbl th{background:#f8fafc;text-align:left;padding:6px 8px;border-bottom:2px solid #e5e7eb;font-size:12px}
   .cls-tbl td{padding:5px 8px;border-bottom:1px solid #f1f5f9}
@@ -2813,7 +2819,7 @@ function clsCredSave(){
     if(/schema cache|Could not find the function|does not exist|PGRST202|404/i.test(m)){
       html='<span style="color:#b91c1c;font-weight:700">ยังบันทึกไม่ได้ — ฐานข้อมูลยังไม่มีฟังก์ชันนี้</span>'+
         '<div style="color:#334155;font-weight:400;margin-top:4px;line-height:1.65">'+
-        'ให้เปิด <b>Supabase → SQL Editor → New query</b> แล้ววางไฟล์ <b>supabase_patch_all_v778.sql</b> ทั้งไฟล์ → กด Run<br>'+
+        'ให้เปิด <b>Supabase → SQL Editor → New query</b> แล้ววางไฟล์ <b>supabase_patch_all_v779.sql</b> ทั้งไฟล์ → กด Run<br>'+
         'รันแล้วยังขึ้นข้อความเดิม ให้รอ 1-2 นาทีแล้วกดบันทึกใหม่ (ระบบกำลังโหลดรายการฟังก์ชันใหม่)</div>';
     } else if(/เฉพาะผู้ดูแล|admin/i.test(m)){
       html='<span style="color:#b91c1c;font-weight:700">บันทึกไม่ได้ — บัญชีนี้ยังไม่ใช่ผู้ดูแลระบบ</span>'+
@@ -3730,7 +3736,7 @@ function clsLoadPublicRooms(force){
   }).catch(function(e){
     var mm=String((e&&e.message)||'');
     cls.roErr=/schema cache|Could not find the function|does not exist|404|PGRST202/i.test(mm)
-      ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v778.sql ทั้งไฟล์ → Run'
+      ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v779.sql ทั้งไฟล์ → Run'
       : mm;
     cls.statsReady=true; clsRender();
   });
@@ -3837,7 +3843,7 @@ function clsLoadPublicScores(force){
       clsPub.rows=[];
       var m=String((e&&e.message)||'');
       clsPub.err=/schema cache|Could not find the function|does not exist|404|PGRST202/i.test(m)
-        ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v778.sql ทั้งไฟล์ → Run'
+        ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v779.sql ทั้งไฟล์ → Run'
         : m;
     })
     .then(function(){ clsPub.loading=false;
@@ -3995,8 +4001,9 @@ function clsC6Pick(sid, k){
   var box=document.getElementById('c6pick-'+sid), row=document.getElementById('cv2d-'+sid), ov=document.getElementById('c6ov-'+sid);
   if(!box||!row) return;
   var open=(row.style.display!=='none');
-  if(open && box.getAttribute('data-k')===k){ row.style.display='none'; box.innerHTML=''; box.removeAttribute('data-k'); if(ov) ov.style.display=''; return; }
-  if(ov) ov.style.display='none'; /* ดูรายด้านย่อยอยู่ → ซ่อนภาพรวมไว้ก่อน ไม่ให้ข้อมูลซ้ำซ้อน */
+  if(open && box.getAttribute('data-k')===k){ row.style.display='none'; box.innerHTML=''; box.removeAttribute('data-k'); if(ov) ov.style.display=''; clsRowSel(sid,false); return; }
+  if(ov) ov.style.display='none';
+  clsRowSel(sid,true); /* ดูรายด้านย่อยอยู่ → ซ่อนภาพรวมไว้ก่อน ไม่ให้ข้อมูลซ้ำซ้อน */
   var stu=(cls.students||[]).filter(function(x){ return String(x.id)===String(sid); })[0];
   var t=stu?clsStatOf(stu):null;
   box.setAttribute('data-k',k);
@@ -4539,6 +4546,14 @@ function clsV2Toggle(id){
   if(box){ box.innerHTML=''; box.removeAttribute('data-k'); }
   if(ov) ov.style.display='';
   el.style.display=(el.style.display==='none')?'':'none';
+  clsRowSel(id, el.style.display!=='none');
+}
+/* [V.7.79] ทำให้แถวของนักเรียนที่กำลังเปิดดู เด่นชัด (ครั้งละ 1 คน) */
+function clsRowSel(id, on){
+  try{
+    [].slice.call(document.querySelectorAll('.cls-stu-row.sel')).forEach(function(tr){ if(!on||tr.id!=='cv2r-'+id) tr.classList.remove('sel'); });
+    var row=document.getElementById('cv2r-'+id); if(row) row.classList.toggle('sel', !!on);
+  }catch(e){}
 }
 var CLS_LV_CLR={6:'#7c3aed',5:'#16a34a',4:'#d97706',3:'#64748b'};
 /* [ตามคำขอครู V.7.68 ข้อ 6] คะแนนเต็มของ "เก็บ" และ "สอบ"
@@ -4563,7 +4578,7 @@ function clsScoresHtml(r){
     var partners=clsPartnersOf(s,t);
     var grpChip=partners.length?'<div style="font-size:10.5px;color:#7c3aed;margin-top:1px" title="เล่นเครื่องเดียวกัน — คะแนน/ข้อมูลการเล่นลงให้ทุกคนในกลุ่ม">👥 คู่กับ '+esc(partners.join(', '))+(t.shared?' <span style="color:#b45309">(ใช้คะแนนร่วมกลุ่ม)</span>':'')+'</div>':'';
     var zebra=idx%2?'background:#fbfdff;':'';
-    var main='<tr style="cursor:pointer;'+zebra+'" onclick="clsV2Toggle(\''+esc(s.id)+'\')" title="คลิกเพื่อดูรายละเอียดสมรรถนะ">'+
+    var main='<tr id="cv2r-'+esc(s.id)+'" class="cls-stu-row" style="cursor:pointer;'+zebra+'" onclick="clsV2Toggle(\''+esc(s.id)+'\')" title="คลิกเพื่อดูรายละเอียดสมรรถนะ">'+
       '<td>'+esc(s.student_number||'')+'</td>'+
       '<td><b>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</b>'+(s.character_name?' <span style="font-size:10.5px;color:#7c3aed">🎮 '+esc(s.character_name)+'</span>':'')+grpChip+'</td>'+
       clsAchCell(t.collected, CLS_MAX_COLLECTED, ACH_BG)+
@@ -4616,7 +4631,6 @@ function clsScoresHtml(r){
       '<span style="font-size:11px;font-weight:800;color:#64748b">⚙️ จัดการข้อมูลนักเรียน</span>'+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#1d4ed8" onclick="clsEditStudent(\''+esc(s.id)+'\')">✏️ แก้ไขข้อมูลนักเรียน</button>'+
       (s.group_ref?'<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#7c3aed" onclick="clsSplitGroup(\''+esc(s.group_ref)+'\')">🔀 แยกกลุ่มนี้เป็นรายคน</button>':'')+
-      '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#0e7490" onclick="clsSplitNamed(\''+esc(s.id)+'\')" title="บัญชีเก่าที่กรอกชื่อ 2 คนรวมในช่องเดียว — แยกเป็นนักเรียน 2 คน คัดลอกคะแนน/ประวัติให้ครบทั้งคู่">👥➗ แยกชื่อรวมเป็น 2 คน</button>'+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#b91c1c" onclick="clsDeleteStudent(\''+esc(s.id)+'\',\''+esc((s.first_name||'')+' '+(s.last_name||''))+'\')">🗑 ลบนักเรียนคนนี้</button></div>';
     det+='</td></tr>';
     return main+det;
@@ -4668,7 +4682,7 @@ function clsListedWarnHtml(v){
     ? '<div style="color:#b91c1c;font-size:11.5px;line-height:1.55;margin-top:4px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:6px 9px">'+
       '⚠️ <b>โหมดนี้ไม่ควรใส่ชื่อ-นามสกุลจริงของนักเรียน</b> — เพราะทุกคนสามารถค้นหาชื่อโรงเรียนและเห็นรายชื่อนักเรียนในห้องนี้ได้จากหน้าเข้าห้องของเกม<br>'+
       'แนะนำให้ใช้ชื่อเล่นหรือชื่อในเกมแทน</div>'
-    : '<div style="color:#b91c1c;font-size:11.5px;line-height:1.55;margin-top:4px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:6px 9px">'+
+    : '<div style="color:#15803d;font-size:11.5px;line-height:1.55;margin-top:4px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:6px 9px">'+
       '🔒 <b>ใส่ชื่อ-นามสกุลจริงของนักเรียนได้</b> — ห้องนี้เข้าได้ด้วยโค้ดเท่านั้น ไม่ปรากฏในรายการค้นหา '+
       'มีเพียง<b>ครูผู้สอน/ผู้สร้างห้อง</b>เท่านั้นที่เห็นชื่อ-นามสกุลจริง (ครูท่านอื่นเห็นเฉพาะชื่อในเกม)</div>';
 }
