@@ -2667,54 +2667,74 @@ function clsOpenSurvey(){
   });
 }
 
-/* [V.7.71 ข้อ 9 ตามที่ครูขอ] แก้ข้อความส่วน "ออกแบบและพัฒนา" ในเกม + ใส่รูป QR Code (เฉพาะผู้ดูแล) */
-var CLS_CRED_FIELDS=[
-  ['credits_name','บรรทัดที่ 1 (ชื่อผู้ออกแบบ)','👨‍🏫 ออกแบบและพัฒนา: นายอาคม อินต๊ะพันธ์','text'],
-  ['credits_contact','บรรทัดที่ 2 (ช่องทางติดต่อ)','📧 Arkhom.aintaphan@gmail.com','text'],
-  ['credits_sub','บรรทัดที่ 3 (ชื่อชุด/ระดับชั้น)','เกมผจญภัยกาญจนบุรี · สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4','text'],
-  ['credits_extra','บรรทัดเพิ่มเติม (ไม่ใส่ก็ได้)','','text'],
-  ['credits_start','ข้อความบนหน้าแรกของเกม (ใต้ปุ่มเริ่มเกม)','www.GamePlearn.com','text'],
-  ['credits_line','เครดิตท้ายหน้าจอ บรรทัดที่ 1','ออกแบบและพัฒนา | นายอาคม อินต๊ะพันธ์','text'],
-  ['credits_line2','เครดิตท้ายหน้าจอ บรรทัดที่ 2 (ไม่ใส่ก็ได้)','','text'],
-  ['credits_line3','เครดิตท้ายหน้าจอ บรรทัดที่ 3 (ไม่ใส่ก็ได้)','','text'],
-  ['credits_qr','รูป QR Code (วางลิงก์รูป หรือกดปุ่มเลือกไฟล์ด้านล่าง)','','qr']
+/* [V.7.71 ข้อ 9 · ขยาย V.7.74 ตามที่ครูขอ] แก้ข้อความ 3 จุดของเกม + รูป QR Code (เฉพาะผู้ดูแล)
+   ทุกบรรทัดมีช่อง "ลิงก์" ของตัวเอง — ใส่แล้วทั้งบรรทัดกดไปเว็บได้ เช่น www.gameplearn.com/support
+   ถ้าพิมพ์ที่อยู่เว็บลงไปในข้อความตรง ๆ ระบบก็ทำให้กดได้เองโดยไม่ต้องกรอกช่องลิงก์ */
+var CLS_CRED_GROUPS=[
+  {t:'🏠 ข้อความบนหน้าแรกของเกม', d:'แสดงใต้ปุ่ม "เริ่มเกม" กลางด้านล่างของหน้าแรก · ใส่ได้ 2 บรรทัด',
+   rows:[['credits_start','บรรทัดที่ 1','www.GamePlearn.com'],
+         ['credits_start2','บรรทัดที่ 2 (ไม่ใส่ก็ได้)','']]},
+  {t:'🖥️ เครดิตท้ายหน้าจอ', d:'แสดงท้ายจอของหน้าเข้าสู่ระบบ · ล็อบบี้ · แผนที่โลก · ใส่ได้ 2 บรรทัด',
+   rows:[['credits_line','บรรทัดที่ 1','www.GamePlearn.com'],
+         ['credits_line2','บรรทัดที่ 2 (ไม่ใส่ก็ได้)','']]},
+  {t:'👨‍🏫 หน้า "ออกแบบและพัฒนา" (ปุ่ม 👨‍🏫 ในเกม)', d:'ใส่ได้ 6 บรรทัด · เว้นว่างไว้ = ไม่แสดงบรรทัดนั้น',
+   rows:[['credits_dev1','บรรทัดที่ 1','ออกแบบและพัฒนา: นายอาคม อินต๊ะพันธ์'],
+         ['credits_dev2','บรรทัดที่ 2','📧 Arkhom.aintaphan@gmail.com'],
+         ['credits_dev3','บรรทัดที่ 3','🌐 www.GamePlearn.com'],
+         ['credits_dev4','บรรทัดที่ 4','เกมผจญภัยกาญจนบุรี · สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4'],
+         ['credits_dev5','บรรทัดที่ 5 (ไม่ใส่ก็ได้)',''],
+         ['credits_dev6','บรรทัดที่ 6 (ไม่ใส่ก็ได้)','']]}
 ];
+function clsCredKeys(){ var k=[]; CLS_CRED_GROUPS.forEach(function(g){ g.rows.forEach(function(r){ k.push(r[0], r[0]+'_url'); }); }); k.push('credits_qr'); return k; }
 function clsOpenCredits(){
   var old=document.getElementById('cls-cred-modal'); if(old) old.remove();
   sbEnsure().then(function(){ return sbFetch('/rest/v1/rpc/rpc_get_settings',{method:'POST',body:'{}'}); })
   .catch(function(){ return []; })
   .then(function(rows){
     var cur={}; (rows||[]).forEach(function(r){ cur[r.skey]=r.sval; });
+    /* ครูที่เคยตั้งค่าไว้ด้วยคีย์รุ่นก่อน — ยกมาใส่ช่องใหม่ให้เห็น จะได้ไม่ต้องพิมพ์ใหม่ */
+    [['credits_dev1','credits_name'],['credits_dev2','credits_contact'],['credits_dev3','credits_sub'],['credits_dev4','credits_extra']]
+      .forEach(function(m){ if(cur[m[0]]==null && cur[m[1]]!=null) cur[m[0]]=cur[m[1]]; });
     var wrap=document.createElement('div');
     wrap.id='cls-cred-modal';
     wrap.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:999;display:flex;align-items:flex-start;justify-content:center;padding:22px 12px;overflow:auto';
-    wrap.innerHTML='<div style="background:#fff;border-radius:14px;padding:16px 20px 20px;width:min(700px,96vw);box-shadow:0 20px 50px rgba(0,0,0,.3)">'+
-      '<div style="display:flex;align-items:center;gap:10px"><b style="font-size:16px;flex:1">👨‍🏫 ส่วน "ออกแบบและพัฒนา" ในเกม</b>'+
+    var groupsHtml=CLS_CRED_GROUPS.map(function(g){
+      return '<div style="border:1px solid var(--line);border-radius:12px;padding:10px 13px 6px;margin-bottom:11px;background:#fcfdff">'+
+        '<div style="font-weight:800;font-size:13.5px">'+esc(g.t)+'</div>'+
+        '<div class="muted" style="font-size:11.5px;margin:1px 0 8px">'+esc(g.d)+'</div>'+
+        g.rows.map(function(r){
+          return '<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:7px">'+
+            '<span style="font-size:12px;font-weight:700;color:#475569;min-width:132px">'+esc(r[1])+'</span>'+
+            '<input class="cls-in" id="cc-'+r[0]+'" value="'+esc(cur[r[0]]||'')+'" placeholder="'+esc(r[2]||'ข้อความ')+'" style="flex:2;min-width:190px" oninput="clsCredPreview()">'+
+            '<input class="cls-in" id="cc-'+r[0]+'_url" value="'+esc(cur[r[0]+'_url']||'')+'" placeholder="ลิงก์ (ไม่ใส่ก็ได้) เช่น www.gameplearn.com/support" style="flex:1.4;min-width:180px" oninput="clsCredPreview()">'+
+            '</div>';
+        }).join('')+'</div>';
+    }).join('');
+    wrap.innerHTML='<div style="background:#fff;border-radius:14px;padding:16px 20px 20px;width:min(760px,96vw);box-shadow:0 20px 50px rgba(0,0,0,.3)">'+
+      '<div style="display:flex;align-items:center;gap:10px"><b style="font-size:16px;flex:1">👨‍🏫 ข้อความและลิงก์ในเกม</b>'+
       '<button class="btn-ghost" style="padding:5px 14px" onclick="document.getElementById(\'cls-cred-modal\').remove()">ปิด</button></div>'+
-      '<div class="muted" style="font-size:12px;margin:6px 0 12px;line-height:1.6">ข้อความเหล่านี้แสดงในหน้า <b>ผู้จัดทำ (ปุ่ม 👨‍🏫)</b> ของเกม · เว้นว่างไว้ = ใช้ข้อความเดิมที่มากับเกม<br>'+
-        'รูป QR Code จะแสดง<b>ด้านซ้ายของข้อความ</b> (จอแคบจะพับขึ้นไปอยู่ด้านบนให้เอง)</div>'+
-      CLS_CRED_FIELDS.map(function(f){
-        if(f[3]==='qr'){
-          return '<div style="margin-bottom:10px"><label style="font-size:12.5px;font-weight:700;display:block;margin-bottom:3px">'+esc(f[1])+'</label>'+
-            '<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">'+
-              '<input class="cls-in" id="cc-'+f[0]+'" value="'+esc(cur[f[0]]||'')+'" placeholder="https://... หรือกดเลือกไฟล์รูป" style="flex:1;min-width:200px" oninput="clsCredPreview()">'+
-              '<input type="file" id="cc-qr-file" accept="image/*" style="display:none" onchange="clsCredPickFile(this)">'+
-              '<button class="btn-ghost" style="padding:6px 12px;font-size:12px" onclick="document.getElementById(\'cc-qr-file\').click()">📁 เลือกไฟล์รูป</button>'+
-              '<button class="btn-ghost" style="padding:6px 12px;font-size:12px;color:#b91c1c" onclick="document.getElementById(\'cc-credits_qr\').value=\'\';clsCredPreview()">ลบรูป</button>'+
-            '</div>'+
-            '<div class="muted" style="font-size:11.5px;margin-top:3px">ไฟล์รูปจะถูกย่อให้กว้างไม่เกิน 400px โดยอัตโนมัติ เพื่อไม่ให้เกมโหลดช้า · '+
-              'รูปนี้แสดง<b>ทั้งในหน้าผู้จัดทำ และที่เครดิตท้ายหน้าจอ</b></div></div>';
-        }
-        return '<div style="margin-bottom:10px"><label style="font-size:12.5px;font-weight:700;display:block;margin-bottom:3px">'+esc(f[1])+'</label>'+
-          '<input class="cls-in" id="cc-'+f[0]+'" value="'+esc(cur[f[0]]||'')+'" placeholder="'+esc(f[2])+'" style="width:100%;box-sizing:border-box"></div>';
-      }).join('')+
+      '<div class="muted" style="font-size:12px;margin:6px 0 12px;line-height:1.6">เว้นว่างไว้ = ใช้ข้อความเดิมที่มากับเกม (บรรทัดที่เคยกรอกแล้วลบออก = ซ่อนบรรทัดนั้น)<br>'+
+        'ช่อง <b>ลิงก์</b> ใส่หรือไม่ใส่ก็ได้ — ถ้าพิมพ์ที่อยู่เว็บไว้ในข้อความอยู่แล้ว ระบบทำให้กดได้เอง</div>'+
+      groupsHtml+
+      '<div style="border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin-bottom:11px;background:#fcfdff">'+
+        '<div style="font-weight:800;font-size:13.5px">🔳 รูป QR Code</div>'+
+        '<div class="muted" style="font-size:11.5px;margin:1px 0 8px">แสดงด้านซ้ายของข้อความในหน้า 👨‍🏫 ออกแบบและพัฒนา (ไม่แสดงที่เครดิตท้ายจอแล้ว)</div>'+
+        '<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">'+
+          '<input class="cls-in" id="cc-credits_qr" value="'+esc(cur.credits_qr||'')+'" placeholder="https://... หรือกดเลือกไฟล์รูป" style="flex:1;min-width:200px" oninput="clsCredPreview()">'+
+          '<input type="file" id="cc-qr-file" accept="image/*" style="display:none" onchange="clsCredPickFile(this)">'+
+          '<button class="btn-ghost" style="padding:6px 12px;font-size:12px" onclick="document.getElementById(\'cc-qr-file\').click()">📁 เลือกไฟล์รูป</button>'+
+          '<button class="btn-ghost" style="padding:6px 12px;font-size:12px;color:#b91c1c" onclick="document.getElementById(\'cc-credits_qr\').value=\'\';clsCredPreview()">ลบรูป</button>'+
+        '</div>'+
+        '<div class="muted" style="font-size:11.5px;margin-top:3px">ไฟล์รูปจะถูกย่อให้กว้างไม่เกิน 400px โดยอัตโนมัติ เพื่อไม่ให้เกมโหลดช้า</div></div>'+
       '<div style="background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:10px 13px;margin-top:6px">'+
-        '<div class="muted" style="font-size:11.5px;margin-bottom:6px">ตัวอย่างที่นักเรียนจะเห็น</div>'+
+        '<div class="muted" style="font-size:11.5px;margin-bottom:6px">ตัวอย่างที่นักเรียนจะเห็น (หน้า 👨‍🏫 ออกแบบและพัฒนา)</div>'+
         '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#0b3a30;border-radius:10px;padding:11px 14px;color:#ffe9b8">'+
           '<img id="cc-prev-qr" style="display:none;width:82px;border-radius:7px;background:#fff;padding:4px;flex:none">'+
-          '<div style="flex:1;min-width:170px;font-size:12.5px"><div id="cc-prev-name" style="font-weight:800;color:#ffe070"></div>'+
-          '<div id="cc-prev-contact"></div><div id="cc-prev-sub" style="opacity:.88"></div><div id="cc-prev-extra" style="opacity:.88"></div></div>'+
-        '</div></div>'+
+          '<div id="cc-prev-dev" style="flex:1;min-width:170px;font-size:12.5px;line-height:1.6"></div>'+
+        '</div>'+
+        '<div class="muted" style="font-size:11.5px;margin:9px 0 6px">หน้าแรก / ท้ายหน้าจอ</div>'+
+        '<div style="background:#0b3a30;border-radius:10px;padding:9px 14px;color:#ffe9b8;font-size:12.5px;text-align:center;line-height:1.6" id="cc-prev-scr"></div>'+
+      '</div>'+
       '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">'+
         '<button class="btn-primary" style="background:#0f766e;padding:7px 18px" onclick="clsCredSave()">💾 บันทึก</button>'+
         '<span class="muted" id="cc-st" style="font-size:12px;align-self:center"></span></div></div>';
@@ -2722,14 +2742,33 @@ function clsOpenCredits(){
     clsCredPreview();
   });
 }
+/* ตัวอย่างในหน้าแก้ไข — วาดด้วยกฎเดียวกับในเกม (มีลิงก์ = ขีดเส้นใต้สีทอง) */
+function clsCredPrevLine(k,dflt,style){
+  var t=String((($('cc-'+k)||{}).value)||'').trim() || (dflt||'');
+  if(!t) return '';
+  var u=String((($('cc-'+k+'_url')||{}).value)||'').trim();
+  var body=u ? ('<u style="color:#ffe070">'+esc(t)+'</u> <span style="opacity:.7;font-size:11px">🔗</span>')
+             : esc(t).replace(/((?:https?:\/\/|www\.)[^\s<>"']+)/gi,'<u style="color:#ffe070">$1</u>');
+  return '<div style="'+(style||'')+'">'+body+'</div>';
+}
 function clsCredPreview(){
-  var g=function(k){ return String((($('cc-'+k)||{}).value)||'').trim(); };
-  var set=function(id,v,dflt){ var el=$(id); if(el) el.textContent=v||dflt||''; };
-  set('cc-prev-name', g('credits_name'), '👨‍🏫 ออกแบบและพัฒนา: นายอาคม อินต๊ะพันธ์');
-  set('cc-prev-contact', g('credits_contact'), '📧 Arkhom.aintaphan@gmail.com');
-  set('cc-prev-sub', g('credits_sub'), 'เกมผจญภัยกาญจนบุรี · สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4');
-  set('cc-prev-extra', g('credits_extra'), '');
-  var qr=$('cc-prev-qr'), v=g('credits_qr');
+  var dev=$('cc-prev-dev');
+  if(dev){
+    var g3=CLS_CRED_GROUPS[2];
+    dev.innerHTML=g3.rows.map(function(r,i){
+      return clsCredPrevLine(r[0], r[2], i===0?'font-weight:800;color:#ffe070':(i>=3?'opacity:.88;font-size:11.5px':''));
+    }).join('');
+  }
+  var scr=$('cc-prev-scr');
+  if(scr){
+    scr.innerHTML='<div style="opacity:.65;font-size:11px">หน้าแรก</div>'+
+      (clsCredPrevLine('credits_start','www.GamePlearn.com')||'<div class="muted">—</div>')+
+      clsCredPrevLine('credits_start2','')+
+      '<div style="opacity:.65;font-size:11px;margin-top:6px">ท้ายหน้าจอ</div>'+
+      (clsCredPrevLine('credits_line','www.GamePlearn.com')||'<div class="muted">—</div>')+
+      clsCredPrevLine('credits_line2','');
+  }
+  var qr=$('cc-prev-qr'), v=String((($('cc-credits_qr')||{}).value)||'').trim();
   if(qr){ if(v){ qr.src=v; qr.style.display=''; } else qr.style.display='none'; }
 }
 /* ย่อรูป QR ก่อนเก็บ — QR ขนาด 400px อ่านได้สบายและไฟล์เล็กพอไม่ถ่วงการเปิดเกม */
@@ -2756,10 +2795,11 @@ function clsCredPickFile(inp){
 function clsCredSave(){
   var st=$('cc-st'); if(st) st.textContent='กำลังบันทึก...';
   var chain=Promise.resolve(), errs=[];
-  CLS_CRED_FIELDS.forEach(function(f){
-    var v=String((($('cc-'+f[0])||{}).value)||'').trim();
-    chain=chain.then(function(){ return sbFetch('/rest/v1/rpc/rpc_set_setting',{method:'POST',body:JSON.stringify({p_key:f[0],p_val:v})}); })
-      .catch(function(e){ errs.push({f:f[1], m:String((e&&e.message)||'')}); });
+  clsCredKeys().forEach(function(k){
+    var el=$('cc-'+k); if(!el) return;
+    var v=String((el.value)||'').trim();
+    chain=chain.then(function(){ return sbFetch('/rest/v1/rpc/rpc_set_setting',{method:'POST',body:JSON.stringify({p_key:k,p_val:v})}); })
+      .catch(function(e){ errs.push({f:k, m:String((e&&e.message)||'')}); });
   });
   sbEnsure().then(function(){ return chain; }).then(function(){
     if(!errs.length){
@@ -2773,7 +2813,7 @@ function clsCredSave(){
     if(/schema cache|Could not find the function|does not exist|PGRST202|404/i.test(m)){
       html='<span style="color:#b91c1c;font-weight:700">ยังบันทึกไม่ได้ — ฐานข้อมูลยังไม่มีฟังก์ชันนี้</span>'+
         '<div style="color:#334155;font-weight:400;margin-top:4px;line-height:1.65">'+
-        'ให้เปิด <b>Supabase → SQL Editor → New query</b> แล้ววางไฟล์ <b>supabase_patch_all_v772.sql</b> ทั้งไฟล์ → กด Run<br>'+
+        'ให้เปิด <b>Supabase → SQL Editor → New query</b> แล้ววางไฟล์ <b>supabase_patch_all_v775.sql</b> ทั้งไฟล์ → กด Run<br>'+
         'รันแล้วยังขึ้นข้อความเดิม ให้รอ 1-2 นาทีแล้วกดบันทึกใหม่ (ระบบกำลังโหลดรายการฟังก์ชันใหม่)</div>';
     } else if(/เฉพาะผู้ดูแล|admin/i.test(m)){
       html='<span style="color:#b91c1c;font-weight:700">บันทึกไม่ได้ — บัญชีนี้ยังไม่ใช่ผู้ดูแลระบบ</span>'+
@@ -3625,7 +3665,7 @@ function clsLoadPublicScores(force){
       clsPub.rows=[];
       var m=String((e&&e.message)||'');
       clsPub.err=/schema cache|Could not find the function|does not exist|404|PGRST202/i.test(m)
-        ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v772.sql ทั้งไฟล์ → Run'
+        ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v775.sql ทั้งไฟล์ → Run'
         : m;
     })
     .then(function(){ clsPub.loading=false;
@@ -3915,6 +3955,17 @@ var SELF_DIM_LABEL=[['qSM','การจัดการตนเอง','SM'],['
                     ['qTW','การรวมพลังทำงานเป็นทีม','TW'],['qCZ','การเป็นพลเมืองที่เข้มแข็ง','CZ'],
                     ['qNS','การอยู่ร่วมกับธรรมชาติฯ','NS']];
 var SELF_LEGACY_KEYS=['c','s','r','p']; /* รุ่นเก่า: 4 ด้านย่อยของการคิดขั้นสูง */
+/* [V.7.74] ชื่อ "ด้านย่อย" สำหรับแสดงผล — สำเนาฝั่ง Dashboard (คนละ <script> กับเกม จึงแชร์ตัวแปรกันไม่ได้)
+   ลำดับและรหัสต้องตรงกับ SELF_DIMS ในเกมเสมอ · test374 เทียบสองชุดนี้ให้อัตโนมัติแล้ว
+   รหัสที่ไม่รู้จัก (ข้อมูลเวอร์ชันอนาคต) จะแสดงเป็นรหัสดิบแทน ไม่ทำให้หน้าพัง */
+var SELF_SUB_LABEL=[
+  ['SM-A','รู้จักและเห็นคุณค่าในตนเอง','SM'],['SM-B','กำกับตนเอง จัดการอารมณ์และเวลา','SM'],['SM-C','ตั้งเป้าหมายและมุ่งมั่นพัฒนาตนเอง','SM'],
+  ['HT-CTC','คิดอย่างมีวิจารณญาณ (คิดก่อนเชื่อ)','HT'],['HT-STM','คิดเชิงระบบ (มองความเกี่ยวข้อง)','HT'],['HT-CRT','คิดสร้างสรรค์','HT'],['HT-PRB','คิดแก้ปัญหา','HT'],
+  ['CM-A','รับสาร (ฟังและอ่านจับใจความ)','CM'],['CM-B','ส่งสาร (พูดและเขียนให้เข้าใจ)','CM'],['CM-C','สื่อสารให้เหมาะกับบุคคลและกาลเทศะ','CM'],
+  ['TW-A','เป็นสมาชิกทีมที่ดีและมีภาวะผู้นำ','TW'],['TW-B','ร่วมมือรวมพลังอย่างเป็นระบบ','TW'],['TW-C','สร้างความสัมพันธ์และจัดการความขัดแย้ง','TW'],
+  ['CZ-A','ปฏิบัติตนอย่างรับผิดชอบตามบทบาทหน้าที่','CZ'],['CZ-B','เคารพสิทธิผู้อื่นและอยู่ร่วมกันในความต่าง','CZ'],['CZ-C','มีส่วนร่วมทำเพื่อส่วนรวมและท้องถิ่น','CZ'],
+  ['NS-A','เข้าใจธรรมชาติ ช่างสังเกตและตั้งคำถาม','NS'],['NS-B','ใช้ทรัพยากรและวิทยาการอย่างรู้คุณค่า','NS'],['NS-C','ร่วมดูแลรักษาเพื่อความยั่งยืน','NS']
+];
 function clsOpenSelfAssess(){
   var old=document.getElementById('cls-self-modal'); if(old) old.remove();
   var wrap=document.createElement('div');
@@ -3956,6 +4007,7 @@ function clsOpenSelfAssess(){
                  :(pl.firstName?String(pl.firstName)+' '+String(pl.lastName||''):'(ไม่ทราบชื่อ)'),
         game: stu?(stu.character_name||''):'',
         mine: !!stu, cls: pl['class']||(stu?'':''), dims:dims, avg: allN?Math.round(tot/allN*100)/100:null,
+        subs: (pl.subAns&&typeof pl.subAns==='object')?pl.subAns:null, /* [V.7.74] คำตอบรายด้านย่อย (มีเฉพาะรุ่น 3 ขึ้นไป) */
         best: Number(pl.bestDim)||0, bestWhy: String(pl.bestReason||'').trim(),
         imp: Number(pl.improveDim)||0, impPlan: String(pl.improvePlan||'').trim(),
         t: r.created_at
@@ -3985,10 +4037,35 @@ function clsOpenSelfAssess(){
           (x.bestWhy?'<b>ที่ทำได้ดีเพราะ:</b> '+esc(x.bestWhy)+' ':'')+
           (x.impPlan?'<b>สิ่งที่จะพยายามต่อ:</b> '+esc(x.impPlan):'')+'</td></tr>'):'');
     }).join('');
+    /* [V.7.74 ตามที่ครูสั่ง "ครบทุกด้าน"] ตารางค่าเฉลี่ยราย "ด้านย่อย" — ครูเห็นว่าองค์ประกอบไหนของแต่ละสมรรถนะยังอ่อน
+       อ่านจาก payload.subAns ที่แบบประเมินรุ่นใหม่แนบมา · ผู้ที่ทำรุ่นเก่าจะไม่ถูกนับในตารางนี้ (ขึ้นจำนวนผู้ตอบตามจริง) */
+    var subStat={}, subN=0;
+    list.forEach(function(x){ if(!x.subs) return; subN++;
+      Object.keys(x.subs).forEach(function(c){ var v=Number(x.subs[c]); if(isNaN(v)||v<=0) return;
+        if(!subStat[c]) subStat[c]={s:0,n:0}; subStat[c].s+=v; subStat[c].n++; }); });
+    var subCodes=SELF_SUB_LABEL.map(function(r){ return r[0]; });
+    Object.keys(subStat).forEach(function(c){ if(subCodes.indexOf(c)<0) subCodes.push(c); });
+    var subHtml='';
+    if(subN){
+      var subLab={}; SELF_SUB_LABEL.forEach(function(r){ subLab[r[0]]=r; });
+      subHtml='<div style="margin-top:14px"><b style="font-size:13.5px">🧩 ค่าเฉลี่ยรายด้านย่อย (องค์ประกอบตามกรอบ CBE)</b>'+
+        '<div class="muted" style="font-size:11.5px;margin:2px 0 6px">จากผู้ตอบแบบประเมินรุ่นที่แยกด้านย่อย <b>'+subN+'</b> คน · เรียงตามลำดับในแบบประเมิน</div>'+
+        '<table class="cls-tbl cls-sub-tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:19%"><col><col style="width:15%"><col style="width:13%"></colgroup>'+
+        '<thead><tr><th>สมรรถนะหลัก</th><th>ด้านย่อย</th><th style="text-align:center">ค่าเฉลี่ย</th><th style="text-align:center">ผู้ตอบ</th></tr></thead><tbody>'+
+        subCodes.map(function(c){
+          var r=subLab[c]||[c,c,String(c).split('-')[0]], st2=subStat[c], av=(st2&&st2.n)?Math.round(st2.s/st2.n*100)/100:null;
+          return '<tr><td style="color:'+(IND_COMP_CLR[r[2]]||'#475569')+';font-weight:700;font-size:11.5px">'+esc(CORE6_SHORT[r[2]]||r[2])+'</td>'+
+            '<td style="font-size:12px">'+esc(r[1])+' <span class="muted" style="font-size:10.5px">'+esc(c)+'</span></td>'+
+            '<td style="text-align:center"><b style="color:'+clr(av)+'">'+(av==null?'–':av.toFixed(2))+'</b>'+
+              '<div style="font-size:10px;color:'+clr(av)+'">'+(av==null?'ยังไม่มีข้อมูล':lab(av))+'</div></td>'+
+            '<td style="text-align:center">'+((st2&&st2.n)||0)+'</td></tr>';
+        }).join('')+'</tbody></table></div>';
+    }
     b.innerHTML=head+
       '<div style="overflow-x:auto"><table class="cls-tbl"><thead><tr><th style="min-width:140px">นักเรียน</th>'+
       SELF_DIM_LABEL.map(function(d){ return '<th style="text-align:center;font-size:10px;line-height:1.2;color:'+(IND_COMP_CLR[d[2]]||'#475569')+'" title="'+esc(d[1])+'">'+esc(CORE6_SHORT[d[2]]||d[1])+'</th>'; }).join('')+
       '<th style="text-align:center">เฉลี่ย</th><th>ทำได้ดีที่สุด</th><th>อยากฝึกเพิ่ม</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>'+
+      subHtml+
       '<div class="muted" style="font-size:12px;margin-top:9px;line-height:1.65">คะแนน 1-5 มาจาก<b>การประเมินตนเองของนักเรียน</b>ครบทั้ง 6 ด้าน (ทำซ้ำได้ ระบบใช้ครั้งล่าสุด) · จากผู้ตอบ <b>'+list.length+'</b> คน<br>'+
       '<b>ใช้ตรวจสอบประกอบ</b>กับคะแนนที่วัดได้จากเกม — ไม่นำมารวมเป็นคะแนนสมรรถนะ · ช่องว่างระหว่าง "สิ่งที่นักเรียนคิดว่าตนทำได้" กับ "สิ่งที่วัดได้จริง" เป็นประเด็นที่น่าคุยกับนักเรียน<br>'+
       'ผู้ที่ทำแบบประเมินรุ่นก่อน (ประเมินเฉพาะการคิดขั้นสูง) จะมีคะแนนเฉพาะด้านการคิดขั้นสูง ด้านอื่นขึ้นเป็น –</div>';

@@ -2,7 +2,16 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"><!-- [FIX] เปิดซูมถึง 2 เท่าเพื่อการเข้าถึง (เดิม user-scalable=no) -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, viewport-fit=cover"><!-- [FIX] เปิดซูมถึง 2 เท่าเพื่อการเข้าถึง (เดิม user-scalable=no) · [V.7.75] viewport-fit=cover ใช้พื้นที่ใต้รอยบากบนมือถือได้ -->
+<!-- [V.7.75 ตามที่ครูเลือก] เพิ่มไอคอนลงหน้าจอโฮมแล้วเล่นแบบเต็มจอ — ไม่มีแถบที่อยู่เว็บและแถบเครื่องมือของเบราว์เซอร์
+     ได้ความสูงคืนมาราว 10-15% และนักเรียนกดพลาดออกจากเกมยากขึ้นด้วย -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ผจญภัยกาญจนบุรี">
+<meta name="theme-color" content="#0b3a30">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="icon" href="data:image/png;base64,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">
 <title>ผจญภัยกาญจนบุรี (kan-adventure) - เกมการเรียนรู้ ป.4</title>
 <!-- [FIX] โหลดฟอนต์ Kanit/Sarabun จริง (เดิมประกาศใน font-family แต่ไม่เคยโหลด — แต่ละเครื่องแสดงฟอนต์ไม่เหมือนกัน)
      display=swap: ถ้าออฟไลน์/โหลดไม่ได้ ตกลงฟอนต์ระบบโดยไม่บล็อกการแสดงผล เกมยังเล่นได้ตามปกติ -->
@@ -27,6 +36,11 @@ html, body {
      ค่าตั้งต้น 1vw/1vh = พฤติกรรมเดิมเป๊ะ ก่อน JS ทำงาน/กรณีเบราว์เซอร์เก่า */
   --vw: 1vw;
   --vh: 1vh;
+  /* [V.7.75] ตัวอักษรฐาน: เดิมไม่ได้กำหนด จึงตกไปใช้ค่าปริยายของเบราว์เซอร์ 16px ตายตัว
+     บน PC เวทีกว้าง 1280 → 16px = 1.25% ของความกว้างเวที
+     บนมือถือเวทีกว้าง 780 → 16px = 2.05% (ใหญ่กว่ากัน 64%) ทุกข้อความที่ไม่ได้กำหนดขนาดเองจึงบวมและล้นกรอบ
+     กำหนดเป็น 1.25 หน่วยเวที = เท่าเดิมเป๊ะบน PC และย่อตามสัดส่วนบนมือถือ */
+  font-size: calc(var(--vw) * 1.25);
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
@@ -36,6 +50,7 @@ html, body {
   overflow: hidden;
   box-shadow: 0 0 60px rgba(0,0,0,0.6);
 }
+
 #game-canvas {
   position: absolute; top: 0; left: 0;
   width: 100%; height: 100%;
@@ -150,7 +165,9 @@ html, body {
   font-size: calc(var(--vw) * 0.85); color: #d8f2e2; opacity: 0.85; text-shadow: 0 1px 3px rgba(0,0,0,0.7);
   pointer-events: none; z-index: 6; white-space: nowrap; }
 
-.btn { font-family: inherit; font-size: calc(var(--vw) * 1.2); font-weight: 700; padding: calc(var(--vw) * 1) calc(var(--vw) * 2.4);
+/* [V.7.75] line-height: อีโมจิในปุ่ม (เช่น ⛶ 🔠) ใช้ฟอนต์สำรองที่มีกล่องบรรทัดสูงมาก
+   ปุ่มบนจอเล็กจึงสูงเกินจริงเกือบเท่าตัวทั้งที่ตัวอักษรเล็ก — ล็อกความสูงบรรทัดไว้ 1.25 เท่า */
+.btn { font-family: inherit; font-size: calc(var(--vw) * 1.2); font-weight: 700; line-height: 1.25; padding: calc(var(--vw) * 1) calc(var(--vw) * 2.4);
   border: none; border-radius: calc(var(--vw) * 2); cursor: pointer; transition: transform 0.15s ease, filter 0.15s ease; }
 .btn:hover { transform: translateY(calc(var(--vw) * -0.2)); filter: brightness(1.08); }
 .btn:active { transform: translateY(calc(var(--vw) * 0.1)) scale(0.97); }
@@ -165,11 +182,15 @@ html, body {
 .corner-bl { position: absolute; bottom: calc(var(--vw) * 1.5); left: calc(var(--vw) * 1.5); }
 /* [รอบ 45 ตามคำขอ #7] ป้ายเวอร์ชันมุมซ้ายหน้าแรก — เล็ก จาง อ่านได้แต่ไม่รบกวนสายตา
    [รอบ 47 ตามคำขอเพิ่มเติม] ลดลงมาให้กึ่งกลางแนวตั้งตรงระดับเดียวกับปุ่มไอคอน 👨‍🏫 (ออกแบบและพัฒนา) มุมขวา */
-/* [V.7.72 ข้อ 2] เครดิตท้ายหน้าจอรองรับรูป QR (ซ้าย) + ข้อความได้ถึง 3 บรรทัด */
-.screen-credit-line.has-qr { display: flex; align-items: center; justify-content: center; gap: calc(var(--vw) * 0.7); text-align: left; }
-.screen-credit-qr { width: calc(var(--vw) * 3.4); min-width: 40px; max-width: 76px; border-radius: calc(var(--vw) * 0.3);
-  background: #fff; padding: calc(var(--vw) * 0.14); flex: none; }
-.screen-credit-line .scl-2, .screen-credit-line .scl-3 { display: block; font-size: 0.88em; opacity: 0.9; }
+/* [V.7.74 ข้อ 3 ตามที่ครูสั่ง] เครดิตท้ายหน้าจอเหลือ 2 บรรทัด และไม่ผูกกับรูป QR อีกแล้ว (QR อยู่ในหน้า 👨‍🏫 อย่างเดียว)
+   สำคัญ: .screen-credit-line ตั้ง pointer-events:none ไว้ (กันบังการกดบนแผนที่) ลิงก์จึงต้องเปิด pointer-events เองไม่งั้นกดไม่ได้ */
+.screen-credit-line { text-align: center; line-height: 1.45; }
+.screen-credit-line .scl-2 { display: block; font-size: 0.88em; opacity: 0.9; }
+.screen-credit-line a, .start-caption-txt a { color: #ffe070; text-decoration: none; border-bottom: 1px solid rgba(255,224,112,0.5);
+  pointer-events: auto; cursor: pointer; }
+.screen-credit-line a:hover, .start-caption-txt a:hover { color: #fff3c4; border-bottom-color: #fff3c4; }
+.start-caption-txt { font-size: calc(var(--vw) * 1.05); color: #ffe9b8; opacity: 0.95; font-weight: 700; }
+.start-caption-2 { font-size: calc(var(--vw) * 0.9); opacity: 0.88; margin-top: calc(var(--vw) * 0.15); }
 .game-version-label { position: absolute; left: calc(var(--vw) * 1.6); bottom: calc(var(--vw) * 2.5);
   font-family: 'Sarabun', sans-serif; font-size: calc(var(--vw) * 0.78); font-weight: 600;
   color: rgba(255,255,255,0.85); background: rgba(0,0,0,0.32); padding: calc(var(--vw) * 0.18) calc(var(--vw) * 0.6);
@@ -178,7 +199,7 @@ html, body {
   /* [แก้ V.7.69 ตามที่ครูแจ้ง "คลิก version 5 ครั้งแล้วเข้า admin ไม่ได้"] เดิมใส่ pointer-events:none ไว้
      ป้ายจึงไม่รับคลิกเลย (คลิกทะลุไปโดนพื้นหลัง) — เอาออกแล้ว พร้อมขยายพื้นที่แตะให้นิ้วโดนง่ายบนแท็บเล็ต */
   cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
-  display: inline-flex; align-items: center; min-height: 30px; }
+  display: inline-flex; align-items: center; min-height: clamp(16px, calc(var(--vh) * 4.2), 30px); } /* [V.7.75] ย่อตามเวทีบนจอเล็ก */
 /* [ใหม่ V.7.69] ป้ายบอกว่ากำลังอยู่ใน "โหมดสาธิต" (?demo=1) — ครูเปิดเล่นโชว์นักเรียนได้เต็มเกม แต่ไม่มีการบันทึกคะแนนใด ๆ */
 .demo-badge { position: fixed; top: 6px; left: 50%; transform: translateX(-50%); z-index: 99998;
   display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg,#6d28d9,#c026d3);
@@ -623,6 +644,35 @@ body.lowfx .cap-twist-banner { animation: none; }
 .learning-progress { font-size: calc(var(--vw) * 0.8); font-weight: 800; color: #ffe89a; text-align: center; padding: calc(var(--vw) * 0.35);
   background: rgba(0,0,0,0.25); border-radius: calc(var(--vw) * 0.5); margin-bottom: calc(var(--vw) * 0.2); }
 .learning-item .li-status { margin-left: auto; flex: none; font-size: calc(var(--vw) * 0.9); }
+/* [V.7.74 ตามที่ครูแจ้ง "หน้าห้องเรียนรู้ ปรับให้พอดี ไม่ให้มีแถบเลื่อน"]
+   จอเตี้ย (โน้ตบุ๊กจอเล็ก · แท็บเล็ต/มือถือแนวนอน) เดิมบังคับปุ่มรายการสูงอย่างน้อย 40px เพื่อให้กดง่าย
+   ผลคือรายชื่อบทเรียน 11 บท ยาวเกินกล่อง ต้องเลื่อนขึ้นลงตลอด
+   แก้โดยจัดรายชื่อเป็น 2 คอลัมน์บนจอเตี้ย (6 แถวก็ครบ) และย่อระยะห่างลงเล็กน้อย — ยังกดง่ายเหมือนเดิม */
+@media (max-height: 700px) {
+  .learning-list { width: calc(var(--vw) * 30); display: grid; grid-template-columns: 1fr 1fr;
+    align-content: start; gap: calc(var(--vw) * 0.22); }
+  /* min-width:0 จำเป็นสำหรับ grid/flex — ไม่งั้นชื่อบทเรียนยาว ๆ จะดันคอลัมน์จนล้นออกด้านข้าง */
+  .learning-list .learning-item { min-height: 32px; padding: calc(var(--vw) * 0.2) calc(var(--vw) * 0.35); min-width: 0; }
+  .learning-list .learning-item span:not(.li-status) { min-width: 0; }
+  .learning-list .learning-item canvas { width: calc(var(--vw) * 1.3); height: calc(var(--vw) * 1.3); }
+  .learning-list .learning-item span:not(.li-status) { font-size: clamp(9px, calc(var(--vw) * 0.72), 13px); }
+  .learning-sub { margin: calc(var(--vw) * 0.15) 0 calc(var(--vw) * 0.35); }
+  /* เนื้อหาบทเรียนก็ย่อระยะห่างและขนาดตัวอักษรลงเล็กน้อย ให้พอดีจอโดยไม่ต้องเลื่อน */
+  .learning-head canvas { width: calc(var(--vw) * 3.6); height: calc(var(--vw) * 3.6); }
+  .learning-head { margin-bottom: calc(var(--vw) * 0.25); gap: calc(var(--vw) * 0.6); }
+  .learning-content { padding: calc(var(--vw) * 0.55) calc(var(--vw) * 0.8); }
+  .learning-point { padding: calc(var(--vw) * 0.26) calc(var(--vw) * 0.45); margin-bottom: calc(var(--vw) * 0.22);
+    font-size: clamp(10.5px, calc(var(--vw) * 0.8), 15px); line-height: 1.4; }
+}
+/* จอเตี้ยมาก (มือถือแนวนอน) — ย่ออีกขั้นให้เนื้อหาพอดีจอ ไม่ต้องเลื่อน */
+@media (max-height: 470px) {
+  .learning-title { font-size: calc(var(--vw) * 1.4); }
+  .learning-sub { display: none; }
+  .learning-head canvas { width: calc(var(--vw) * 3); height: calc(var(--vw) * 3); }
+  .learning-head-title { font-size: calc(var(--vw) * 1.05); }
+  .learning-point { padding: calc(var(--vw) * 0.2) calc(var(--vw) * 0.4); margin-bottom: calc(var(--vw) * 0.16);
+    font-size: clamp(9.5px, calc(var(--vw) * 0.75), 13px); line-height: 1.35; }
+}
 .lq-question { font-size: calc(var(--vw) * 1.05); font-weight: 800; color: #fff8e6; padding: calc(var(--vw) * 0.5) 0; }
 .lq-opt { display: block; width: 100%; text-align: left; margin: calc(var(--vw) * 0.3) 0; padding: calc(var(--vw) * 0.55) calc(var(--vw) * 0.8);
   background: rgba(255,255,255,0.08); border: calc(var(--vw) * 0.12) solid rgba(255,255,255,0.25); border-radius: calc(var(--vw) * 0.5);
@@ -641,7 +691,7 @@ body.lowfx .cap-twist-banner { animation: none; }
 .btn-settings-global { position: absolute; top: calc(var(--vw) * 2); right: calc(var(--vw) * 2); z-index: 50; pointer-events: auto; }
 
 /* MODULE 8: ตั้งค่าเสียงละเอียด */
-.audio-settings-box { width: calc(var(--vw) * 30); }
+.audio-settings-box { width: calc(var(--vw) * 34); max-width: calc(var(--vw) * 36); max-height: calc(var(--vh) * 92); overflow-y: auto; } /* [V.7.75] กว้างขึ้นเล็กน้อยเพราะมีแถวขนาดตัวอักษร/เต็มจอเพิ่มเข้ามา + กันกล่องสูงเกินจอ */ /* [V.7.75] มีแถวตั้งค่าเพิ่ม — กันไม่ให้กล่องสูงเกินจอ */
 /* [ใหม่] โซนล้างข้อมูลในเครื่อง (ในหน้าต่างตั้งค่า) — สำหรับครูรีเซ็ตเครื่องห้องเรียน/ลบข้อมูลค้างหลังลบบัญชีในชีต */
 .wipe-zone { margin-top: calc(var(--vw) * 1); padding-top: calc(var(--vw) * 0.9); border-top: calc(var(--vw) * 0.1) dashed rgba(255,255,255,0.25);
   display: flex; flex-direction: column; gap: calc(var(--vw) * 0.5); align-items: center; text-align: center; }
@@ -651,9 +701,35 @@ body.lowfx .cap-twist-banner { animation: none; }
   font-size: calc(var(--vw) * 0.9); }
 .btn-danger-soft:hover { filter: brightness(1.12); }
 .volume-row { display: flex; align-items: center; gap: calc(var(--vw) * 1); margin-bottom: calc(var(--vw) * 1.2); }
-.volume-row label { flex: 0 0 calc(var(--vw) * 9); font-size: calc(var(--vw) * 0.95); color: #d8f2e2; text-align: left; }
+/* [V.7.75] จอแคบ: ป้ายชื่อยาว ๆ เคยดันแถวจนล้นออกนอกกล่อง — ให้ย่อได้และตัดบรรทัดภาษาไทยได้ */
+.volume-row label { flex: 1 1 calc(var(--vw) * 9); max-width: calc(var(--vw) * 11); min-width: 0;
+  font-size: calc(var(--vw) * 0.95); color: #d8f2e2; text-align: left; overflow-wrap: anywhere; line-height: 1.3; }
 .volume-row input[type="range"] { flex: 1; accent-color: #ffd54a; height: calc(var(--vw) * 0.6); cursor: pointer; }
-.volume-row input[type="range"] { height: max(calc(var(--vw) * 0.6), 28px); } /* [ตรวจมือถือ V.7.64] พื้นที่นิ้วจับสไลเดอร์ขั้นต่ำ 28px (เดิม 2-7px บนจอเล็ก) */
+.volume-row input[type="range"] { height: clamp(18px, calc(var(--vw) * 2.2), 28px); }
+/* [V.7.75] ปุ่มเลือกขนาดตัวอักษร + คำแนะนำเพิ่มลงหน้าจอโฮม */
+.uiscale-chips { display: flex; gap: calc(var(--vw) * 0.4); flex: 1 1 auto; flex-wrap: nowrap; min-width: 0; }
+.uiscale-chip { flex: 1 1 0; min-width: 0; border: calc(var(--vw)*0.12) solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.08); color: #eaf8ef; border-radius: calc(var(--vw) * 0.5); cursor: pointer;
+  padding: calc(var(--vw) * 0.35) calc(var(--vw) * 0.5); font-weight: 800; font-size: calc(var(--vw) * 0.95);
+  min-height: clamp(24px, calc(var(--vh) * 4.6), 36px); }
+.uiscale-chip.on { background: linear-gradient(180deg,#ffca4a,#ff9d2e); color: #4a2a00; border-color: #ffd54a; }
+.uiscale-chip, #btn-fullscreen { white-space: nowrap; } /* ตัวอักษรในปุ่มต้องไม่ตัดบรรทัด ไม่งั้นปุ่มสูงเกินแถว */
+#btn-fullscreen { flex: none; padding: calc(var(--vw) * 0.5) calc(var(--vw) * 1); font-size: calc(var(--vw) * 0.9); }
+/* [V.7.75] จอเตี้ย (มือถือแนวนอน): บีบระยะห่างในหน้าตั้งค่าให้ทุกแถวพอดีจอ ไม่ต้องเลื่อน */
+@media (max-height: 700px) {
+  .btn { padding: calc(var(--vw) * 0.6) calc(var(--vw) * 1.8); }
+  .audio-settings-box .volume-row { margin-bottom: calc(var(--vw) * 0.32); }
+  .audio-settings-box .media-modal-title { margin-bottom: calc(var(--vw) * 0.35); font-size: calc(var(--vw) * 1.2); }
+  .audio-settings-box .volume-row input[type="range"] { height: clamp(15px, calc(var(--vw) * 1.8), 24px); }
+  /* กล่องกว้างขึ้นบนจอเตี้ย — ป้ายชื่อยาว ๆ จะได้อยู่บรรทัดเดียว ไม่ดันกล่องให้สูงจนต้องเลื่อน */
+  /* .modal-box มี max-width 32 หน่วยเวทีอยู่ ต้องขยายด้วย ไม่งั้นค่า width ใหม่ไม่มีผล */
+  .audio-settings-box { padding: calc(var(--vw) * 1) calc(var(--vw) * 1.8); width: calc(var(--vw) * 44); max-width: calc(var(--vw) * 46); }
+  .audio-settings-box .volume-row label { max-width: calc(var(--vw) * 17); flex-basis: calc(var(--vw) * 15); }
+  .a2hs-hint { font-size: calc(var(--vw) * 0.78); padding: calc(var(--vw) * 0.35) calc(var(--vw) * 0.6); }
+}
+.a2hs-hint { font-size: calc(var(--vw) * 0.86); color: #ffe89a; background: rgba(255,213,74,0.12);
+  border: calc(var(--vw)*0.12) solid rgba(255,213,74,0.45); border-radius: calc(var(--vw) * 0.6);
+  padding: calc(var(--vw) * 0.45) calc(var(--vw) * 0.7); margin-top: calc(var(--vw) * 0.5); line-height: 1.5; } /* [ตรวจมือถือ V.7.64] พื้นที่นิ้วจับสไลเดอร์ · [V.7.75] ย่อตามเวทีบนจอเล็ก แต่ไม่ต่ำกว่า 18px */
 .volume-val { flex: 0 0 calc(var(--vw) * 3); font-size: calc(var(--vw) * 0.9); color: #ffd54a; text-align: right; font-weight: 700; }
 
 /* ปุ่มออกจากด่าน + หน้าต่างยืนยัน */
@@ -738,7 +814,7 @@ body.lowfx .cap-twist-banner { animation: none; }
 .lobby-panel { width: calc(var(--vw) * 16.5); background: rgba(0,0,0,0.3); border: calc(var(--vw) * 0.12) solid rgba(255,255,255,0.18);
   border-radius: calc(var(--vw) * 0.9); padding: calc(var(--vw) * 0.7); display: flex; flex-direction: column; gap: calc(var(--vw) * 0.5); }
 .lobby-panel-title { font-size: calc(var(--vw) * 0.95); font-weight: 800; color: #ffe070; text-align: center; }
-.lobby-panel-hint { font-size: clamp(10px, calc(var(--vw) * 0.68), 14px); color: #bfe0cd; opacity: 0.8; text-align: center; margin-top: auto; line-height: 1.35; }
+.lobby-panel-hint { font-size: clamp(7.5px, calc(var(--vw) * 0.68), 14px); color: #bfe0cd; opacity: 0.8; text-align: center; margin-top: auto; line-height: 1.35; }
 .lobby-lb-list { display: flex; flex-direction: column; gap: calc(var(--vw) * 0.3); }
 .lobby-lb-row { display: flex; justify-content: space-between; align-items: center; gap: calc(var(--vw) * 0.4);
   font-size: clamp(11px, calc(var(--vw) * 0.82), 16px); font-weight: 700; color: #e8f6ee;
@@ -1081,14 +1157,30 @@ body.lowfx .ls-train, body.lowfx .ls-cloud-1, body.lowfx .ls-cloud-2, body.lowfx
 .media-modal-box { max-width: min(calc(var(--vw) * 78), 1180px); width: min(calc(var(--vw) * 78), 1180px); text-align: left;
   max-height: calc(var(--vh) * 92); overflow-y: auto; } /* [V.7.72 ข้อ 8] กล่องชมสื่อกว้างขึ้นมาก (เดิม 50vw ทำให้วิดีโอเล็ก) */
 @media (max-width: 700px) { .media-modal-box { max-width: 96vw; width: 96vw; } }
+/* [V.7.74 ตามที่ครูแจ้ง "หน้าชมวิดีโอ ปรับให้พอดี ไม่ให้มีแถบเลื่อน"]
+   ของเดิมล้นแนวตั้งราว 60px ทุกขนาดจอ → มีแถบเลื่อนขึ้นลงเสมอ
+   แก้ที่ต้นเหตุ 2 ทางพร้อมกัน แทนการย่อวิดีโออย่างเดียว (ครูเคยแจ้งว่าวิดีโอเล็กเกินไป):
+     1) ลดขอบ/ระยะห่างที่ไม่จำเป็นของกล่องชมสื่อ (เดิมใช้ระยะเดียวกับกล่องข้อความ ซึ่งเผื่อไว้เยอะเกิน)
+     2) จำกัดความสูงวิดีโอด้วยหน่วยความสูงจอ แล้วให้ความกว้างวิ่งตามสัดส่วน 16:9
+   เวทีเกมเป็น 16:9 เสมอ ค่า --vw กับ --vh จึงเป็นสัดส่วนคงที่ ตัวเลขด้านล่างจึงพอดีทุกขนาดจอ (มีเทสต์วัดจริง) */
+#media-modal .media-modal-box { padding: calc(var(--vw) * 1.1) calc(var(--vw) * 1.6); overflow: hidden;
+  /* ความสูงสูงสุดของสื่อ 1 ชิ้น = 66% ของความสูงจอ แต่ถ้าจอเตี้ยมาก ต้องหักส่วนหัว/ปุ่มที่ย่อไม่ได้ (ราว 106px) ออกก่อน
+     ไม่งั้นจอเล็ก (เช่นแท็บเล็ต/มือถือแนวนอน) จะมีแถบเลื่อนโผล่มาอีก */
+  --media-max-h: min(calc(var(--vh) * 66), calc(var(--vh) * 84 - 106px)); }
+#media-modal .media-modal-title { margin-bottom: calc(var(--vw) * 0.4); }
+#media-modal .modal-buttons { margin-top: calc(var(--vw) * 0.5); }
+#media-modal .modal-buttons .btn { font-size: calc(var(--vw) * 1); padding: calc(var(--vw) * 0.55) calc(var(--vw) * 1.8); }
 .media-modal-title { font-size: calc(var(--vw) * 1.4); font-weight: 800; color: #ffd54a; margin-bottom: calc(var(--vw) * 1); text-align: center; }
 .media-photo-wrap { width: 100%; border-radius: calc(var(--vw) * 0.8); overflow: hidden; margin-bottom: calc(var(--vw) * 0.8); background: rgba(0,0,0,0.3); }
-.media-photo-wrap img { width: 100%; display: block; max-height: calc(var(--vh) * 56); object-fit: contain; } /* [FIX] รูปแนวตั้ง/ใหญ่ ไม่ดันจอแตก */
+.media-photo-wrap img { width: 100%; display: block; max-height: var(--media-max-h, calc(var(--vh) * 66)); object-fit: contain; } /* [FIX] รูปแนวตั้ง/ใหญ่ ไม่ดันจอแตก · [V.7.74] ขยายเท่าวิดีโอ (66vh) เพราะกล่องมีที่ว่างพอแล้ว */
 .media-video-wrap { position: relative; width: 100%; border-radius: calc(var(--vw) * 0.8); overflow: hidden; margin-bottom: calc(var(--vw) * 0.5); background: rgba(0,0,0,0.3);
   /* [V.7.71 ข้อ 13 ตามที่ครูขอ] ยึดสัดส่วนวิดีโอ 16:9 แทนการล็อกความสูงตายตัว (เดิม 56vh ทำให้ภาพมีขอบดำ/ถูกบีบตามจอ)
      aspect-ratio ครอบคลุมเบราว์เซอร์ยุคปัจจุบันทั้งหมด · จำกัดความสูงไม่ให้ล้นจอในแนวนอน */
   /* [V.7.72 ข้อ 8] ครูแจ้งว่าจอชมวิดีโอเล็กเกินไป — ขยายให้เต็มความกว้างที่กล่องมี และยอมสูงได้ถึง 74vh */
-  aspect-ratio: 16 / 9; max-height: calc(var(--vh) * 74); margin-left: auto; margin-right: auto; }
+  /* [V.7.74] ความกว้างวิ่งตามความสูงที่เหลือจริง (66vh × 16/9 ≈ 117vh) จึงคงสัดส่วน 16:9 โดยไม่ล้นจอ */
+  aspect-ratio: 16 / 9; max-height: var(--media-max-h, calc(var(--vh) * 66));
+  width: min(100%, calc(var(--media-max-h, calc(var(--vh) * 66)) * 16 / 9));
+  margin-left: auto; margin-right: auto; }
 /* เบราว์เซอร์เก่าที่ยังไม่รู้จัก aspect-ratio → ถอยไปใช้เทคนิค padding-top 56.25% (= 9/16) ได้สัดส่วนเดียวกัน */
 @supports not (aspect-ratio: 16 / 9) { .media-video-wrap { height: 0; padding-top: 56.25%; } }
 /* [FIX ตามคำขอ] หน้าชมสื่อพอดีจอ ไม่มีแถบเลื่อน: หัวข้อ (~6vh) + สื่อ (56vh) + ปุ่มเลื่อน (~9vh) รวม < 86vh ของกล่องพอดี */
@@ -1103,14 +1195,38 @@ body.lowfx .ls-train, body.lowfx .ls-cloud-1, body.lowfx .ls-cloud-2, body.lowfx
 .media-credit { font-size: calc(var(--vw) * 0.8); color: #d8f2e2; opacity: 0.75; text-align: right; margin-bottom: calc(var(--vw) * 1); }
 .media-credit a { color: #ffd54a; }
 .media-empty { text-align: center; color: #d8f2e2; opacity: 0.75; font-size: calc(var(--vw) * 0.95); padding: calc(var(--vw) * 2) 0; }
-.credits-list { overflow: visible; text-align: left; font-size: calc(var(--vw) * 0.9); color: #d8f2e2; line-height: 1.8; } /* [ปรับปรุงตามคำขอ] เดิมเลื่อนดูถ้าเกิน 40vh ตอนนี้แบ่งหน้าแทน (ดู _pagerSlice) */
+/* [V.7.74 ข้อ 5 ตามที่ครูขอ "ปรับให้สวยงาม น่าอ่าน เป็นสัดส่วน"]
+   เดิมที่มาของสื่อเป็นข้อความยาวต่อกันจนล้นบรรทัด (โดยเฉพาะ URL ที่ไม่มีช่องว่างให้ตัดคำ)
+   ตอนนี้แยกเป็นการ์ดรายบทเรียน วางเป็นกริด 2 คอลัมน์บนจอกว้าง และแหล่งที่มาแสดงเป็นชิปสั้น ๆ (โดเมนอย่างเดียว) */
+.credits-list { overflow: visible; text-align: left; font-size: calc(var(--vw) * 0.9); color: #d8f2e2; line-height: 1.7;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--vw) * 22)), 1fr));
+  gap: calc(var(--vw) * 0.6); align-items: start; }
 .credits-list a { color: #ffd54a; }
+.credit-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  border-left: calc(var(--vw) * 0.25) solid rgba(255,213,74,0.65); border-radius: calc(var(--vw) * 0.6);
+  padding: calc(var(--vw) * 0.5) calc(var(--vw) * 0.7); overflow-wrap: anywhere; }
+.credit-card-t { font-weight: 800; color: #ffe070; font-size: calc(var(--vw) * 0.92); margin-bottom: calc(var(--vw) * 0.25); }
+.credit-chips { display: flex; flex-wrap: wrap; gap: calc(var(--vw) * 0.25); }
+.credit-chip { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 999px; padding: 0 calc(var(--vw) * 0.55); font-size: calc(var(--vw) * 0.78); color: #eaf8ef;
+  line-height: 1.85; text-decoration: none; max-width: 100%; overflow-wrap: anywhere; }
+a.credit-chip { color: #ffd54a; border-color: rgba(255,213,74,0.4); }
+a.credit-chip:hover { background: rgba(255,213,74,0.16); }
 /* [ใหม่ รอบ 21] กล่องผู้จัดทำ — อยู่เหนือรายการเครดิตสื่อ แสดงถาวร */
-.credits-maker { text-align: left; background: rgba(255,255,255,0.07); border: calc(var(--vw) * 0.1) solid rgba(255,213,74,0.35);
+.credits-maker { text-align: left; display: flex; gap: calc(var(--vw) * 1); align-items: center; flex-wrap: wrap; background: rgba(255,255,255,0.07); border: calc(var(--vw) * 0.1) solid rgba(255,213,74,0.35);
   border-radius: calc(var(--vw) * 0.7); padding: calc(var(--vw) * 0.7) calc(var(--vw) * 1); margin: calc(var(--vw) * 0.5) 0 calc(var(--vw) * 0.9);
   color: #eafff4; font-size: calc(var(--vw) * 0.95); line-height: 1.8; }
 .credits-maker-name { font-weight: 800; color: #ffe070; }
 .credits-maker-sub { font-size: calc(var(--vw) * 0.82); opacity: 0.88; }
+/* [V.7.74] การ์ดผู้พัฒนา: QR ซ้าย · ข้อความ 6 บรรทัดขวา (จอแคบ QR จะพับขึ้นไปอยู่บนสุดเอง) */
+.credits-maker-lines { flex: 1; min-width: min(100%, calc(var(--vw) * 14)); }
+.credits-maker-line { font-size: calc(var(--vw) * 0.88); }
+.credits-maker-lines > div { overflow-wrap: anywhere; margin-bottom: calc(var(--vw) * 0.12); }
+.credits-maker-lines a { color: #ffd54a; text-decoration: none; border-bottom: 1px solid rgba(255,213,74,0.5); }
+.credits-qr-img { width: calc(var(--vw) * 7); min-width: 74px; max-width: 130px; border-radius: calc(var(--vw) * 0.5);
+  background: #fff; padding: calc(var(--vw) * 0.3); flex: none; }
+.credits-box .credits-section-head { margin-top: calc(var(--vw) * 0.9); }
+.credits-box { padding: calc(var(--vw) * 1.6) calc(var(--vw) * 2.2); }
 /* [รอบ 23] หัวข้อหมวดในหน้าเครดิต + เส้นคั่นระหว่างหมวด */
 .credits-section-head { text-align: left; font-size: calc(var(--vw) * 1.05); font-weight: 800; color: #ffd54a; margin-top: calc(var(--vw) * 0.4); }
 .credits-divider { height: calc(var(--vw) * 0.1); background: rgba(255,255,255,0.18); border-radius: calc(var(--vw) * 0.1); margin: calc(var(--vw) * 0.7) 0 calc(var(--vw) * 0.5); }
@@ -1417,45 +1533,74 @@ body.lowfx .ls-train, body.lowfx .ls-cloud-1, body.lowfx .ls-cloud-2, body.lowfx
 @keyframes swipeHintNudge { 0%, 100% { transform: translateX(-52%) translateY(0); } 50% { transform: translateX(-48%) translateY(0); } }
 
 button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แตะ/ซูมเบิ้ลแตะบนจอสัมผัส (ไม่มีผลกับเมาส์บน PC) */
+/* [V.7.75] ปุ่ม/ช่องกรอก ไม่สืบทอดขนาดตัวอักษรจากพ่อแม่ เบราว์เซอร์บังคับ 13.33px ตายตัว
+   → บนมือถือใหญ่เกินสัดส่วนเวที 64% · ตั้งเป็น 1.04 หน่วยเวที = 13.33px เป๊ะบน PC และย่อตามเวทีบนมือถือ
+   (กฎที่เจาะจงกว่า เช่น .btn / .form-input ยังทับค่านี้ได้ตามปกติ) */
+#game-wrapper button, #game-wrapper input, #game-wrapper select, #game-wrapper textarea { font-size: calc(var(--vw) * 1.04); }
 
 /* --- แท็บเล็ตแนวนอน (หน้าต่าง ≤ 1280px เช่น iPad ทุกรุ่น — [ตรวจมือถือ V.7.64] เดิม 1150 ทำให้ iPad Air/Pro 11" (1180-1194px) หลุดเกณฑ์ ปุ่มไอคอนเล็ก 38px) --- */
+/* [V.7.75] ค่าขั้นต่ำเดิมเป็น "พิกเซลตายตัว" — พอเวทีเล็กลง (มือถือ) ปุ่มจึงกินพื้นที่เกือบ 2 เท่าของสัดส่วนบน PC
+   จนข้อความล้นกล่อง · เปลี่ยนเป็น clamp(ขั้นต่ำที่ยังกดง่าย, ค่าตามสัดส่วนเวที, ค่าเดิม)
+   → จอใหญ่ได้ค่าเดิมเป๊ะ · จอเล็กย่อลงตามสัดส่วนเวทีแต่ไม่เล็กจนกดไม่โดน */
 @media (max-width: 1280px) {
-  .btn { min-height: 40px; }
-  .btn-icon { min-width: 44px; min-height: 44px; font-size: 17px; }
-  #btn-cinematic-skip { min-width: 84px; min-height: 40px; font-size: 14px; }
-  .quiz-item-btn { min-width: 50px; min-height: 40px; font-size: 14px; padding: 2px; }
-  .wm-status-lb-btn { min-height: 38px; font-size: 11px; padding: 3px 6px; white-space: nowrap; }
-  .shop-tab-btn { min-height: 40px; font-size: 13px; }
-  .shop-aura-btn { min-height: 38px; font-size: 12px; }
-  .auth-tab { min-height: 38px; font-size: 13px; }
-  .form-input { min-height: 40px; font-size: 14px; }
-  .guest-menu-btn { min-height: 38px; font-size: 12px; }
+  .btn { min-height: clamp(28px, calc(var(--vh) * 5.6), 40px); }
+  .btn-icon { min-width: clamp(30px, calc(var(--vw) * 3.2), 44px); min-height: clamp(30px, calc(var(--vw) * 3.2), 44px); font-size: clamp(12px, calc(var(--vw) * 1.4), 17px); }
+  #btn-cinematic-skip { min-width: clamp(60px, calc(var(--vw) * 7), 84px); min-height: clamp(26px, calc(var(--vh) * 5.6), 40px); font-size: clamp(10px, calc(var(--vw) * 1.1), 14px); }
+  .quiz-item-btn { min-width: clamp(34px, calc(var(--vw) * 4), 50px); min-height: clamp(28px, calc(var(--vh) * 5.6), 40px); font-size: clamp(10px, calc(var(--vw) * 1.1), 14px); padding: 2px; }
+  .wm-status-lb-btn { min-height: clamp(24px, calc(var(--vh) * 5.3), 38px); font-size: clamp(8.5px, calc(var(--vw) * 0.86), 11px); padding: 3px 6px; white-space: nowrap; }
+  .shop-tab-btn { min-height: clamp(26px, calc(var(--vh) * 5.6), 40px); font-size: clamp(9.5px, calc(var(--vw) * 1), 13px); }
+  .shop-aura-btn { min-height: clamp(24px, calc(var(--vh) * 5.3), 38px); font-size: clamp(9px, calc(var(--vw) * 0.94), 12px); }
+  .auth-tab { min-height: clamp(26px, calc(var(--vh) * 5.3), 38px); font-size: clamp(9.5px, calc(var(--vw) * 1), 13px); }
+  .form-input { min-height: clamp(26px, calc(var(--vh) * 5.6), 40px); font-size: clamp(10px, calc(var(--vw) * 1.1), 14px); }
+  .guest-menu-btn { min-height: clamp(24px, calc(var(--vh) * 5.3), 38px); font-size: clamp(9px, calc(var(--vw) * 0.94), 12px); }
   .btn-settings-global { right: calc(var(--vw) * 2); } /* [รอบ 53] ปุ่มเสียงถูกถอด — ตั้งค่ากลับมาชิดขวาสุดได้ */
 }
 
 /* --- สมาร์ตโฟนแนวนอน (หน้าต่าง ≤ 900px) — นิ้วโป้งต้องกดโดนแม่นทุกปุ่ม --- */
 @media (max-width: 900px) {
-  .btn { min-height: 42px; font-size: 14px; }
-  .btn-icon { min-width: 44px; min-height: 44px; font-size: 19px; }
-  .quiz-item-btn { min-width: 50px; min-height: 42px; font-size: 14px; padding: 2px; }
-  .quiz-option-btn { min-height: 44px; font-size: 13.5px; padding: 6px 12px; line-height: 1.3; }
-  .quiz-question { font-size: 14px; line-height: 1.35; }
-  #quiz-timer-text { font-size: 11px; }
-  .auth-tab { min-height: 40px; font-size: 14px; }
-  .form-input { min-height: 38px; font-size: 15px; }
-  .form-label { font-size: 12px; }
-  .guest-menu-btn { min-height: 40px; font-size: 12px; }
-  .wm-status-lb-btn { min-height: 38px; font-size: 10px; padding: 3px 5px; white-space: nowrap; }
-  .stage-node { min-width: 44px; min-height: 44px; }
-  #btn-cinematic-skip { min-width: 88px; min-height: 42px; font-size: 14px; }
-  #dialogue-text { font-size: 14px; line-height: 1.45; }
-  #dialogue-name { font-size: 13px; }
-  .lb-podium-name { font-size: 12px; }
-  .mg3-token-label { font-size: 10px; line-height: 1.2; }
-  .learning-item { min-height: 40px; font-size: 12px; }
-  .credits-maker { font-size: 12px; }
-  .credits-maker-sub { font-size: 10.5px; }
-  .credits-list { font-size: 11px; }
+  .btn { min-height: clamp(28px, calc(var(--vh) * 5.8), 42px); font-size: clamp(9.5px, calc(var(--vw) * 1.2), 14px); }
+  .btn-icon { min-width: clamp(30px, calc(var(--vw) * 3.2), 44px); min-height: clamp(30px, calc(var(--vw) * 3.2), 44px); font-size: clamp(13px, calc(var(--vw) * 1.5), 19px); }
+  .quiz-item-btn { min-width: clamp(34px, calc(var(--vw) * 4), 50px); min-height: clamp(28px, calc(var(--vh) * 5.8), 42px); font-size: clamp(10px, calc(var(--vw) * 1.1), 14px); padding: 2px; }
+  .quiz-option-btn { min-height: clamp(26px, calc(var(--vh) * 6.1), 44px); font-size: clamp(9.5px, calc(var(--vw) * 1.05), 13.5px); padding: 4px 10px; line-height: 1.3; }
+  .quiz-question { font-size: clamp(10px, calc(var(--vw) * 1.1), 14px); line-height: 1.35; }
+  #quiz-timer-text { font-size: clamp(8px, calc(var(--vw) * 0.86), 11px); }
+  .auth-tab { min-height: clamp(26px, calc(var(--vh) * 5.6), 40px); font-size: clamp(10px, calc(var(--vw) * 1.1), 14px); }
+  .form-input { min-height: clamp(26px, calc(var(--vh) * 5.3), 38px); font-size: clamp(10px, calc(var(--vw) * 1.17), 15px); }
+  .form-label { font-size: clamp(8.5px, calc(var(--vw) * 0.94), 12px); }
+  .guest-menu-btn { min-height: clamp(24px, calc(var(--vh) * 5.6), 40px); font-size: clamp(9px, calc(var(--vw) * 0.94), 12px); }
+  .wm-status-lb-btn { min-height: clamp(24px, calc(var(--vh) * 5.3), 38px); font-size: clamp(8px, calc(var(--vw) * 0.78), 10px); padding: 3px 5px; white-space: nowrap; }
+  .stage-node { min-width: clamp(32px, calc(var(--vw) * 3.4), 44px); min-height: clamp(32px, calc(var(--vw) * 3.4), 44px); }
+  #btn-cinematic-skip { min-width: clamp(60px, calc(var(--vw) * 7), 88px); min-height: clamp(28px, calc(var(--vh) * 5.8), 42px); font-size: clamp(10px, calc(var(--vw) * 1.1), 14px); }
+  #dialogue-text { font-size: clamp(10px, calc(var(--vw) * 1.1), 14px); line-height: 1.45; }
+  #dialogue-name { font-size: clamp(9.5px, calc(var(--vw) * 1), 13px); }
+  .lb-podium-name { font-size: clamp(8.5px, calc(var(--vw) * 0.94), 12px); }
+  .mg3-token-label { font-size: clamp(8px, calc(var(--vw) * 0.78), 10px); line-height: 1.2; }
+  .learning-item { min-height: clamp(24px, calc(var(--vh) * 5.6), 40px); font-size: clamp(8.5px, calc(var(--vw) * 0.94), 12px); }
+  .credits-maker { font-size: clamp(8.5px, calc(var(--vw) * 0.94), 12px); }
+  .credits-maker-sub { font-size: clamp(8px, calc(var(--vw) * 0.82), 10.5px); }
+  .credits-list { font-size: clamp(8px, calc(var(--vw) * 0.86), 11px); }
+}
+/* [V.7.75 ตามที่ครูเลือก "ขยายเวทีเต็มจอ + สเกลอัตโนมัติ"]
+   ปัญหาเดิม: เวทีล็อก 16:9 เสมอ — มือถือแนวนอน (เช่น 844×390) จึงได้เวทีแค่ 693×390
+   เสียพื้นที่ซ้าย-ขวาไป 151 จุด และทุกอย่างที่คิดตามสัดส่วนเวทีก็เล็กตามไปด้วย
+   แก้: บนจอเล็ก/จอสัมผัส ให้เวทีกินพื้นที่จอเต็มที่ แต่ยืดได้ไม่เกินสัดส่วน 2:1
+        (ยืดเกินกว่านี้ภาพวาดจะดูแบนผิดสัดส่วนจนสังเกตได้)
+   สูตร: กว้าง = min(100vw, 200vh) · สูง = min(100vh, 56.25vw)
+     · จอตั้ง/4:3 (อัตราส่วน < 16:9) → ได้ 16:9 เท่าเดิมทุกประการ
+     · จอ 16:9 ถึง 2:1 → เต็มจอพอดี
+     · จอยาวกว่า 2:1 → หยุดที่ 2:1 ไม่ยืดต่อ */
+@media (max-width: 1024px), (pointer: coarse) {
+  #game-wrapper { width: min(100vw, 200vh); height: min(100vh, 56.25vw); max-width: 100vw; max-height: 100vh; }
+  /* ภาพที่วาดด้วยแคนวาส (ฉากคัทซีน · แผนที่ไอโซเมตริก) ยึดพิกัด 1920×1080 ไว้
+     จึงต้องคุมให้อยู่ในกรอบ 16:9 กลางเวทีเสมอ ไม่งั้นภาพจะถูกยืดแบน */
+  #game-canvas { width: min(100%, calc(var(--vh) * 177.78)); left: 50%; transform: translateX(-50%); }
+  #worldmap-screen { width: min(100%, calc(var(--vh) * 177.78)); left: 50%; transform: translateX(-50%); }
+}
+/* [V.7.75] ต้องอยู่ท้ายสุดของสไตล์ — เพราะ .modal-box (max-width 32 หน่วยเวที) ถูกประกาศ "ทีหลัง" .audio-settings-box ในไฟล์
+   ถ้าเขียนไว้ด้านบน ค่าความกว้างใหม่จะถูกทับจนไม่มีผล (เจอจากการวัดจริง: กล่องยังกว้าง 32 เท่าเดิม) */
+.audio-settings-box { width: calc(var(--vw) * 34); max-width: calc(var(--vw) * 36); }
+@media (max-height: 700px) {
+  .audio-settings-box { width: calc(var(--vw) * 44); max-width: calc(var(--vw) * 46); }
 }
 </style>
 </head>
@@ -1523,7 +1668,9 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
             <!-- [รอบ 45 ตามคำขอ #1] เปลี่ยนชื่อเกมเป็น "ผจญภัยกาญจนบุรี" + แท็กไลน์เป็นเครดิตผู้ออกแบบ -->
             <!-- [V.7.73 ตามที่ครูสั่ง] หน้าแรกเหลือข้อความบรรทัดเดียว (ชื่อเกมมีอยู่บนป้ายไม้ในภาพพื้นหลังแล้ว)
                  ข้อความนี้แก้ได้จากหน้าห้องเรียน → ปุ่ม 👨‍🏫 ผู้ออกแบบ / QR (คีย์ credits_start) -->
-            <div id="start-caption-line" class="start-subtitle" style="font-size:calc(var(--vw) * 1.05); color:#ffe9b8; opacity:0.95; font-weight:700">www.GamePlearn.com</div>
+            <div id="start-caption-line" class="start-subtitle start-caption-txt">www.GamePlearn.com</div>
+            <!-- [V.7.74 ข้อ 2] บรรทัดที่ 2 ของหน้าแรก — ว่างไว้จนกว่าครูจะกรอกในหน้า ผู้ออกแบบ/QR -->
+            <div id="start-caption-line2" class="start-subtitle start-caption-txt start-caption-2" style="display:none"></div>
           </div>
         </div>
         <!-- เมนู Guest เล็กๆ มุมจอ สำหรับข้ามไปทดสอบด่านใดก็ได้ระหว่างช่วงพัฒนา (ไม่ใช่ฟีเจอร์สำหรับผู้เล่นทั่วไป) -->
@@ -1570,7 +1717,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
         <button id="btn-login-back" class="btn btn-icon corner-bl" title="กลับหน้าแรก">←</button>
         <!-- [รอบ 65 ตามคำขอ] ปุ่มเล่นแบบ Guest ย้ายมามุมขวาล่างของจอ (เดิมอยู่กลางการ์ดล็อกอิน) -->
         <button id="btn-auth-guest" class="btn btn-secondary" style="position:absolute; right:calc(var(--vw) * 2); bottom:calc(var(--vw) * 2); margin:0; z-index:41; font-size:calc(var(--vw) * 0.9); opacity:0.9;">เล่นแบบไม่บันทึกคะแนน (Guest)</button>
-        <div class="screen-credit-line">ออกแบบและพัฒนา | นายอาคม อินต๊ะพันธ์</div><!-- [รอบ 52 ตามคำขอ] เครดิตท้ายหน้า Login ตำแหน่งเดียวกับหน้าแรก -->
+        <div class="screen-credit-line">www.GamePlearn.com</div><!-- [รอบ 52 ตามคำขอ] เครดิตท้ายหน้า Login ตำแหน่งเดียวกับหน้าแรก -->
         <div class="auth-box">
           <div class="auth-title">เข้าสู่การผจญภัย</div>
           <!-- [เฟส 2.1] เมนู 3 แท็บสไตล์เดียวกัน: เข้าห้องเรียน / เข้าสู่ระบบ / สมัครสมาชิก -->
@@ -1940,7 +2087,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
           <button id="btn-lobby-badges" class="btn btn-secondary">🎖️ เหรียญตรา</button>
           <!-- [รอบ 51 ตามคำขอ] ถอดปุ่ม 👨‍🏫 ออกจาก Lobby — เปลี่ยนเป็นข้อความเครดิตด้านล่างของหน้าแทน (จุดผูกอีเวนต์เดิมมี null-guard อยู่แล้ว ปลอดภัย) -->
         </div>
-        <div class="screen-credit-line">ออกแบบและพัฒนา | นายอาคม อินต๊ะพันธ์</div><!-- [รอบ 51 ตามคำขอ] เครดิตท้ายหน้า ตำแหน่งเดียวกับหน้าแรก -->
+        <div class="screen-credit-line">www.GamePlearn.com</div><!-- [รอบ 51 ตามคำขอ] เครดิตท้ายหน้า ตำแหน่งเดียวกับหน้าแรก -->
       </div>
 
       <div id="worldmap-screen" class="screen">
@@ -2117,7 +2264,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
           <span class="stage-node-passed">ผ่าน</span>
           <span class="stage-node-label">👹 ปีศาจข้อสอบ</span>
         </button>
-        <div class="screen-credit-line">ออกแบบและพัฒนา | นายอาคม อินต๊ะพันธ์</div><!-- [รอบ 51 ตามคำขอ] เครดิตท้ายหน้า ตำแหน่งเดียวกับหน้าแรก -->
+        <div class="screen-credit-line">www.GamePlearn.com</div><!-- [รอบ 51 ตามคำขอ] เครดิตท้ายหน้า ตำแหน่งเดียวกับหน้าแรก -->
       </div>
 
       <!-- คัทซีนเปิดเรื่องหลังเลือกตัวละครครั้งแรก + คัทซีนก่อนด่านบอส — ใช้ #game-canvas เดิมวาดฉากดราม่า (โปร่งใสให้เห็นทะลุ เพราะ .screen ไม่ตั้ง background เอง) ร่วมกับกล่องข้อความ #dialogue-box เดิม -->
@@ -2285,23 +2432,23 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
 
       <!-- MODULE 14: หน้าเครดิตภาพ/วิดีโอ (ตามเงื่อนไข Creative Commons) -->
       <div id="credits-modal" class="modal-overlay hidden">
-        <div class="modal-box media-modal-box">
-          <div class="media-modal-title">ออกแบบและพัฒนา</div><!-- [รอบ 45 ตามคำขอ #2] "ผู้จัดทำ" → "ออกแบบและพัฒนา" ทุกจุดในหน้าเครดิต -->
-          <!-- [รอบ 23] แบ่ง 2 หมวดชัดเจน: ออกแบบและพัฒนา (แสดงถาวร) / ที่มาของรูปภาพและวิดีโอ (สร้างสดจากลิงก์ Google Drive ในชีต Media) -->
-          <!-- [รอบ 25 ตามคำขอ] เปลี่ยนหัวข้อหมวดที่สองจาก "เครดิตภาพและวิดีโอ" เป็น "ที่มาของรูปภาพและวิดีโอ" -->
-          <div class="credits-section-head">👨‍🏫 ออกแบบและพัฒนา</div>
-          <!-- [V.7.71 ข้อ 9 ตามที่ครูขอ] ข้อความทั้งบล็อกนี้แก้ไขได้จากหน้าห้องเรียนของผู้ดูแล (ปุ่ม 👨‍🏫 ผู้ออกแบบ/QR)
-               และรองรับรูป QR Code — วางไว้ด้านซ้ายของข้อความ (flex 2 คอลัมน์ · จอแคบจะพับลงมาอยู่บนสุดเอง) -->
-          <div class="credits-maker" id="credits-maker-box" style="display:flex;gap:calc(var(--vw)*1);align-items:center;flex-wrap:wrap">
-            <img id="credits-qr" alt="QR Code" style="display:none;width:calc(var(--vw)*7);min-width:74px;max-width:130px;border-radius:calc(var(--vw)*0.5);background:#fff;padding:calc(var(--vw)*0.3);flex:none">
-            <div style="flex:1;min-width:min(100%,calc(var(--vw)*14))">
-              <div class="credits-maker-name" id="credits-name">👨‍🏫 ออกแบบและพัฒนา: นายอาคม อินต๊ะพันธ์</div>
-              <div id="credits-contact">📧 Arkhom.aintaphan@gmail.com</div>
-              <div class="credits-maker-sub" id="credits-sub">เกมผจญภัยกาญจนบุรี · สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4</div>
-              <div class="credits-maker-sub" id="credits-extra" style="display:none;margin-top:calc(var(--vw)*0.3)"></div>
+        <div class="modal-box media-modal-box credits-box">
+          <!-- [V.7.74 ตามที่ครูขอ ข้อ 5] จัดหน้าใหม่ให้อ่านง่ายและเป็นสัดส่วน:
+               หัวข้อเดียว (เดิมมี "ออกแบบและพัฒนา" ซ้ำ 2 ที่) · การ์ดผู้พัฒนามี QR อยู่ซ้าย ข้อความ 6 บรรทัดอยู่ขวา
+               · ที่มาของสื่อเปลี่ยนจากข้อความยาวพันบรรทัด เป็นการ์ดรายบทเรียน + ชิปแหล่งที่มา (ลิงก์กดได้) -->
+          <div class="media-modal-title">👨‍🏫 ออกแบบและพัฒนา</div>
+          <!-- [V.7.74 ข้อ 4] 6 บรรทัด แก้ไขได้จากหน้าห้องเรียน (ปุ่ม 👨‍🏫 ผู้ออกแบบ/QR) · แต่ละบรรทัดใส่ลิงก์ได้ -->
+          <div class="credits-maker" id="credits-maker-box">
+            <img id="credits-qr" alt="QR Code" class="credits-qr-img" style="display:none">
+            <div class="credits-maker-lines">
+              <div class="credits-maker-name" id="credits-dev1">ออกแบบและพัฒนา: นายอาคม อินต๊ะพันธ์</div>
+              <div class="credits-maker-line" id="credits-dev2">📧 Arkhom.aintaphan@gmail.com</div>
+              <div class="credits-maker-line" id="credits-dev3">🌐 www.GamePlearn.com</div>
+              <div class="credits-maker-sub" id="credits-dev4">เกมผจญภัยกาญจนบุรี · สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4</div>
+              <div class="credits-maker-sub" id="credits-dev5" style="display:none"></div>
+              <div class="credits-maker-sub" id="credits-dev6" style="display:none"></div>
             </div>
           </div>
-          <div class="credits-divider"></div>
           <div class="credits-section-head">🖼️ ที่มาของรูปภาพและวิดีโอ</div>
           <div id="credits-list" class="credits-list"></div>
           <!-- [ใหม่ตามคำขอ] บทเรียนที่มีเครดิตครบทุกบทอาจยาวเกิน 1 หน้าจอ → เปลี่ยนหน้าแทนเลื่อน -->
@@ -2338,15 +2485,23 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
           <!-- [Audit VIS-01] โหมดลดเอฟเฟกต์ภาพ — สำหรับคอมพิวเตอร์/แท็บเล็ตโรงเรียนที่เครื่องช้า ลดเอฟเฟกต์หนักบางส่วนให้ลื่นขึ้น ไม่กระทบการเล่น/คะแนน -->
           <div class="volume-row" style="margin-top:calc(var(--vw) * 0.5); border-top:calc(var(--vw)*0.12) solid rgba(255,255,255,0.15); padding-top:calc(var(--vw)*0.6);">
             <label for="toggle-lowfx">⚡ ลดเอฟเฟกต์ (เครื่องช้า/ลื่นขึ้น)</label>
-            <input id="toggle-lowfx" type="checkbox" style="width:max(calc(var(--vw) * 2.4),22px); height:max(calc(var(--vw) * 2.4),22px); cursor:pointer;">
+            <input id="toggle-lowfx" type="checkbox" style="width:clamp(15px,calc(var(--vw) * 2.4),22px); height:clamp(15px,calc(var(--vw) * 2.4),22px); cursor:pointer;">
             <span id="toggle-lowfx-val" class="volume-val">ปิด</span>
           </div>
           <!-- [รอบ 54 ตามคำขอ] โหมดอ่านให้ฟัง — สนับสนุนนักเรียนที่ยังอ่านไม่คล่องให้ทำกิจกรรมได้ทุกด่าน (อ่านโจทย์+ตัวเลือก+บทสนทนา+บทเรียนอัตโนมัติด้วยเสียงไทยของเครื่อง) -->
           <div class="volume-row">
             <label for="toggle-readaloud">🗣️ โหมดอ่านให้ฟัง (ช่วยผู้ที่ยังอ่านไม่คล่อง)</label>
-            <input id="toggle-readaloud" type="checkbox" style="width:max(calc(var(--vw) * 2.4),22px); height:max(calc(var(--vw) * 2.4),22px); cursor:pointer;">
+            <input id="toggle-readaloud" type="checkbox" style="width:clamp(15px,calc(var(--vw) * 2.4),22px); height:clamp(15px,calc(var(--vw) * 2.4),22px); cursor:pointer;">
             <span id="toggle-readaloud-val" class="volume-val">ปิด</span>
           </div>
+          <!-- [V.7.75 ตามที่ครูเลือก] ปรับขนาดตัวอักษร/ปุ่มได้เอง — จอเล็กอ่านไม่ถนัดก็กด A+ ได้ทันที
+               ค่าที่เลือกถูกจำไว้ในเครื่อง เปิดเกมครั้งหน้าใช้ค่าเดิม -->
+          <div class="volume-row" style="margin-top:calc(var(--vw) * 0.4); border-top:calc(var(--vw)*0.12) solid rgba(255,255,255,0.15); padding-top:calc(var(--vw)*0.5);">
+            <label>🔠 ขนาดตัวอักษร / ปุ่ม</label>
+            <div id="uiscale-chips" class="uiscale-chips"></div>
+            <span id="fullscreen-row"><button id="btn-fullscreen" class="btn btn-secondary btn-compact">⛶ เต็มจอ</button></span>
+          </div>
+          <div id="a2hs-hint" class="a2hs-hint hidden"></div>
           <!-- [ใหม่ Task #95] ปุ่มเครดิตต่อท้ายด้านล่างเมนูตั้งค่าเสียง — เปิด modal เดียวกับปุ่มเครดิตหน้าแรก -->
           <!-- [รอบ 45 ตามคำขอ #2+#5] เหลือแค่ไอคอน 👨‍🏫 (ไม่มีข้อความ) และจัดปุ่มเป็นแถวเดียว: เครดิตชิดซ้าย / ปิดชิดขวา -->
           <div class="modal-buttons" style="margin-top:calc(var(--vw) * 0.8); display:flex; justify-content:space-between; align-items:center; gap:calc(var(--vw) * 1);">
@@ -2487,7 +2642,7 @@ button, .btn { touch-action: manipulation; } /* ตัดดีเลย์แ�
    ตัวอย่าง: ไฟล์ CAI_KAN_NEW2_72.html ออกวันที่ 22/07/2569 → V.7.2 + 2569 07 22 = "V.7.225690722"
    เหตุที่ท้ายเรียง ปี-เดือน-วัน: ตัวเลขจะโตตามเวลาเสมอ เทียบได้ทันทีว่าเครื่องไหนรุ่นใหม่กว่า (มาตรฐาน build number)
    ทุกครั้งที่แก้ไฟล์ออกรุ่นใหม่ ให้ขยับเลขรุ่น+วันที่นี้พร้อมเลขท้ายชื่อไฟล์เสมอ จะได้ตรวจจากหน้าจอได้ไม่ต้องเดา */
-const GAME_VERSION = 'V.7.73-IX2050-2569.53'; /* [แก้ตามครู V.7.73] (1) แก้ตารางหน้าตัวชี้วัดข้อความล้นทับกัน — ภาษาไทยไม่มีช่องว่างระหว่างคำ เบราว์เซอร์จึงตัดบรรทัดไม่ได้ ใส่ overflow-wrap:anywhere ให้ทุกตารางแล้ว (2) แบบประเมินตนเองครอบคลุมสมรรถนะหลักครบ 6 ด้าน (14 ข้อ · การคิดขั้นสูง 4 ข้อ อีก 5 ด้านละ 2 ข้อ) + ปุ่มดูผลย้ายไปแถบบนสุดข้างปุ่มห้องเรียน ใช้ชื่อ "ผลการประเมินสมรรถนะ (นักเรียนประเมินตนเอง)" ครูเจ้าของห้องดูได้ (3) ดูสรุปห้องเรียนของครูท่านอื่นได้ครบเหมือนห้องตัวเอง (กราฟ · ตาราง · ระดับสมรรถนะ 6 ด้าน) แต่ปิดชื่อ-นามสกุลจริงและแก้ไขไม่ได้ (4) ข้อความหน้าแรกเหลือบรรทัดเดียว www.GamePlearn.com และแก้ไขได้จากหน้าห้องเรียน — ต้องรัน SQL v773 */ /* [แก้ตามครู V.7.72] (1) แก้ "บันทึกข้อมูลผู้ออกแบบไม่ได้" — เดิมโชว์ error ดิบของฐานข้อมูล ตอนนี้บอกตรง ๆ ว่าต้องรันไฟล์ SQL ไหน + ไฟล์ SQL สั่ง PostgREST โหลดผังใหม่ทันทีหลังรัน (2) รูป QR แสดงที่เครดิตท้ายหน้าจอด้วย + เพิ่มข้อความเครดิตท้ายจอได้ถึง 3 บรรทัด (3) ตารางคะแนนของห้องพอดีจอ ไม่มีแถบเลื่อนซ้ายขวา (ย้าย A·B·C·D ลงแถวรายละเอียด) (4) ปุ่มเดิม "เกณฑ์ประเมินการคิดขั้นสูง" เปลี่ยนเป็น "ผลการประเมินการคิดขั้นสูง (นักเรียนประเมินตนเอง)" สรุปรายด้านเป็นรายบุคคล (5) เกณฑ์การประเมินการคิดขั้นสูงย้ายไปอยู่ในหน้า ตัวชี้วัด/สมรรถนะ (6) ตารางเกณฑ์สมรรถนะหลัก 6 ด้าน เลื่อนขึ้นเป็นตารางที่ 2 (7) สรุปผู้เรียนกรองได้ทั้ง รายห้อง · รายโรงเรียน · รายชั้น · ทั้งหมด — ห้องคนอื่นดูอย่างเดียวและปิดชื่อ-นามสกุลจริง แสดงเฉพาะชื่อในเกม (8) จอชมวิดีโอสถานที่จริงใหญ่ขึ้นมาก (กล่อง 78vw · สูงได้ถึง 74vh · คงสัดส่วน 16:9) + แก้บั๊กแบบประเมินตนเองที่ยังจับคู่คำตอบแบบ 10 ข้อ/ด้าน ทั้งที่เหลือด้านละ 3 — ต้องรัน SQL v772 */ /* [แก้ตามครู V.7.71] (1) ย้ายปุ่ม 🤝 ประเมินเพื่อนร่วมทีม มาอยู่ข้างปุ่มแบบประเมินอื่นมุมขวาล่างแผนที่ (2) แบบประเมินตนเองการคิดขั้นสูงเหลือ 12 ข้อ (ด้านละ 3) ภาษาเด็ก ป.4 + มาตรวัดหน้ายิ้ม (3) เปลี่ยนชื่อเป็น "เกมผจญภัยกาญจนบุรี" ทุกจุด (4) ผู้ดูแลดูผลแบบประเมินความพึงพอใจได้จากหน้าห้องเรียน (ค่าเฉลี่ยรายข้อ + คำตอบปลายเปิด) (5) ผู้ดูแลกดดูเกณฑ์ประเมินการคิดขั้นสูงได้จากแถบบน (6) แบบประเมินไม่ต้องกรอกโรงเรียน/ชื่อ/ชั้น/เลขที่ซ้ำ — ดึงจากตอนเข้าห้องเรียนให้เลย (7) แก้บั๊กคะแนน "การรวมพลังทำงานเป็นทีม" ไม่ขึ้น — เดิมบันทึกโดยตรวจ PIN ผิดคน + คิวที่ส่งไม่ผ่านบล็อกคิวทั้งหมด (ต้องรัน SQL v771) (8) ตัดบรรทัดค่าเฉลี่ยการคิดขั้นสูงและบล็อกรายละเอียดออกจากหน้าสรุป (9) ข้อความ "ออกแบบและพัฒนา" + รูป QR Code แก้ได้จากหน้าห้องเรียนของผู้ดูแล (รูปอยู่ด้านซ้าย) (10) ตารางคะแนน: สมรรถนะหลัก 6 ด้านแยกเป็นคอลัมน์ละด้าน แสดง % + สีตามระดับ (11) คะแนนเก็บ/สอบ ใช้สี 4 ระดับ เกณฑ์ 50/60/70/80% (12) แก้บั๊กเลือกห้องเรียนเดิมซ้ำแล้วไม่ขึ้นรายชื่อ (13) วิดีโอ YouTube ใช้สัดส่วน 16:9 */ /* [แก้ตามครู V.7.70] (1) ชื่อเกมภาษาอังกฤษเป็น kan-adventure (2) ปุ่ม "ห้องเรียน" กดแล้วกลับหน้ารายการ/เพิ่มห้องเสมอ (เดิมค้างหน้าย่อยที่เปิดไว้) (3) ถอดแถบสมรรถนะหลัก 6 ด้านแบบรายการออกจากหน้าสรุปผู้เรียน (ซ้ำกับหน้าตัวชี้วัด/สมรรถนะ) (4) ถอดการ์ดสรุป HOTS ออก ให้ตารางสมรรถนะหลัก 6 ด้านมาแทน (ค่าเฉลี่ย HOTS ย้ายไปอยู่บนหัวตาราง) (5) ตารางที่ 1 แสดงคำอธิบายตัวชี้วัดด้วย แม้ในโหมดผู้ดูแล (6) เพิ่มตารางรายละเอียดหลักฐาน A·B·C·D ต่อท้ายตารางที่ 2 (7) เรียงด่านตามเส้นทางบนแผนที่ ด่านที่ 1-14 · ด่านบอสอยู่ล่างสุดเป็น "แบบทดสอบหลังเรียน" (8) ตารางที่ 4 เกณฑ์ประเมินสมรรถนะหลัก 6 ด้านตาม CBE พร้อมนำไปใช้ (ระดับ 3-6 = ช่วงชั้น ป.4-6) — ประเมินได้ครบทั้ง 6 ด้านแล้ว: จัดการตนเอง=พฤติกรรมในเกม · คิดขั้นสูง=เกณฑ์เดิมไม่เปลี่ยน · สื่อสาร=ช่อง 💬 ที่ครูให้แยกจากช่อง 🧠 การคิด · ทำงานเป็นทีม=เพื่อนประเมินเพื่อนในเกม (ปุ่ม 🤝 บนแผนที่) · พลเมือง/ธรรมชาติ=ข้อสอบด่านที่เกี่ยวข้อง + เกณฑ์กาญ 2050 (9) โหมดสาธิตเข้าเล่นได้ทุกด่านทันที (เพิ่มเติม) ตารางที่ 1 ชิดซ้าย พอดีจอ ไม่มีแถบเลื่อนซ้ายขวา */ /* [แก้ตามครู V.7.69] (1) ตาราง 1 หน้าตัวชี้วัด เรียงใหม่: ด่าน/ภารกิจ · ตัวชี้วัด · สมรรถนะหลัก (2) ตาราง 2 สมรรถนะการคิดขั้นสูง ตัดคอลัมน์ค่าเฉลี่ยห้อง/จำนวนที่มีข้อมูลออก เหลือ รหัส · ด้าน · หลักฐาน A B C D (3) เพิ่มตาราง 3: ด่าน/ภารกิจ · หลักฐาน · ด้านการคิดขั้นสูงที่วัด (4) ประเมิน "สมรรถนะหลัก 6 ด้าน" จากคะแนนที่มีจริง (CORE6ENG) — ด้านไหนไม่มีหลักฐานบอกตรง ๆ ว่าไม่ประเมิน (5) สรุปผู้เรียนมีตารางจำนวนนักเรียนแต่ละระดับ (3·4·5·6) ครบทั้ง 6 ด้าน (6) ย้ายเกณฑ์การให้ระดับมาไว้ในหน้าตัวชี้วัด/สมรรถนะ (7) แก้ "แตะป้ายเวอร์ชัน 5 ครั้งแล้วไม่เข้าโหมดครู" (เดิมป้ายตั้ง pointer-events:none นิ้วแตะไม่โดน) + เพิ่มโหมดสาธิต ?demo=1 — ปุ่ม 🎮 เล่นสาธิต ในการ์ดห้องเรียน: เล่นได้ทุกอย่าง เหรียญ 9999 ปลดล็อกครบ แต่ไม่บันทึกคะแนน ไม่ขึ้นกระดานอันดับ ไม่ปนข้อมูลวิจัย (8) ตารางคะแนนของห้องแสดงสมรรถนะหลัก 6 ด้าน (กดดูรายละเอียดด้านการคิดขั้นสูงได้) และระบุชัดว่าเป็น "ผลระหว่างเรียน" (9) ผู้ดูแลระบบจัดการห้องเรียนค้างในระบบได้ (🏫 ห้องเรียนทั้งหมดในระบบ → ซ่อน/ปิด/ย้ายมาเป็นของฉัน/ลบ) (10) กระดานอันดับโชว์เหรียญตราของทุกคน ไม่ใช่แค่ของตัวเอง — ต้องรัน SQL v769 */ /* [แก้ตามครู V.7.68] (1) เอาปุ่มเกมแนะนำออกจากแถบบน (2) ทางเข้าทดสอบเกมสำหรับครู/ผู้ดูแล: เปิดเกมด้วย ?admin=1 หรือแตะป้ายเวอร์ชันหน้าแรก 5 ครั้ง → เมนู "เข้าสู่ระบบ" กลับมา (3) หัวเรื่อง Dashboard เป็น GamePlearn: Play. Learn. Level Up. กดแล้วไป gameplearn.com (4) วิธีเข้าห้อง: "โค้ดหรือค้นหาชื่อโรงเรียน" / "โค้ดเท่านั้น" (5) ปุ่ม 🔗 แชร์ลิงก์ ของแต่ละห้อง — ลิงก์ ?join=CODE เปิดเกมแล้วกรอกโค้ดให้อัตโนมัติ พร้อมข้อความสำเร็จรูป/คัดลอก/แชร์ผ่านแอป (6) คะแนนบอกเต็ม: เก็บ/150 · สอบ/30 (7) ใส่ตัวชี้วัดหลักสูตรแกนกลาง ป.4 + สมรรถนะหลัก 6 ด้าน (CBE) ให้ทุกด่านเป็นค่าตั้งต้น ผู้ดูแลแก้ได้ — การประเมินหลักยังเป็น HOTS เหมือนเดิม (8) สรุปผู้เรียน: HOTS เป็นกราฟจำนวนผู้เรียนตามระดับ + แถบสมรรถนะหลัก 6 ด้าน (ด้านที่ไม่ประเมินบอกตรง ๆ) (9) กด "การคิดขั้นสูง" → รายละเอียด 4 ด้านย่อย + วิธีให้คะแนนครบ */ /* [แก้ตามครู V.7.67] (1) ตัด Dashboard V.2 ออกจากการใช้งาน — เปิดหน้าครูเมื่อไรเข้า "ห้องเรียน" ทันที (เดิมกลับจาก Google แล้วค้างที่ V.2 และไม่เห็นห้อง) (2) แก้อาการ "ผูกบัญชีแล้วต้องผูกซ้ำตลอด" — รอบที่ Google ไม่ส่ง refresh_token กลับมา ระบบเดิมทิ้ง session ทั้งก้อน ตอนนี้เก็บของเดิมไว้ใช้ต่อ + ยอมรับ session ที่ยังไม่หมดอายุ (3) เอาปุ่ม/หน้าเข้าสู่ระบบผู้ดูแลของระบบเดิม (Google Sheets) ออกทั้งหมด (4) สิทธิ์ผู้ดูแลระบบ: สื่อห้องเรียนรู้ · เกมแนะนำ · ตัวชี้วัดกลาง แก้ได้เฉพาะผู้ดูแล (ตาราง app_admins — ตั้งอีเมลไว้ในไฟล์ SQL v767) ครูทั่วไปจัดการห้องตัวเองได้ครบเหมือนเดิม (5) เรียงปุ่มแถบบน: ห้องเรียน · ตัวชี้วัด/สมรรถนะ · บทเรียนอื่น (+เกมแนะนำ) · ส่งออกคะแนน (CSV) · เข้าสู่ระบบ/ออกจากระบบ — ต้องรัน SQL v767 */ /* [แก้ตามครู V.7.66 · 13 ข้อ] หน้า Login: เอาปุ่มกระดานอันดับ 📺 และปุ่ม Dashboard 📊 ออก เหลือปุ่ม 🏫 ห้องเรียน + ซ่อนเมนู "เข้าสู่ระบบ" (เข้าทางห้องเรียนอย่างเดียว) · หน้าห้องเรียน/Dashboard: หัวเรื่องเป็น "Dashboard: ผจญภัยกาญจนบุรี" · แถบบนจัดใหม่ (🏫 ห้องเรียน · 📐 ตัวชี้วัด&สมรรถนะ · ⬇ CSV · 📚 บทเรียนอื่น → gameplearn.com · เกมแนะนำ 3 ช่อง · ⋯ เพิ่มเติม · ปุ่มเข้าสู่ระบบ/ออกจากระบบ) · เข้าสู่ระบบ Google แล้วย้ายห้องเดิมมาให้อัตโนมัติ (rpc_claim_teacher — แก้อาการห้องที่เคยสร้างไม่ขึ้น) · สรุปผู้เรียนเพิ่มโหมด 🌏 ทุกโรงเรียน (ดูอย่างเดียว แก้ห้องคนอื่นไม่ได้) · วิธีเข้าห้องใช้คำ "โค้ด+ค้นหาชื่อโรงเรียน"/"โค้ดเท่านั้น" แก้ทีหลังได้ที่ ✏️ — ต้องรัน SQL v767 */ /* [แก้ตามครู V.7.65] (1) ด่านต้นจามจุรียักษ์: บทเริ่มด่าน + ห้องเรียนรู้ + ฉาก (ป้ายซุ้มไม้) + เกร็ดท้ายด่าน ไม่พาดพิงอำเภอด่านมะขามเตี้ยแล้ว — ข้อสอบ 21 ข้อ (q6_1..q6_21) คงเดิมทุกตัวอักษร ไม่แตะเพื่อไม่ให้กระทบข้อมูลวิจัย (2) ไอคอนในด่านเลือกใหม่ให้ดูรูปแล้วเดาได้: 📋→🪧 · 🐝→🦋 · 🍂→🌾 · 🗑️→⛓️ · 🧪→☠️ · 💨→🏭 · ✂️→🧱 · 🚜→🚚 · 🔨→🏗️ · 🌊→⛏️ พร้อมข้อความ feedback ใหม่ทุกชิ้น — กติกา/คะแนน/จำนวนดี-ร้ายเท่าเดิม และบันทึกด้วย logId รหัสเดิม ข้อมูลวิจัยต่อเนื่อง 100% (3) เพลง: ใส่ฟิลเตอร์ตัดเสียงแหลม + เสียงขึ้นนุ่มขึ้น + ไฮแฮตเบา/เว้นบีท + จำกัดเสียงประสานไม่เกิน 1.4kHz → หายปวดหู · แผนที่มีเพลงของตัวเอง (journey) ตื่นเต้นแบบออกเดินทาง (4) หน้าห้องเรียน: ฟอร์มสร้าง/แก้ไขห้องครบ ระดับชั้น·ห้องที่·โรงเรียน·ปีการศึกษา + เลือกได้ว่าให้ค้นหาเจอ หรือใส่โค้ดเท่านั้น (5) สื่อห้องเรียนรู้กลับมา: ครูใส่ลิงก์รูป/วิดีโอ/ที่มา ที่หน้าห้องเรียน (🖼️) เก็บใน Supabase แทนชีต Media — ต้องรัน SQL v767 + migrateMedia() */ /* [ตรวจมือถือ/แท็บเล็ต V.7.64] จากการไล่ทดสอบ iPhone SE/14 แนวนอน-แนวตั้ง + iPad: (1) breakpoint แท็บเล็ต 1150→1280px — iPad Air/Pro 11" ได้ปุ่มไอคอน 44px ตามเกณฑ์นิ้วแตะ (2) แถบขอบเขต Leaderboard + แท็บตัวละคร/ออร่า/สัตว์เลี้ยง สูงขั้นต่ำ 40px (เดิม 12-20px บนมือถือ) (3) สไลเดอร์เสียงพื้นที่จับ 28px (เดิม 2-7px) + เช็คบ็อกซ์ 22px (4) จอแนวตั้งชวนหมุนแนวนอน (ปิดได้ จำทั้งเซสชัน) (5) กัน dropdown ห้องล้นการ์ดจอแคบ · ผ่านแล้ว: เสียงปลดล็อกหลังแตะแรก (iOS policy), ไม่มีจอเลื่อนแนวนอน, ไม่มีองค์ประกอบหลุดจอ, ปุ่มเกม/ตัวเลือกข้อสอบ ≥42px */ /* [แก้ตามครู V.7.64] (ก.1) ชื่อในเกมซ้ำกันบนกระดาน (คู่เก่าแยกกัน) → คนอันดับรองติดท้าย (2),(3) อัตโนมัติ · จับคู่ใหม่แล้วสมาชิกมีชื่อเดิมหลายชื่อ → หน้าเข้าห้องให้เลือกใช้ชื่อจากที่มีอยู่ (หรือตั้งใหม่) แล้วบันทึกให้ทุกคนในกลุ่ม (ก) กระดานอันดับโชว์เฉพาะชื่อในเกมอย่างเดียวทุกขอบเขต (ไม่โชว์ชื่อจริง/ไม่ติดชื่อห้อง) · เล่นเป็นกลุ่ม 2-3 คนขึ้นกระดานแค่รายการเดียว (SQL v764 + กันซ้ำในเกม) · ปุ่ม 🧹 ล้างข้อมูล เปลี่ยนเป็น 🗑 ลบนักเรียนทั้งคน (ข) ขอบเขต "ชั้น" นับทุกห้องที่เป็นชั้นเดียวกันไม่ติดเงื่อนไขโรงเรียน (เดิมห้องที่ไม่ได้ผูกโรงเรียนตกหล่น เห็นแต่ห้องตัวเอง) — ต้องรัน SQL v764 (ค) 👥➗ แยกชื่อรวมเป็น 2 คน: บัญชีเดิมที่พิมพ์ชื่อเด็ก 2 คนลงแถวเดียว (ระบบเดิมไม่ได้บันทึก GroupSize) แยกได้จากปุ่มในแถวรายละเอียด — คนที่ 2 ได้สำเนาคะแนน/ประวัติ/เซฟครบ จำนวนนักเรียน +1 (ส่วนกลุ่มที่ระบบรู้จักมี 2 แถวแยกกันอยู่แล้ว ปุ่ม 🔀 จึงไม่เพิ่มจำนวน — ถูกต้องแล้ว) — ต้องรัน SQL v764 */ /* [V.7.63] (1) ✏️ แก้ไขนักเรียนเป็นฟอร์มเดียว (เดิม prompt 5 ชั้นโดนเบราว์เซอร์บล็อก แก้ได้แค่เลขที่) (2) 🔀 แยกกลุ่ม: คัดลอกประวัติเก่าให้สมาชิกแบบรายแถว (เดิมถ้าสมาชิกมีข้อมูลเล่นใหม่บ้างจะไม่คัดลอกอะไรเลย) */ /* [เฟส 3f] AI ตรวจคำตอบเขียนกาญ 2050 กลับมาแล้ว: (1) เกมตรวจสดด้วย heuristic-v1 (พอร์ตจาก .gs — deterministic ไม่ต้องมีคีย์/เซิร์ฟเวอร์) (2) หน้า 🏫 มีปุ่ม 📝 ตรวจคำตอบเขียน: โชว์คำตอบ 3 ข้อ + คะแนน AI แนะนำ + ครูให้คะแนนจริง 0-4/ข้อ + คอมเมนต์ → รวม 36 (เกม 24 + เขียน 12) บันทึกลง events.raw (รองรับกลุ่ม — บันทึกครบทุกสำเนา) (3) ✨ ตรวจซ้ำด้วย Gemini (ครูใส่คีย์เอง เก็บในเครื่อง) (4) login เดิมวินิจฉัยสาเหตุ: PIN ผิด/ยังไม่ย้ายข้อมูล/ยังไม่รัน SQL (rpc_legacy_check) (5) ช่องโค้ดไม่ prefill — ใช้ตัวอย่าง เช่น G5AWKW (6) สรุปรวมมีตัวกรอง ทุกห้อง/รายห้อง */ /* [เฟส 3e] ตัด Google Sheets ออกจากเกม 100% — sheetGet/sheetPost ไม่ยิง Apps Script อีกแล้ว (บันทึกทุกอย่างผ่าน SBTee→Supabase, เซฟเกม rpc_set_save/get_save, login เดิม rpc_legacy_login, กระดานอันดับรายห้อง rpc_leaderboard, สถิติข้อสอบครู rpc_question_stats) · ปิดแท็บสมัครสมาชิกเดิม (เข้าทางห้องเรียน) · เข้าห้องเรียนไม่สมัครบัญชีเงียบฝั่ง Sheets แล้ว · 📊 เปิดหน้าห้องเรียน (Dashboard ระบบใหม่) · ปิด Apps Script ได้เมื่อ migrate ครบ */ /* [2569.31 ตามข้อสังเกตครู 7 ข้อ] (1) Dashboard V.2 แยก 🏆 ผลสัมฤทธิ์ กับ 🧠 สมรรถนะ ชัดเจน — ส่วนที่ 1/ส่วนที่ 2 + การ์ดแยกชุด + ตารางจัดกลุ่มคอลัมน์ 2 ชั้นพร้อมสีพื้น (2) สรุปข้อมูลผู้เรียนหน้าห้องเรียนแบ่ง 3 ส่วน ทั่วไป/ผลสัมฤทธิ์/สมรรถนะ (3) ตารางคะแนนของห้อง: ตัดคอลัมน์กาญ/24 (ย้ายลงรายละเอียด) + หัวตาราง 2 ชั้นแบ่งสีกลุ่ม + ระดับเป็นป้ายสี 6ม่วง/5เขียว/4ส้ม/3เทา + แถบสลับสี + คำอธิบายระดับท้ายตาราง (4) แก้คะแนนเพี้ยน: clamp สเกลเก่า (หลักร้อย) เหมือน .gs + บัญชีกลุ่มเดิม 1 username หลายคน — migration v2.36 สร้างแถวสมาชิกคนที่ 2-3 + group_ref เชื่อมกลุ่ม (มี migrateGroupMembers() สำหรับคนที่ย้ายไปแล้ว) และหน้าห้องเรียนแชร์สถิติให้สมาชิกกลุ่มเดียวกัน (5) ป้าย 👥 คู่กับใคร ใต้ชื่อนักเรียน (จาก group_ref เดิม หรือข้อมูลกลุ่มรอบเล่นล่าสุด) (6) เปลี่ยนคู่ได้อิสระ — คะแนนผูกกับตัวนักเรียนรายคน best ต่อด่าน (7) แก้ไขข้อมูลนักเรียนได้จากหน้าคะแนนของห้อง (ปุ่ม ✏️ ในแถวรายละเอียด) + rpc_legacy_login คืนสมาชิกกลุ่มครบ ให้ login บัญชีกลุ่มเดิมลงคะแนนครบทุกคน | [เฟส 3d 2569.30] หน้าห้องเรียนครบตาม Dashboard V.2: (1) พอร์ตสูตร HOTS v2 (A20/B30/C25/D25 + CTC/STM/CRT/PRB + ระดับ 3-6 + pilok solver) มาคิดจาก events ใน Supabase ตรง — ตาราง เก็บ/สอบ/A/B/C/D/รวม/ระดับ/กาญ24/เล่น/ล่าสุด + คลิกแถวดู 4 ด้านการคิด/สิ่งที่ขาด/Strict · สรุปบนสุดเพิ่ม สมรรถนะเฉลี่ย + ระดับ 5-6 + แถบเฉลี่ยรายแหล่ง (2) ครูเจ้าของห้อง = admin ของห้องตัวเอง: ✏️ แก้ข้อมูลนักเรียน+PIN · 🧹 ล้างข้อมูลการเล่นรายคน (ตรวจ RLS แล้วแจ้งถ้ายังไม่รันแพตช์) · 🗑 ลบห้องถาวร (ยืนยันพิมพ์โค้ดห้อง) (3) dropdown โรงเรียน→ห้องเรียนหน้า login: โรงเรียนเดียวเลือกให้อัตโนมัติ+โหลดห้องทันที · โชว์จำนวนห้อง · ข้อความ error ชี้สาเหตุ (ยังไม่รัน SQL แพตช์) · SQL รวมไฟล์เดียว supabase_patch_all_v754.sql | [เฟส 3c 2569.29] เกมคุย Supabase ตรง (Sheets เหลือเป็นตัวสำรอง): (1) login บัญชีเดิมผ่าน rpc_legacy_login — เข้าได้ทันที+กู้เซฟ+ผูกห้องเรียนอัตโนมัติ (2) เซฟเกม (ProfileBlob) ขึ้น Supabase ผ่าน rpc_set_save พร้อมคะแนนสรุป (คะแนนเก็บ=ผลรวม normScore ดีที่สุดต่อด่าน · คะแนนสอบ=ด่าน 8) — กลุ่ม 2-3 คนลงครบทุกสมาชิก (3) กระดานอันดับรายห้องจาก rpc_leaderboard เมื่อผูกห้องเรียนอยู่ (เห็นเฉพาะเพื่อนร่วมห้อง) ถอยกลับ Sheets อัตโนมัติเมื่อมีปัญหา (4) เข้าห้องเรียนแล้วดึงเซฟจาก rpc_get_save มาผสานก่อนเข้าเกม (รอสูงสุด 4 วิ) (5) Sheets ล่มไม่กั้นการเข้าเล่น — ผูก session ในเครื่อง เล่นต่อได้ ข้อมูลยังลง Supabase ครบ | [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
+const GAME_VERSION = 'V.7.75-IX2050-2569.55'; /* [แก้ตามครู V.7.75 — เรื่องจอมือถือ] (1) ขยายเวทีเกมให้เต็มจอบนมือถือ/แท็บเล็ต (เดิมล็อก 16:9 ทำให้เสียพื้นที่ซ้าย-ขวา) ยืดได้ไม่เกิน 2:1 และคุมภาพวาด (แผนที่ไอโซเมตริก/ฉากคัทซีน) ให้คงสัดส่วน 16:9 ไม่ยืดแบน (2) แก้ตัวหนังสือ/ไอคอนล้นจอที่ต้นเหตุ — ค่าขั้นต่ำที่เป็นพิกเซลตายตัว (ปุ่ม 40-44px · ตัวอักษร 12-15px) เปลี่ยนเป็น clamp ที่ย่อตามสัดส่วนเวที · กำหนดตัวอักษรฐานของเกมและของปุ่ม/ช่องกรอกให้อิงขนาดเวที (เดิมค้างที่ 16px/13.33px ของเบราว์เซอร์) · ล็อก line-height ของปุ่มกันอีโมจิดันความสูง (3) เพิ่มปุ่มปรับขนาดตัวอักษร/ปุ่ม 4 ระดับในหน้าตั้งค่า จำค่าไว้ให้ (4) รองรับโหมดเต็มจอและ 'เพิ่มไปยังหน้าจอโฮม' (ไอคอนแอป + manifest + คำแนะนำสำหรับ iPhone/iPad) — ผลรวม: บนมือถือแนวนอนได้เวทีกว้างขึ้น 12% · ปุ่มจาก 11% ของความสูงจอเหลือ 7% · ทุกหน้าไม่มีข้อความล้นกรอบแล้ว */ /* [แก้ตามครู V.7.74] (1) แบบประเมินตนเองครอบคลุมสมรรถนะหลัก 6 ด้าน และครบทุกด้านย่อยตามกรอบ CBE รวม 19 ข้อ (ด้านย่อยละ 1 ข้อ) พร้อมสรุปค่าเฉลี่ยรายด้านย่อยให้ครูดู (2) ข้อความหน้าแรกใส่ได้ 2 บรรทัด แต่ละบรรทัดลิงก์ไปเว็บได้ แก้ไขจากหน้า ผู้ออกแบบ/QR (3) เครดิตท้ายหน้าจอเหลือ 2 บรรทัด ไม่ผูกกับรูป QR แล้ว และลิงก์ไปเว็บได้ทั้ง 2 บรรทัด (4) ส่วน "ออกแบบและพัฒนา" เพิ่มเป็น 6 บรรทัด ลิงก์ได้ทุกบรรทัด (5) จัดหน้า "ออกแบบและพัฒนา" ใหม่ให้อ่านง่ายเป็นสัดส่วน — การ์ด QR ซ้าย · ที่มาของสื่อเป็นการ์ดกริดพร้อมชิปลิงก์ ไม่มี URL ยาวล้นบรรทัดอีก */ /* [แก้ตามครู V.7.73] (1) แก้ตารางหน้าตัวชี้วัดข้อความล้นทับกัน — ภาษาไทยไม่มีช่องว่างระหว่างคำ เบราว์เซอร์จึงตัดบรรทัดไม่ได้ ใส่ overflow-wrap:anywhere ให้ทุกตารางแล้ว (2) แบบประเมินตนเองครอบคลุมสมรรถนะหลักครบ 6 ด้าน (14 ข้อ · การคิดขั้นสูง 4 ข้อ อีก 5 ด้านละ 2 ข้อ) + ปุ่มดูผลย้ายไปแถบบนสุดข้างปุ่มห้องเรียน ใช้ชื่อ "ผลการประเมินสมรรถนะ (นักเรียนประเมินตนเอง)" ครูเจ้าของห้องดูได้ (3) ดูสรุปห้องเรียนของครูท่านอื่นได้ครบเหมือนห้องตัวเอง (กราฟ · ตาราง · ระดับสมรรถนะ 6 ด้าน) แต่ปิดชื่อ-นามสกุลจริงและแก้ไขไม่ได้ (4) ข้อความหน้าแรกเหลือบรรทัดเดียว www.GamePlearn.com และแก้ไขได้จากหน้าห้องเรียน — ต้องรัน SQL v773 */ /* [แก้ตามครู V.7.72] (1) แก้ "บันทึกข้อมูลผู้ออกแบบไม่ได้" — เดิมโชว์ error ดิบของฐานข้อมูล ตอนนี้บอกตรง ๆ ว่าต้องรันไฟล์ SQL ไหน + ไฟล์ SQL สั่ง PostgREST โหลดผังใหม่ทันทีหลังรัน (2) รูป QR แสดงที่เครดิตท้ายหน้าจอด้วย + เพิ่มข้อความเครดิตท้ายจอได้ถึง 3 บรรทัด (3) ตารางคะแนนของห้องพอดีจอ ไม่มีแถบเลื่อนซ้ายขวา (ย้าย A·B·C·D ลงแถวรายละเอียด) (4) ปุ่มเดิม "เกณฑ์ประเมินการคิดขั้นสูง" เปลี่ยนเป็น "ผลการประเมินการคิดขั้นสูง (นักเรียนประเมินตนเอง)" สรุปรายด้านเป็นรายบุคคล (5) เกณฑ์การประเมินการคิดขั้นสูงย้ายไปอยู่ในหน้า ตัวชี้วัด/สมรรถนะ (6) ตารางเกณฑ์สมรรถนะหลัก 6 ด้าน เลื่อนขึ้นเป็นตารางที่ 2 (7) สรุปผู้เรียนกรองได้ทั้ง รายห้อง · รายโรงเรียน · รายชั้น · ทั้งหมด — ห้องคนอื่นดูอย่างเดียวและปิดชื่อ-นามสกุลจริง แสดงเฉพาะชื่อในเกม (8) จอชมวิดีโอสถานที่จริงใหญ่ขึ้นมาก (กล่อง 78vw · สูงได้ถึง 74vh · คงสัดส่วน 16:9) + แก้บั๊กแบบประเมินตนเองที่ยังจับคู่คำตอบแบบ 10 ข้อ/ด้าน ทั้งที่เหลือด้านละ 3 — ต้องรัน SQL v772 */ /* [แก้ตามครู V.7.71] (1) ย้ายปุ่ม 🤝 ประเมินเพื่อนร่วมทีม มาอยู่ข้างปุ่มแบบประเมินอื่นมุมขวาล่างแผนที่ (2) แบบประเมินตนเองการคิดขั้นสูงเหลือ 12 ข้อ (ด้านละ 3) ภาษาเด็ก ป.4 + มาตรวัดหน้ายิ้ม (3) เปลี่ยนชื่อเป็น "เกมผจญภัยกาญจนบุรี" ทุกจุด (4) ผู้ดูแลดูผลแบบประเมินความพึงพอใจได้จากหน้าห้องเรียน (ค่าเฉลี่ยรายข้อ + คำตอบปลายเปิด) (5) ผู้ดูแลกดดูเกณฑ์ประเมินการคิดขั้นสูงได้จากแถบบน (6) แบบประเมินไม่ต้องกรอกโรงเรียน/ชื่อ/ชั้น/เลขที่ซ้ำ — ดึงจากตอนเข้าห้องเรียนให้เลย (7) แก้บั๊กคะแนน "การรวมพลังทำงานเป็นทีม" ไม่ขึ้น — เดิมบันทึกโดยตรวจ PIN ผิดคน + คิวที่ส่งไม่ผ่านบล็อกคิวทั้งหมด (ต้องรัน SQL v771) (8) ตัดบรรทัดค่าเฉลี่ยการคิดขั้นสูงและบล็อกรายละเอียดออกจากหน้าสรุป (9) ข้อความ "ออกแบบและพัฒนา" + รูป QR Code แก้ได้จากหน้าห้องเรียนของผู้ดูแล (รูปอยู่ด้านซ้าย) (10) ตารางคะแนน: สมรรถนะหลัก 6 ด้านแยกเป็นคอลัมน์ละด้าน แสดง % + สีตามระดับ (11) คะแนนเก็บ/สอบ ใช้สี 4 ระดับ เกณฑ์ 50/60/70/80% (12) แก้บั๊กเลือกห้องเรียนเดิมซ้ำแล้วไม่ขึ้นรายชื่อ (13) วิดีโอ YouTube ใช้สัดส่วน 16:9 */ /* [แก้ตามครู V.7.70] (1) ชื่อเกมภาษาอังกฤษเป็น kan-adventure (2) ปุ่ม "ห้องเรียน" กดแล้วกลับหน้ารายการ/เพิ่มห้องเสมอ (เดิมค้างหน้าย่อยที่เปิดไว้) (3) ถอดแถบสมรรถนะหลัก 6 ด้านแบบรายการออกจากหน้าสรุปผู้เรียน (ซ้ำกับหน้าตัวชี้วัด/สมรรถนะ) (4) ถอดการ์ดสรุป HOTS ออก ให้ตารางสมรรถนะหลัก 6 ด้านมาแทน (ค่าเฉลี่ย HOTS ย้ายไปอยู่บนหัวตาราง) (5) ตารางที่ 1 แสดงคำอธิบายตัวชี้วัดด้วย แม้ในโหมดผู้ดูแล (6) เพิ่มตารางรายละเอียดหลักฐาน A·B·C·D ต่อท้ายตารางที่ 2 (7) เรียงด่านตามเส้นทางบนแผนที่ ด่านที่ 1-14 · ด่านบอสอยู่ล่างสุดเป็น "แบบทดสอบหลังเรียน" (8) ตารางที่ 4 เกณฑ์ประเมินสมรรถนะหลัก 6 ด้านตาม CBE พร้อมนำไปใช้ (ระดับ 3-6 = ช่วงชั้น ป.4-6) — ประเมินได้ครบทั้ง 6 ด้านแล้ว: จัดการตนเอง=พฤติกรรมในเกม · คิดขั้นสูง=เกณฑ์เดิมไม่เปลี่ยน · สื่อสาร=ช่อง 💬 ที่ครูให้แยกจากช่อง 🧠 การคิด · ทำงานเป็นทีม=เพื่อนประเมินเพื่อนในเกม (ปุ่ม 🤝 บนแผนที่) · พลเมือง/ธรรมชาติ=ข้อสอบด่านที่เกี่ยวข้อง + เกณฑ์กาญ 2050 (9) โหมดสาธิตเข้าเล่นได้ทุกด่านทันที (เพิ่มเติม) ตารางที่ 1 ชิดซ้าย พอดีจอ ไม่มีแถบเลื่อนซ้ายขวา */ /* [แก้ตามครู V.7.69] (1) ตาราง 1 หน้าตัวชี้วัด เรียงใหม่: ด่าน/ภารกิจ · ตัวชี้วัด · สมรรถนะหลัก (2) ตาราง 2 สมรรถนะการคิดขั้นสูง ตัดคอลัมน์ค่าเฉลี่ยห้อง/จำนวนที่มีข้อมูลออก เหลือ รหัส · ด้าน · หลักฐาน A B C D (3) เพิ่มตาราง 3: ด่าน/ภารกิจ · หลักฐาน · ด้านการคิดขั้นสูงที่วัด (4) ประเมิน "สมรรถนะหลัก 6 ด้าน" จากคะแนนที่มีจริง (CORE6ENG) — ด้านไหนไม่มีหลักฐานบอกตรง ๆ ว่าไม่ประเมิน (5) สรุปผู้เรียนมีตารางจำนวนนักเรียนแต่ละระดับ (3·4·5·6) ครบทั้ง 6 ด้าน (6) ย้ายเกณฑ์การให้ระดับมาไว้ในหน้าตัวชี้วัด/สมรรถนะ (7) แก้ "แตะป้ายเวอร์ชัน 5 ครั้งแล้วไม่เข้าโหมดครู" (เดิมป้ายตั้ง pointer-events:none นิ้วแตะไม่โดน) + เพิ่มโหมดสาธิต ?demo=1 — ปุ่ม 🎮 เล่นสาธิต ในการ์ดห้องเรียน: เล่นได้ทุกอย่าง เหรียญ 9999 ปลดล็อกครบ แต่ไม่บันทึกคะแนน ไม่ขึ้นกระดานอันดับ ไม่ปนข้อมูลวิจัย (8) ตารางคะแนนของห้องแสดงสมรรถนะหลัก 6 ด้าน (กดดูรายละเอียดด้านการคิดขั้นสูงได้) และระบุชัดว่าเป็น "ผลระหว่างเรียน" (9) ผู้ดูแลระบบจัดการห้องเรียนค้างในระบบได้ (🏫 ห้องเรียนทั้งหมดในระบบ → ซ่อน/ปิด/ย้ายมาเป็นของฉัน/ลบ) (10) กระดานอันดับโชว์เหรียญตราของทุกคน ไม่ใช่แค่ของตัวเอง — ต้องรัน SQL v769 */ /* [แก้ตามครู V.7.68] (1) เอาปุ่มเกมแนะนำออกจากแถบบน (2) ทางเข้าทดสอบเกมสำหรับครู/ผู้ดูแล: เปิดเกมด้วย ?admin=1 หรือแตะป้ายเวอร์ชันหน้าแรก 5 ครั้ง → เมนู "เข้าสู่ระบบ" กลับมา (3) หัวเรื่อง Dashboard เป็น GamePlearn: Play. Learn. Level Up. กดแล้วไป gameplearn.com (4) วิธีเข้าห้อง: "โค้ดหรือค้นหาชื่อโรงเรียน" / "โค้ดเท่านั้น" (5) ปุ่ม 🔗 แชร์ลิงก์ ของแต่ละห้อง — ลิงก์ ?join=CODE เปิดเกมแล้วกรอกโค้ดให้อัตโนมัติ พร้อมข้อความสำเร็จรูป/คัดลอก/แชร์ผ่านแอป (6) คะแนนบอกเต็ม: เก็บ/150 · สอบ/30 (7) ใส่ตัวชี้วัดหลักสูตรแกนกลาง ป.4 + สมรรถนะหลัก 6 ด้าน (CBE) ให้ทุกด่านเป็นค่าตั้งต้น ผู้ดูแลแก้ได้ — การประเมินหลักยังเป็น HOTS เหมือนเดิม (8) สรุปผู้เรียน: HOTS เป็นกราฟจำนวนผู้เรียนตามระดับ + แถบสมรรถนะหลัก 6 ด้าน (ด้านที่ไม่ประเมินบอกตรง ๆ) (9) กด "การคิดขั้นสูง" → รายละเอียด 4 ด้านย่อย + วิธีให้คะแนนครบ */ /* [แก้ตามครู V.7.67] (1) ตัด Dashboard V.2 ออกจากการใช้งาน — เปิดหน้าครูเมื่อไรเข้า "ห้องเรียน" ทันที (เดิมกลับจาก Google แล้วค้างที่ V.2 และไม่เห็นห้อง) (2) แก้อาการ "ผูกบัญชีแล้วต้องผูกซ้ำตลอด" — รอบที่ Google ไม่ส่ง refresh_token กลับมา ระบบเดิมทิ้ง session ทั้งก้อน ตอนนี้เก็บของเดิมไว้ใช้ต่อ + ยอมรับ session ที่ยังไม่หมดอายุ (3) เอาปุ่ม/หน้าเข้าสู่ระบบผู้ดูแลของระบบเดิม (Google Sheets) ออกทั้งหมด (4) สิทธิ์ผู้ดูแลระบบ: สื่อห้องเรียนรู้ · เกมแนะนำ · ตัวชี้วัดกลาง แก้ได้เฉพาะผู้ดูแล (ตาราง app_admins — ตั้งอีเมลไว้ในไฟล์ SQL v767) ครูทั่วไปจัดการห้องตัวเองได้ครบเหมือนเดิม (5) เรียงปุ่มแถบบน: ห้องเรียน · ตัวชี้วัด/สมรรถนะ · บทเรียนอื่น (+เกมแนะนำ) · ส่งออกคะแนน (CSV) · เข้าสู่ระบบ/ออกจากระบบ — ต้องรัน SQL v767 */ /* [แก้ตามครู V.7.66 · 13 ข้อ] หน้า Login: เอาปุ่มกระดานอันดับ 📺 และปุ่ม Dashboard 📊 ออก เหลือปุ่ม 🏫 ห้องเรียน + ซ่อนเมนู "เข้าสู่ระบบ" (เข้าทางห้องเรียนอย่างเดียว) · หน้าห้องเรียน/Dashboard: หัวเรื่องเป็น "Dashboard: ผจญภัยกาญจนบุรี" · แถบบนจัดใหม่ (🏫 ห้องเรียน · 📐 ตัวชี้วัด&สมรรถนะ · ⬇ CSV · 📚 บทเรียนอื่น → gameplearn.com · เกมแนะนำ 3 ช่อง · ⋯ เพิ่มเติม · ปุ่มเข้าสู่ระบบ/ออกจากระบบ) · เข้าสู่ระบบ Google แล้วย้ายห้องเดิมมาให้อัตโนมัติ (rpc_claim_teacher — แก้อาการห้องที่เคยสร้างไม่ขึ้น) · สรุปผู้เรียนเพิ่มโหมด 🌏 ทุกโรงเรียน (ดูอย่างเดียว แก้ห้องคนอื่นไม่ได้) · วิธีเข้าห้องใช้คำ "โค้ด+ค้นหาชื่อโรงเรียน"/"โค้ดเท่านั้น" แก้ทีหลังได้ที่ ✏️ — ต้องรัน SQL v767 */ /* [แก้ตามครู V.7.65] (1) ด่านต้นจามจุรียักษ์: บทเริ่มด่าน + ห้องเรียนรู้ + ฉาก (ป้ายซุ้มไม้) + เกร็ดท้ายด่าน ไม่พาดพิงอำเภอด่านมะขามเตี้ยแล้ว — ข้อสอบ 21 ข้อ (q6_1..q6_21) คงเดิมทุกตัวอักษร ไม่แตะเพื่อไม่ให้กระทบข้อมูลวิจัย (2) ไอคอนในด่านเลือกใหม่ให้ดูรูปแล้วเดาได้: 📋→🪧 · 🐝→🦋 · 🍂→🌾 · 🗑️→⛓️ · 🧪→☠️ · 💨→🏭 · ✂️→🧱 · 🚜→🚚 · 🔨→🏗️ · 🌊→⛏️ พร้อมข้อความ feedback ใหม่ทุกชิ้น — กติกา/คะแนน/จำนวนดี-ร้ายเท่าเดิม และบันทึกด้วย logId รหัสเดิม ข้อมูลวิจัยต่อเนื่อง 100% (3) เพลง: ใส่ฟิลเตอร์ตัดเสียงแหลม + เสียงขึ้นนุ่มขึ้น + ไฮแฮตเบา/เว้นบีท + จำกัดเสียงประสานไม่เกิน 1.4kHz → หายปวดหู · แผนที่มีเพลงของตัวเอง (journey) ตื่นเต้นแบบออกเดินทาง (4) หน้าห้องเรียน: ฟอร์มสร้าง/แก้ไขห้องครบ ระดับชั้น·ห้องที่·โรงเรียน·ปีการศึกษา + เลือกได้ว่าให้ค้นหาเจอ หรือใส่โค้ดเท่านั้น (5) สื่อห้องเรียนรู้กลับมา: ครูใส่ลิงก์รูป/วิดีโอ/ที่มา ที่หน้าห้องเรียน (🖼️) เก็บใน Supabase แทนชีต Media — ต้องรัน SQL v767 + migrateMedia() */ /* [ตรวจมือถือ/แท็บเล็ต V.7.64] จากการไล่ทดสอบ iPhone SE/14 แนวนอน-แนวตั้ง + iPad: (1) breakpoint แท็บเล็ต 1150→1280px — iPad Air/Pro 11" ได้ปุ่มไอคอน 44px ตามเกณฑ์นิ้วแตะ (2) แถบขอบเขต Leaderboard + แท็บตัวละคร/ออร่า/สัตว์เลี้ยง สูงขั้นต่ำ 40px (เดิม 12-20px บนมือถือ) (3) สไลเดอร์เสียงพื้นที่จับ 28px (เดิม 2-7px) + เช็คบ็อกซ์ 22px (4) จอแนวตั้งชวนหมุนแนวนอน (ปิดได้ จำทั้งเซสชัน) (5) กัน dropdown ห้องล้นการ์ดจอแคบ · ผ่านแล้ว: เสียงปลดล็อกหลังแตะแรก (iOS policy), ไม่มีจอเลื่อนแนวนอน, ไม่มีองค์ประกอบหลุดจอ, ปุ่มเกม/ตัวเลือกข้อสอบ ≥42px */ /* [แก้ตามครู V.7.64] (ก.1) ชื่อในเกมซ้ำกันบนกระดาน (คู่เก่าแยกกัน) → คนอันดับรองติดท้าย (2),(3) อัตโนมัติ · จับคู่ใหม่แล้วสมาชิกมีชื่อเดิมหลายชื่อ → หน้าเข้าห้องให้เลือกใช้ชื่อจากที่มีอยู่ (หรือตั้งใหม่) แล้วบันทึกให้ทุกคนในกลุ่ม (ก) กระดานอันดับโชว์เฉพาะชื่อในเกมอย่างเดียวทุกขอบเขต (ไม่โชว์ชื่อจริง/ไม่ติดชื่อห้อง) · เล่นเป็นกลุ่ม 2-3 คนขึ้นกระดานแค่รายการเดียว (SQL v764 + กันซ้ำในเกม) · ปุ่ม 🧹 ล้างข้อมูล เปลี่ยนเป็น 🗑 ลบนักเรียนทั้งคน (ข) ขอบเขต "ชั้น" นับทุกห้องที่เป็นชั้นเดียวกันไม่ติดเงื่อนไขโรงเรียน (เดิมห้องที่ไม่ได้ผูกโรงเรียนตกหล่น เห็นแต่ห้องตัวเอง) — ต้องรัน SQL v764 (ค) 👥➗ แยกชื่อรวมเป็น 2 คน: บัญชีเดิมที่พิมพ์ชื่อเด็ก 2 คนลงแถวเดียว (ระบบเดิมไม่ได้บันทึก GroupSize) แยกได้จากปุ่มในแถวรายละเอียด — คนที่ 2 ได้สำเนาคะแนน/ประวัติ/เซฟครบ จำนวนนักเรียน +1 (ส่วนกลุ่มที่ระบบรู้จักมี 2 แถวแยกกันอยู่แล้ว ปุ่ม 🔀 จึงไม่เพิ่มจำนวน — ถูกต้องแล้ว) — ต้องรัน SQL v764 */ /* [V.7.63] (1) ✏️ แก้ไขนักเรียนเป็นฟอร์มเดียว (เดิม prompt 5 ชั้นโดนเบราว์เซอร์บล็อก แก้ได้แค่เลขที่) (2) 🔀 แยกกลุ่ม: คัดลอกประวัติเก่าให้สมาชิกแบบรายแถว (เดิมถ้าสมาชิกมีข้อมูลเล่นใหม่บ้างจะไม่คัดลอกอะไรเลย) */ /* [เฟส 3f] AI ตรวจคำตอบเขียนกาญ 2050 กลับมาแล้ว: (1) เกมตรวจสดด้วย heuristic-v1 (พอร์ตจาก .gs — deterministic ไม่ต้องมีคีย์/เซิร์ฟเวอร์) (2) หน้า 🏫 มีปุ่ม 📝 ตรวจคำตอบเขียน: โชว์คำตอบ 3 ข้อ + คะแนน AI แนะนำ + ครูให้คะแนนจริง 0-4/ข้อ + คอมเมนต์ → รวม 36 (เกม 24 + เขียน 12) บันทึกลง events.raw (รองรับกลุ่ม — บันทึกครบทุกสำเนา) (3) ✨ ตรวจซ้ำด้วย Gemini (ครูใส่คีย์เอง เก็บในเครื่อง) (4) login เดิมวินิจฉัยสาเหตุ: PIN ผิด/ยังไม่ย้ายข้อมูล/ยังไม่รัน SQL (rpc_legacy_check) (5) ช่องโค้ดไม่ prefill — ใช้ตัวอย่าง เช่น G5AWKW (6) สรุปรวมมีตัวกรอง ทุกห้อง/รายห้อง */ /* [เฟส 3e] ตัด Google Sheets ออกจากเกม 100% — sheetGet/sheetPost ไม่ยิง Apps Script อีกแล้ว (บันทึกทุกอย่างผ่าน SBTee→Supabase, เซฟเกม rpc_set_save/get_save, login เดิม rpc_legacy_login, กระดานอันดับรายห้อง rpc_leaderboard, สถิติข้อสอบครู rpc_question_stats) · ปิดแท็บสมัครสมาชิกเดิม (เข้าทางห้องเรียน) · เข้าห้องเรียนไม่สมัครบัญชีเงียบฝั่ง Sheets แล้ว · 📊 เปิดหน้าห้องเรียน (Dashboard ระบบใหม่) · ปิด Apps Script ได้เมื่อ migrate ครบ */ /* [2569.31 ตามข้อสังเกตครู 7 ข้อ] (1) Dashboard V.2 แยก 🏆 ผลสัมฤทธิ์ กับ 🧠 สมรรถนะ ชัดเจน — ส่วนที่ 1/ส่วนที่ 2 + การ์ดแยกชุด + ตารางจัดกลุ่มคอลัมน์ 2 ชั้นพร้อมสีพื้น (2) สรุปข้อมูลผู้เรียนหน้าห้องเรียนแบ่ง 3 ส่วน ทั่วไป/ผลสัมฤทธิ์/สมรรถนะ (3) ตารางคะแนนของห้อง: ตัดคอลัมน์กาญ/24 (ย้ายลงรายละเอียด) + หัวตาราง 2 ชั้นแบ่งสีกลุ่ม + ระดับเป็นป้ายสี 6ม่วง/5เขียว/4ส้ม/3เทา + แถบสลับสี + คำอธิบายระดับท้ายตาราง (4) แก้คะแนนเพี้ยน: clamp สเกลเก่า (หลักร้อย) เหมือน .gs + บัญชีกลุ่มเดิม 1 username หลายคน — migration v2.36 สร้างแถวสมาชิกคนที่ 2-3 + group_ref เชื่อมกลุ่ม (มี migrateGroupMembers() สำหรับคนที่ย้ายไปแล้ว) และหน้าห้องเรียนแชร์สถิติให้สมาชิกกลุ่มเดียวกัน (5) ป้าย 👥 คู่กับใคร ใต้ชื่อนักเรียน (จาก group_ref เดิม หรือข้อมูลกลุ่มรอบเล่นล่าสุด) (6) เปลี่ยนคู่ได้อิสระ — คะแนนผูกกับตัวนักเรียนรายคน best ต่อด่าน (7) แก้ไขข้อมูลนักเรียนได้จากหน้าคะแนนของห้อง (ปุ่ม ✏️ ในแถวรายละเอียด) + rpc_legacy_login คืนสมาชิกกลุ่มครบ ให้ login บัญชีกลุ่มเดิมลงคะแนนครบทุกคน | [เฟส 3d 2569.30] หน้าห้องเรียนครบตาม Dashboard V.2: (1) พอร์ตสูตร HOTS v2 (A20/B30/C25/D25 + CTC/STM/CRT/PRB + ระดับ 3-6 + pilok solver) มาคิดจาก events ใน Supabase ตรง — ตาราง เก็บ/สอบ/A/B/C/D/รวม/ระดับ/กาญ24/เล่น/ล่าสุด + คลิกแถวดู 4 ด้านการคิด/สิ่งที่ขาด/Strict · สรุปบนสุดเพิ่ม สมรรถนะเฉลี่ย + ระดับ 5-6 + แถบเฉลี่ยรายแหล่ง (2) ครูเจ้าของห้อง = admin ของห้องตัวเอง: ✏️ แก้ข้อมูลนักเรียน+PIN · 🧹 ล้างข้อมูลการเล่นรายคน (ตรวจ RLS แล้วแจ้งถ้ายังไม่รันแพตช์) · 🗑 ลบห้องถาวร (ยืนยันพิมพ์โค้ดห้อง) (3) dropdown โรงเรียน→ห้องเรียนหน้า login: โรงเรียนเดียวเลือกให้อัตโนมัติ+โหลดห้องทันที · โชว์จำนวนห้อง · ข้อความ error ชี้สาเหตุ (ยังไม่รัน SQL แพตช์) · SQL รวมไฟล์เดียว supabase_patch_all_v754.sql | [เฟส 3c 2569.29] เกมคุย Supabase ตรง (Sheets เหลือเป็นตัวสำรอง): (1) login บัญชีเดิมผ่าน rpc_legacy_login — เข้าได้ทันที+กู้เซฟ+ผูกห้องเรียนอัตโนมัติ (2) เซฟเกม (ProfileBlob) ขึ้น Supabase ผ่าน rpc_set_save พร้อมคะแนนสรุป (คะแนนเก็บ=ผลรวม normScore ดีที่สุดต่อด่าน · คะแนนสอบ=ด่าน 8) — กลุ่ม 2-3 คนลงครบทุกสมาชิก (3) กระดานอันดับรายห้องจาก rpc_leaderboard เมื่อผูกห้องเรียนอยู่ (เห็นเฉพาะเพื่อนร่วมห้อง) ถอยกลับ Sheets อัตโนมัติเมื่อมีปัญหา (4) เข้าห้องเรียนแล้วดึงเซฟจาก rpc_get_save มาผสานก่อนเข้าเกม (รอสูงสุด 4 วิ) (5) Sheets ล่มไม่กั้นการเข้าเล่น — ผูก session ในเครื่อง เล่นต่อได้ ข้อมูลยังลง Supabase ครบ | [แพตช์ 2569.17] แก้ตัวละครจมแท่น/เท้าห้อยใต้แท่น — rig วาดเท้าต่ำกว่าจุด anchor ~78*scale*body.h จึงยกตัวละครขึ้นเท่านั้นพอดี (คำนวณจาก body.h ต่อ sprite) ให้เท้ายืนบนผิวแท่นวงกลมจริง | [แพตช์ 2569.16] ลบข้อความในวงเล็บออกจากตัวเลือกคำตอบ (กันการชี้คำตอบ) 7 จุด: ด้านสิ่งแวดล้อม/เศรษฐกิจ/สังคม, สร้างโรงงานใหญ่, พลังงานแสงอาทิตย์+ลม, สร้างโรงไฟฟ้าถ่านหิน, ตึกสูงกลางเมือง | [แพตช์ 2569.15] แท่นผู้วางแผนใหญ่ขึ้น+เงาสัมผัสใต้เท้า → ตัวละครยืนบนแท่นแน่น (ทุก sprite) · Cinema แก้ตัวหนังสือฉีกคำ — _wrapPx ใช้ Intl.Segmenter แบ่งคำไทยขึ้นบรรทัดที่ขอบเขตคำ ไม่ตัดกลางคำ | [แพตช์ 2569.14] แก้ตัวละครยืนบนแท่นพอดี(fy=sy+8) · ภ.5: แม่น้ำแควเป็นสายยาว(ไม่ใช่บ่อ), กล่องเหตุการณ์ไว้บนสุดถัดจากมิเตอร์, จัดวางองค์ประกอบใหม่+ขยายสัดส่วน+เต็มพื้นที่ (พื้นเทคกริดเรืองแสง+แผงเซิร์ฟเวอร์มุมหลัง, วัตถุดิบใหญ่ขึ้น แถวหลัง6+แถวหน้า5+แม่น้ำ, เครื่องกลางใหญ่ขึ้น) | [แพตช์ 2569.13/12] แก้ตาม Audit ศิลป์/UX: [P0] ตึกไม่ล้นกรอบ(ลด OY/ความสูง/setback), จอเครื่องประดิษฐ์ยึดกับเครื่อง(มีขาตั้ง), กำแพงกันน้ำ cap เป็น quad iso(หมดเส้นแนวนอน) · [P1] ขยายคนให้สัดส่วนดี, เติมพื้นที่ว่าง(น้ำพุ+แปลงดอกไม้ลานศาลากลาง / สตูล+ม้วนแบบ+กระดาน blueprint / เส้นวงจรเชื่อมวัตถุดิบ lab), ลานปูนโรงงาน river พอดีฐาน+คันขอบ, ตึกเมืองไม่ซ้อนแน่น, โต๊ะวางแผนเป็นไม้(ไม่เหมือนสระ), โคมไฟ lab ตั้งพื้น · [P2] คำใบ้ลากโชว์ครั้งเดียว, ป้ายข่าวไม่ทับป้ายสถานที่, ป้าย "โรงงาน", เชือกแพเด่นขึ้น | [แพตช์ 2569.11] ตัวละครฮีโร่ = "ผู้วางแผน" ยืนบนแท่นวงกลม 2.5D iso (disc+ทรงกระบอก+ขอบเรืองแสง+ป้ายผู้วางแผน) นอกพื้นที่ฉากมุมซ้ายหน้า มองเข้าเมือง · ตำแหน่งคงที่ไม่เลื่อนตาม pan · ถอดฮีโร่ในฉากออก | [แพตช์ 2569.10] แก้ลากเลื่อนดูฉากไม่ได้ — ย้ายการผูกอีเวนต์ pan จาก canvas (อยู่ข้างหลัง คลิกไม่ถึง) ไปที่ cap-body ที่รับคลิกจริง + ยกเว้นการเริ่มลากบนปุ่ม/ป้ายข่าว + touchAction:none | [แพตช์ 2569.09] พื้นฉากเป็นแท่นลอย(platform)+เงา+พื้นหลังภูเขาหลายชั้น · จัดเลเยอร์ z-depth (zq/zflush) กันตึก/ต้นไม้/ช้างซ้อนทับผิดธรรมชาติ · ลาก/แตะเลื่อนดูฉากได้ (pan+clamp) · ภ.1 โรงงานละเอียดขึ้น(หลังคาฟันเลื่อย/ไซโล/ปล่องคาดแดง/ป้าย)+ช้างเลเยอร์ถูก · ภ.2 ตัดคำใบ้ป้ายข่าว · ภ.4 ผลลัพธ์+คำตอบที่เลือกไว้บนสุด · ภ.5 ไม่โชว์ข้อความจนกดรวม+วัตถุดิบครบ 12(เพิ่มแม่น้ำ)ทุกตัวมีแท่นยิงลำแสง · จัดตำแหน่งฮีโร่ทุกฉากให้ยืนเหมาะสม | [แพตช์ 2569.08] เติมเนื้อหา+ฉากครบ 6 ภารกิจ: ภ.2 ป้ายข่าวคลิกได้ในฉากเมือง · ภ.3 ศาลากลางเป็นโมเดลจำลองทางเลือกพัฒนาเมือง ~16 พร็อพ (โรงงาน/รีสอร์ต/ฟาร์ม/ห้าง/เหมือง/รถบัส/โรงขยะ/ด่านเก็บเงิน/ก่อสร้าง/เขื่อน/โซลาร์/กังหันลม/สายส่งไฟ/โรงไฟฟ้าถ่านหิน/รีไซเคิลน้ำ/นักท่องเที่ยว) · ภ.4 โต๊ะวางแผน+แผนที่ภูมิประเทศ+ทีมประชุม+โมเดลแผนแก้น้ำ · ภ.5 เพิ่ม 2 วัตถุดิบ(กังหันลม/บ่อปลา)+คอมโบ+พร็อพวัตถุดิบ+อนิเมชันรวมคอมโบ · ภ.6 อาคารละเอียด+บ้านแพ+เต็นท์อพยพ+หอเตือนภัย+กำแพงกันน้ำ+คนอพยพ +ตัวเลือกอีก 4 ข้อ — payload/ฐานข้อมูล/สูตร A·B·C·D/telemetry เดิมทุกอย่าง · scenarioVersion เดิม (แยก cohort จาก GameVersion+ScenarioVersion) */
 
 /* [ใหม่ V.7.69 · ตามคำขอครู ข้อ 7] โหมดสาธิต — เปิดเกมด้วย ?demo=1 (ปุ่ม 🎮 ในการ์ดห้องเรียนสร้างลิงก์นี้ให้)
    ใช้ตอนครูอยากลองระบบเอง หรือสาธิตเกมให้นักเรียนดูหน้าชั้นเรียน:
@@ -22895,7 +23050,7 @@ function renderCredits() {
     const pushLine = (kindLabel, fid) => {
       if (!fid || seen[fid]) return;
       seen[fid] = 1;
-      lines.push('<div class="credits-drive-line">📁 Google Drive (' + kindLabel + ') • ID: <span class="credits-drive-id">' + escapeHtml(fid) + '</span></div>');
+      lines.push('<span class="credit-chip" title="Google Drive ID: ' + escapeHtml(fid) + '">📁 ' + escapeHtml(kindLabel) + ' · Drive</span>');
     };
     _asList(m.photoUrl).forEach(u => pushLine('ภาพ', _driveFileIdFrom(u)));           // คอลัมน์ PhotoUrls
     _asList(m.youtubeUrl).forEach(u => pushLine('วิดีโอ', _driveFileIdFrom(u)));      // คอลัมน์ YoutubeUrls (เฉพาะลิงก์วิดีโอที่ฝากไว้ใน Drive)
@@ -22906,13 +23061,26 @@ function renderCredits() {
     // ลำดับความสำคัญตามที่ตั้งใจไว้เดิม: ข้อความคอลัมน์ Credit ในชีต → photoCredit ที่ฝังในโค้ด (พร้อมลิงก์ photoCreditUrl ถ้ามี)
     const creditText = m.sheetCredit || m.photoCredit || '';
     if (!lines.length && !creditText) return; // ไม่มีทั้งลิงก์ Drive และข้อความเครดิต — ไม่มีอะไรจะโชว์จริงๆ ค่อยข้าม
-    let creditHtml = '';
-    if (creditText) {
-      const useLink = !m.sheetCredit && m.photoCreditUrl; // ลิงก์กลับต้นทาง (เงื่อนไข CC) ใช้เฉพาะเครดิตที่ฝังในโค้ด — ข้อความจากชีตเป็นข้อความล้วน
-      const inner = useLink ? `<a href="${escapeHtml(m.photoCreditUrl)}" target="_blank" rel="noopener">${escapeHtml(creditText)}</a>` : escapeHtml(creditText);
-      creditHtml = '<div class="credits-drive-credit">' + inner + '</div>';
-    }
-    rows.push('<div><strong>' + escapeHtml(lesson.title) + '</strong>' + creditHtml + lines.join('') + '</div>');
+    /* [V.7.74 ข้อ 5] เดิมพิมพ์ข้อความเครดิตทั้งก้อนต่อกันจนล้นบรรทัด (URL ยาว ๆ ไม่มีที่ตัดคำ)
+       ตอนนี้ตัดเป็นชิปทีละแหล่ง · ถ้าเป็นลิงก์แสดงแค่ชื่อโดเมนแล้วกดเปิดได้ · ตัดชื่อซ้ำออกให้ด้วย */
+    const chips = [], seenChip = {};
+    const addChip = (raw) => {
+      const t = String(raw || '').trim(); if (!t) return;
+      const key = t.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
+      if (!key || seenChip[key]) return; seenChip[key] = 1;
+      if (/^(https?:\/\/|www\.)/i.test(t)) {
+        const href = /^https?:/i.test(t) ? t : 'https://' + t;
+        const host = t.replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[\/?#]/)[0];
+        chips.push('<a class="credit-chip" href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer" title="' + escapeHtml(t) + '">🔗 ' + escapeHtml(host) + '</a>');
+      } else {
+        chips.push('<span class="credit-chip">' + escapeHtml(t) + '</span>');
+      }
+    };
+    String(creditText).split(/\s*[|,]\s*/).forEach(addChip);
+    // ลิงก์กลับต้นทาง (เงื่อนไข CC) ใช้เฉพาะเครดิตที่ฝังในโค้ด — ข้อความจากชีตเป็นข้อความล้วน
+    if (!m.sheetCredit && m.photoCreditUrl) addChip(m.photoCreditUrl);
+    rows.push('<div class="credit-card"><div class="credit-card-t">' + escapeHtml(lesson.title) + '</div>' +
+      '<div class="credit-chips">' + chips.join('') + lines.join('') + '</div></div>');
   });
   if (!rows.length) {
     document.getElementById('credits-pager').classList.add('hidden');
@@ -22920,8 +23088,9 @@ function renderCredits() {
     return;
   }
   // [ใหม่ตามคำขอ] บทที่มีเครดิตครบทุกบทยาวเกิน 1 หน้าจอ (346px สูง รับได้ราว 3-4 รายการ) → พอดี 4 รายการต่อหน้า เกินกว่านี้เปลี่ยนหน้าแทนเลื่อน
-  const { pageItems, page, totalPages } = _pagerSlice('credits', rows, 4);
-  listEl.innerHTML = pageItems.join('<hr style="opacity:0.15; margin:calc(var(--vw) * 0.6) 0;">');
+  /* การ์ดกริด 2 คอลัมน์ — 6 การ์ดต่อหน้าพอดีหนึ่งจอ (เดิมข้อความยาว จึงได้แค่ 4) */
+  const { pageItems, page, totalPages } = _pagerSlice('credits', rows, 6);
+  listEl.innerHTML = pageItems.join('');
   _renderPagerControls('credits-pager', 'credits-page-prev', 'credits-page-next', 'credits-page-label', page, totalPages);
 }
 
@@ -22991,32 +23160,77 @@ function _teacherModeOn(silent) {
 /* [V.7.71 ข้อ 9] โหลดข้อความ/รูป QR ของส่วน "ออกแบบและพัฒนา" ที่ผู้ดูแลตั้งไว้ในระบบ
    ค่าเริ่มต้นคือข้อความที่เขียนไว้ในไฟล์ — ถ้าผู้ดูแลยังไม่ได้ตั้งอะไร หน้าตาเหมือนเดิมทุกประการ
    เก็บสำเนาไว้ในเครื่องด้วย (localStorage) เปิดเกมครั้งถัดไปจึงแสดงได้ทันทีไม่ต้องรอเน็ต */
-var CREDITS_KEYS=['credits_name','credits_contact','credits_sub','credits_extra','credits_qr','credits_line','credits_line2','credits_line3','credits_start'];
-function _applyCredits(map){
-  if(!map) return;
-  var set=function(id,v){ var el=document.getElementById(id); if(el&&v!=null&&String(v).trim()!==''){ el.textContent=String(v); el.style.display=''; } };
-  set('credits-name', map.credits_name);
-  set('credits-contact', map.credits_contact);
-  set('credits-sub', map.credits_sub);
-  set('credits-extra', map.credits_extra);
-  set('start-caption-line', map.credits_start); /* [V.7.73] ข้อความบรรทัดเดียวบนหน้าแรก */
-  var qrSrc=String(map.credits_qr||'').trim();
-  var qr=document.getElementById('credits-qr');
-  if(qr && qrSrc){ qr.src=qrSrc; qr.style.display=''; }
-  /* [V.7.72 ข้อ 2] เครดิตท้ายหน้าจอ: ใส่รูป QR ด้วย + รองรับข้อความเพิ่มอีก 2 บรรทัด */
-  var l1=String(map.credits_line||'').trim(), l2=String(map.credits_line2||'').trim(), l3=String(map.credits_line3||'').trim();
-  if(!l1 && !l2 && !l3 && !qrSrc) return;
-  [].slice.call(document.querySelectorAll('.screen-credit-line')).forEach(function(el){
-    var base=l1 || (el.getAttribute('data-orig') || el.textContent || '').trim();
-    if(!el.getAttribute('data-orig')) el.setAttribute('data-orig', (el.textContent||'').trim());
-    var txt='<span class="scl-1">'+_credEsc(base)+'</span>'+
-      (l2?'<span class="scl-2">'+_credEsc(l2)+'</span>':'')+
-      (l3?'<span class="scl-3">'+_credEsc(l3)+'</span>':'');
-    if(qrSrc){ el.classList.add('has-qr'); el.innerHTML='<img class="screen-credit-qr" src="'+_credEsc(qrSrc)+'" alt="QR">'+'<span>'+txt+'</span>'; }
-    else { el.classList.remove('has-qr'); el.innerHTML=txt; }
+var CREDITS_DEV_N=6; /* [V.7.74 ข้อ 4] ส่วน "ออกแบบและพัฒนา" ใส่ได้ 6 บรรทัด */
+var CREDITS_KEYS=(function(){
+  var k=['credits_qr'];
+  for(var i=1;i<=CREDITS_DEV_N;i++){ k.push('credits_dev'+i, 'credits_dev'+i+'_url'); }
+  ['credits_start','credits_start2','credits_line','credits_line2'].forEach(function(b){ k.push(b, b+'_url'); });
+  /* คีย์รุ่นก่อน — ยังอ่านมาเป็นค่าตั้งต้นให้ ครูที่เคยตั้งไว้แล้วข้อความจึงไม่หาย */
+  return k.concat(['credits_name','credits_contact','credits_sub','credits_extra']);
+})();
+function _credEsc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+/* [V.7.74 ตามที่ครูขอ "แต่ละบรรทัดสามารถลิงก์ข้อความไปยังเว็บได้"]
+   รับได้ทั้งแบบพิมพ์ที่อยู่เว็บลงไปในข้อความตรง ๆ (เช่น www.gameplearn.com/support → กดได้เอง)
+   และแบบใส่ช่อง "ลิงก์" แยกไว้ (ทั้งบรรทัดกลายเป็นลิงก์)
+   ความปลอดภัย: ยอมเฉพาะ http/https — กัน javascript: ที่ใช้ยิงสคริปต์ใส่หน้าเกม */
+function _credUrlOk(u){
+  u=String(u==null?'':u).trim();
+  if(!u) return '';
+  if(/^https?:\/\//i.test(u)) return u;
+  if(/^[a-z][a-z0-9+.-]*:/i.test(u)) return '';           /* javascript: · data: · mailto: ที่พิมพ์เอง → ไม่รับ */
+  if(/^(www\.|[\w-]+(\.[\w-]+)+)(\/|$)/i.test(u)) return 'https://'+u;  /* พิมพ์โดเมนเฉย ๆ → เติม https:// ให้ */
+  return '';
+}
+function _credAutoLink(escd){
+  return String(escd).replace(/((?:https?:\/\/|www\.)[^\s<>"']+)/gi, function(m){
+    var tail='', mm=m.match(/[.,;:)\]]+$/); if(mm){ tail=mm[0]; m=m.slice(0,-tail.length); }
+    var href=_credUrlOk(m);
+    return (href?'<a href="'+href+'" target="_blank" rel="noopener noreferrer">'+m+'</a>':m)+tail;
   });
 }
-function _credEsc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function _credLineHtml(text,url){
+  var t=_credEsc(text), href=_credUrlOk(url);
+  if(href) return '<a href="'+href+'" target="_blank" rel="noopener noreferrer">'+t+'</a>';
+  return _credAutoLink(t);
+}
+function _applyCredits(map){
+  if(!map) return;
+  var has=function(k){ return Object.prototype.hasOwnProperty.call(map,k); };
+  var g=function(k){ return String(map[k]==null?'':map[k]).trim(); };
+  /* ตั้งข้อความ 1 บรรทัด: ยังไม่เคยตั้งค่า = ใช้ข้อความเดิมในไฟล์ · ตั้งเป็นค่าว่าง = ครูตั้งใจลบ → ซ่อนบรรทัดนั้น */
+  var setLine=function(id,key){
+    var el=document.getElementById(id); if(!el) return;
+    if(!has(key)) { if(g(key+'_url')) el.innerHTML=_credLineHtml(el.textContent||'', g(key+'_url')); return; }
+    var v=g(key);
+    if(v){ el.innerHTML=_credLineHtml(v, g(key+'_url')); el.style.display=''; }
+    else { el.style.display='none'; }
+  };
+  /* ส่วน "ออกแบบและพัฒนา" 6 บรรทัด (บรรทัด 1-4 รับค่าจากคีย์รุ่นก่อนถ้ายังไม่เคยตั้งค่าใหม่) */
+  var legacy={credits_dev1:'credits_name',credits_dev2:'credits_contact',credits_dev3:'credits_sub',credits_dev4:'credits_extra'};
+  for(var i=1;i<=CREDITS_DEV_N;i++){
+    var k='credits_dev'+i, el=document.getElementById('credits-dev'+i); if(!el) continue;
+    var lk=legacy[k], useKey=has(k)?k:(lk&&has(lk)?lk:null);
+    if(!useKey){ if(g(k+'_url')) el.innerHTML=_credLineHtml(el.textContent||'', g(k+'_url')); continue; }
+    var v=g(useKey);
+    if(v){ el.innerHTML=_credLineHtml(v, g(k+'_url')); el.style.display=''; }
+    else { el.style.display='none'; }
+  }
+  setLine('start-caption-line','credits_start');
+  setLine('start-caption-line2','credits_start2');
+  var qrSrc=g('credits_qr');
+  var qr=document.getElementById('credits-qr');
+  if(qr && qrSrc){ qr.src=qrSrc; qr.style.display=''; }
+  /* [V.7.74 ข้อ 3] เครดิตท้ายหน้าจอ 2 บรรทัด · ไม่มีรูป QR แล้ว */
+  if(!has('credits_line') && !has('credits_line2') && !g('credits_line_url') && !g('credits_line2_url')) return;
+  var l1=g('credits_line'), l2=g('credits_line2');
+  [].slice.call(document.querySelectorAll('.screen-credit-line')).forEach(function(el){
+    if(!el.getAttribute('data-orig')) el.setAttribute('data-orig', (el.textContent||'').trim());
+    var t1=has('credits_line')?l1:(el.getAttribute('data-orig')||'');
+    el.classList.remove('has-qr');
+    el.innerHTML=(t1?'<span class="scl-1">'+_credLineHtml(t1,g('credits_line_url'))+'</span>':'')+
+                 (l2?'<span class="scl-2">'+_credLineHtml(l2,g('credits_line2_url'))+'</span>':'');
+  });
+}
 function loadCreditsSettings(){
   try{ var cached=JSON.parse(localStorage.getItem('cai_credits_v1')||'null'); if(cached) _applyCredits(cached); }catch(e){}
   try{
@@ -23701,8 +23915,10 @@ function wireEvents() {
     // [Audit VIS-01] sync สถานะ toggle ลดเอฟเฟกต์ตอนเปิดเมนู
     const _lfCb = document.getElementById('toggle-lowfx');
     if (_lfCb) { _lfCb.checked = !!window.LOWFX; const v = document.getElementById('toggle-lowfx-val'); if (v) v.textContent = window.LOWFX ? 'เปิด' : 'ปิด'; }
+    renderUiScaleChips(); refreshDisplayModeUI(); /* [V.7.75] */
     document.getElementById('audio-settings-modal').classList.remove('hidden');
   });
+  (function () { var fb = document.getElementById('btn-fullscreen'); if (fb) fb.addEventListener('click', toggleFullscreen); })(); /* [V.7.75] */
   document.getElementById('btn-audio-settings-close').addEventListener('click', () => {
     AUDIO.playSFX('click');
     document.getElementById('audio-settings-modal').classList.add('hidden');
@@ -24314,9 +24530,76 @@ function updateWrapperUnits() {
   const w = document.getElementById('game-wrapper');
   if (!w) return;
   const r = w.getBoundingClientRect();
-  if (r.width > 0) w.style.setProperty('--vw', (r.width / 100) + 'px');
+  /* [V.7.75] คูณด้วย "ขนาดตัวอักษร/ปุ่ม" ที่ผู้ใช้เลือกเอง — คูณเฉพาะ --vw
+     เพราะความสูงของกล่องต่าง ๆ (เช่น กล่องห้องเรียนรู้ 88vh · กล่องชมสื่อ 92vh) อิง --vh อยู่
+     ถ้าคูณ --vh ด้วย กล่องจะโตเกินจอทันที — คูณเฉพาะ --vw จึงได้ตัวอักษร/ปุ่มใหญ่ขึ้นโดยกล่องยังพอดีจอ */
+  const k = getUiScale();
+  if (r.width > 0) w.style.setProperty('--vw', (r.width / 100 * k) + 'px');
   if (r.height > 0) w.style.setProperty('--vh', (r.height / 100) + 'px');
 }
+/* ===== [V.7.75 ตามที่ครูเลือก] ปรับขนาดตัวอักษร/ปุ่มได้เอง (A- / A+) ===== */
+var UI_SCALE_STEPS = [[0.9, 'ย่อ'], [1, 'ปกติ'], [1.15, 'ใหญ่'], [1.3, 'ใหญ่สุด']];
+function getUiScale() {
+  try { var v = parseFloat(localStorage.getItem('cai_ui_scale')); return (v >= 0.8 && v <= 1.4) ? v : 1; } catch (e) { return 1; }
+}
+function setUiScale(v) {
+  try { localStorage.setItem('cai_ui_scale', String(v)); } catch (e) { }
+  updateWrapperUnits(); renderUiScaleChips();
+  try { if (typeof AUDIO !== 'undefined' && AUDIO.playSFX) AUDIO.playSFX('click'); } catch (e) { }
+}
+function renderUiScaleChips() {
+  var box = document.getElementById('uiscale-chips'); if (!box) return;
+  var cur = getUiScale();
+  box.innerHTML = UI_SCALE_STEPS.map(function (st, i) {
+    return '<button type="button" class="uiscale-chip' + (Math.abs(st[0] - cur) < 0.001 ? ' on' : '') +
+      '" style="font-size:' + (0.72 + i * 0.14).toFixed(2) + 'em" onclick="setUiScale(' + st[0] + ')" title="' + st[1] + '">A</button>';
+  }).join('');
+}
+/* ===== [V.7.75] โหมดเต็มจอ / เพิ่มไปยังหน้าจอโฮม ===== */
+function _fsEl() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
+function _fsSupported() { var e = document.documentElement; return !!(e.requestFullscreen || e.webkitRequestFullscreen); }
+function _isIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+function _isStandalone() {
+  try { return !!window.navigator.standalone || (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches)); } catch (e) { return false; }
+}
+function toggleFullscreen() {
+  try {
+    if (_fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+    else { var e = document.documentElement; (e.requestFullscreen || e.webkitRequestFullscreen).call(e); }
+  } catch (e) { }
+  setTimeout(function () { updateWrapperUnits(); refreshDisplayModeUI(); }, 350);
+}
+function refreshDisplayModeUI() {
+  var row = document.getElementById('fullscreen-row'), hint = document.getElementById('a2hs-hint');
+  var btn = document.getElementById('btn-fullscreen'), val = document.getElementById('fullscreen-val');
+  if (row) row.style.display = _fsSupported() ? '' : 'none';
+  if (btn) btn.textContent = _fsEl() ? '⛶ ออกเต็มจอ' : '⛶ เต็มจอ';
+  if (hint) {
+    if (_isStandalone()) { hint.classList.add('hidden'); }
+    else if (_isIOS()) {
+      hint.classList.remove('hidden');
+      hint.innerHTML = '📱 <b>เล่นเต็มจอบน iPhone/iPad</b>: แตะปุ่มแชร์ <b>⬆️</b> ด้านล่างของ Safari → เลือก <b>“เพิ่มไปยังหน้าจอโฮม”</b> ' +
+        'แล้วเปิดเกมจากไอคอนนั้น จะไม่มีแถบที่อยู่เว็บมาบังจออีก (ได้พื้นที่เพิ่มราว 15%)';
+    } else { hint.classList.add('hidden'); } /* เครื่องอื่นมีปุ่ม ⛶ เต็มจอ อยู่แล้ว ไม่ต้องมีคำแนะนำมากินพื้นที่ */
+  }
+}
+/* ประกาศ manifest ตอนรันไทม์ (เกมเป็นไฟล์เดียว จึงสร้างเป็น Blob แทนไฟล์แยก) */
+(function _initManifest() {
+  try {
+    var ic = document.querySelector('link[rel="apple-touch-icon"]');
+    var mf = {
+      name: 'เกมผจญภัยกาญจนบุรี', short_name: 'ผจญภัยกาญ', start_url: '.', scope: '.',
+      display: 'fullscreen', display_override: ['fullscreen', 'standalone'], orientation: 'landscape',
+      background_color: '#0a0a12', theme_color: '#0b3a30',
+      icons: ic ? [{ src: ic.getAttribute('href'), sizes: '180x180', type: 'image/png', purpose: 'any maskable' }] : []
+    };
+    var l = document.createElement('link'); l.rel = 'manifest';
+    l.href = URL.createObjectURL(new Blob([JSON.stringify(mf)], { type: 'application/manifest+json' }));
+    document.head.appendChild(l);
+  } catch (e) { }
+})();
+document.addEventListener('fullscreenchange', function () { updateWrapperUnits(); refreshDisplayModeUI(); });
+document.addEventListener('webkitfullscreenchange', function () { updateWrapperUnits(); refreshDisplayModeUI(); });
 window.addEventListener('resize', updateWrapperUnits);
 window.addEventListener('orientationchange', updateWrapperUnits);
 
@@ -24463,6 +24746,9 @@ window.addEventListener('pagehide', () => { if (typeof flushAnswerLogs === 'func
 #sat-survey .self-choice label{flex:1;min-width:150px;border:1.5px solid #cbd5e1;border-radius:10px;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:700;color:#334155;background:#fff;text-align:center;position:relative}
 #sat-survey .self-choice label.sel{background:#0e7490;border-color:#0b5566;color:#fff}
 #sat-survey .self-choice input{position:absolute;opacity:0;width:0;height:0}
+/* [V.7.74] ป้ายชื่อ "ด้านย่อย" ต่อท้ายคำถาม — ครูตรวจสอบได้ว่าข้อไหนวัดองค์ประกอบใดของ CBE
+   ตัวเล็กและสีอ่อนกว่าคำถาม เด็กจึงยังอ่านคำถามเป็นหลักเหมือนเดิม */
+#sat-survey .self-subtag{display:inline-block;margin-left:7px;font-size:11px;font-weight:600;color:#0e7490;background:#ecfeff;border:1px solid #a5f3fc;border-radius:999px;padding:1px 9px;vertical-align:middle;line-height:1.7;overflow-wrap:anywhere}
 #sat-survey .self-note{font-size:12.5px;color:#0b5566;background:#ecfeff;border:1px solid #a5f3fc;border-radius:10px;padding:9px 12px;margin:14px 0 4px;line-height:1.55}
 @media(max-width:560px){#sat-survey .sat-fields{grid-template-columns:1fr}#sat-survey .sat-scale label{min-width:52px}}
 </style>
@@ -24664,36 +24950,45 @@ var SAT_FACE={5:'🤩',4:'😃',3:'🙂',2:'😐',1:'😞'};
    ภาษา: ประโยคสั้น ใช้คำที่เด็กใช้จริง เลี่ยงศัพท์วิชาการ ("วิจารณญาณ" → "คิดก่อนเชื่อ")
    รูปแบบ: เปลี่ยนจากตัวเลข 1-5 เป็นหน้ายิ้ม 5 ระดับ (ชุดเดียวกับหน้าประเมินเพื่อน) เด็กตัดสินใจง่ายกว่า
    คะแนนยังเป็น 1-5 เท่าเดิม เต็มด้านละ 15 · ยังเป็นข้อมูล "ตรวจสอบประกอบ" ไม่รวมเป็นคะแนนสมรรถนะ */
-/* [V.7.73 ตามที่ครูสั่ง] แบบประเมินตนเองครอบคลุม "สมรรถนะหลักครบทั้ง 6 ด้าน" (เดิมมีแต่การคิดขั้นสูง 4 ด้านย่อย)
-   จำนวนข้อ 14 ข้อ — ใกล้เคียงของเดิม (12 ข้อ) ที่ครูรับได้แล้ว จึงไม่ทำให้เด็ก ป.4 ล้า
-     · การคิดขั้นสูงได้ 4 ข้อ (ด้านย่อยละ 1: CTC/STM/CRT/PRB) เพราะเป็นการประเมินหลักของงานวิจัย
-     · อีก 5 ด้านได้ด้านละ 2 ข้อ
+/* [V.7.74 ตามที่ครูสั่ง "ให้ครบ 6 สมรรถนะ ครบทุกด้าน"] แบบประเมินตนเองครอบคลุมสมรรถนะหลัก 6 ด้าน
+   และครบ "องค์ประกอบย่อย" ของทุกด้านตามกรอบ CBE (เดิม V.7.73 มี 14 ข้อ ยังไม่ครบด้านย่อยของบางสมรรถนะ)
+   โครงสร้าง: 19 ข้อ = SM 3 + HT 4 + CM 3 + TW 3 + CZ 3 + NS 3 (ด้านย่อยละ 1 ข้อ ไม่มีด้านย่อยไหนตกหล่น)
+   จำนวนข้อยังพอเหมาะกับเด็ก ป.4-6 (ราว 5-7 นาที) เพราะ 1 ข้อ = 1 ด้านย่อย ไม่มีข้อซ้ำความหมาย
    ภาษา: ประโยคสั้น คำที่เด็กใช้จริง · มาตรวัดหน้ายิ้ม 1-5 เหมือนเดิม
-   คีย์ที่ส่ง: qSM1, qHT1, ... (ขึ้นต้น q + รหัสสมรรถนะ) — ไม่ชนกับคีย์เดิมของระบบ
+   ป้ายด้านย่อยที่เด็กเห็นใช้คำง่าย ๆ (เช่น "คิดก่อนเชื่อ") ส่วนชื่อทางการตามกรอบ CBE เก็บไว้ฝั่งครูใน SELF_SUB_LABEL
+   คีย์ที่ส่ง: qSM1..3, qHT1..4, qCM1..3, qTW1..3, qCZ1..3, qNS1..3 (เหมือน V.7.73 แค่จำนวนข้อเพิ่ม)
+   เพิ่ม payload.subAns = {"SM-A":4,...} เพื่อให้หน้าสรุปผลแยกดูรายด้านย่อยได้โดยไม่ต้องรู้ลำดับข้อ
    ยังเป็น "ข้อมูลตรวจสอบประกอบ" ไม่นำมารวมเป็นคะแนนสมรรถนะที่วัดจากเกม */
 var SELF_DIMS=[
   {t:'ด้านที่ 1 การจัดการตนเอง',sub:'ดูแลและกำกับตัวเองในการเรียน',comp:'SM',key:'qSM',items:[
-    'ฉันตั้งใจทำงานของตัวเองจนเสร็จ ไม่ต้องมีคนคอยเตือน',
-    'ถ้าทำได้ไม่ดี ฉันกลับมาแก้ไขให้ดีขึ้น']},
+    {c:'SM-A',s:'รู้จักตัวเอง',q:'ฉันบอกได้ว่าตัวเองทำอะไรได้ดี และเรื่องไหนที่ต้องฝึกเพิ่ม'},
+    {c:'SM-B',s:'กำกับตัวเองได้',q:'ฉันตั้งใจทำงานของตัวเองจนเสร็จ ไม่ต้องมีคนคอยเตือน'},
+    {c:'SM-C',s:'ตั้งใจพัฒนาตัวเอง',q:'ถ้าทำได้ไม่ดี ฉันกลับมาแก้ไขให้ดีขึ้น'}]},
   {t:'ด้านที่ 2 การคิดขั้นสูง',sub:'คิดก่อนเชื่อ · มองความเกี่ยวข้อง · คิดสิ่งใหม่ · แก้ปัญหา',comp:'HT',key:'qHT',
    subKeys:['CTC','STM','CRT','PRB'],items:[
-    'ฉันอ่านหรือฟังให้เข้าใจก่อน แล้วค่อยตอบ',
-    'ฉันบอกได้ว่าถ้าทำแบบนี้แล้วจะเกิดอะไรตามมา',
-    'ฉันคิดวิธีทำได้มากกว่าหนึ่งวิธี',
-    'เมื่อเจอปัญหา ฉันวางแผนแล้วลองแก้จนสำเร็จ']},
-  {t:'ด้านที่ 3 การสื่อสาร',sub:'เล่าและอธิบายให้คนอื่นเข้าใจ',comp:'CM',key:'qCM',items:[
-    'ฉันเล่าหรือเขียนอธิบายให้เพื่อนเข้าใจได้',
-    'ฉันฟังคนอื่นให้จบก่อน แล้วค่อยตอบให้ตรงเรื่อง']},
-  {t:'ด้านที่ 4 การรวมพลังทำงานเป็นทีม',sub:'ทำงานร่วมกับเพื่อน',comp:'TW',key:'qTW',items:[
-    'ฉันช่วยคิดและทำหน้าที่ของตัวเองในกลุ่มจนสำเร็จ',
-    'เมื่อคิดไม่เหมือนกัน ฉันรับฟังและหาทางออกร่วมกัน']},
-  {t:'ด้านที่ 5 การเป็นพลเมืองที่เข้มแข็ง',sub:'รับผิดชอบต่อส่วนรวม',comp:'CZ',key:'qCZ',items:[
-    'ฉันทำหน้าที่ของตัวเองในห้องเรียนและโรงเรียนอย่างรับผิดชอบ',
-    'ฉันช่วยดูแลของส่วนรวมและสถานที่สำคัญในท้องถิ่น']},
-  {t:'ด้านที่ 6 การอยู่ร่วมกับธรรมชาติและวิทยาการ',sub:'ใช้ทรัพยากรอย่างรู้คุณค่า',comp:'NS',key:'qNS',items:[
-    'ฉันใช้น้ำ ไฟ และของใช้อย่างประหยัด ไม่ทิ้งขยะเรี่ยราด',
-    'ฉันบอกได้ว่าการกระทำของคนส่งผลต่อธรรมชาติอย่างไร']}
+    {c:'HT-CTC',s:'คิดก่อนเชื่อ',q:'ฉันอ่านหรือฟังให้เข้าใจก่อน แล้วค่อยตอบ'},
+    {c:'HT-STM',s:'มองความเกี่ยวข้อง',q:'ฉันบอกได้ว่าถ้าทำแบบนี้แล้วจะเกิดอะไรตามมา'},
+    {c:'HT-CRT',s:'คิดสิ่งใหม่',q:'ฉันคิดวิธีทำได้มากกว่าหนึ่งวิธี'},
+    {c:'HT-PRB',s:'แก้ปัญหา',q:'เมื่อเจอปัญหา ฉันวางแผนแล้วลองแก้จนสำเร็จ'}]},
+  {t:'ด้านที่ 3 การสื่อสาร',sub:'รับสาร · ส่งสาร · เลือกใช้ให้เหมาะกับคนและกาลเทศะ',comp:'CM',key:'qCM',items:[
+    {c:'CM-A',s:'ฟังและอ่านจับใจความ',q:'ฉันฟังหรืออ่านแล้วบอกได้ว่าเรื่องนั้นบอกอะไร'},
+    {c:'CM-B',s:'พูดและเขียนให้เข้าใจ',q:'ฉันเล่าหรือเขียนอธิบายให้เพื่อนเข้าใจได้'},
+    {c:'CM-C',s:'พูดให้เหมาะกับคนและเวลา',q:'ฉันเลือกใช้คำพูดให้สุภาพและเหมาะกับคนที่คุยด้วย'}]},
+  {t:'ด้านที่ 4 การรวมพลังทำงานเป็นทีม',sub:'เป็นสมาชิกที่ดี · ร่วมมือเป็นระบบ · จัดการความขัดแย้ง',comp:'TW',key:'qTW',items:[
+    {c:'TW-A',s:'เป็นสมาชิกทีมที่ดี',q:'ฉันช่วยคิดและเสนอความเห็นให้กลุ่ม'},
+    {c:'TW-B',s:'ทำหน้าที่ในทีม',q:'ฉันทำหน้าที่ที่กลุ่มตกลงกันไว้จนสำเร็จ'},
+    {c:'TW-C',s:'รับฟังเมื่อคิดต่าง',q:'เมื่อคิดไม่เหมือนกัน ฉันรับฟังและหาทางออกร่วมกัน'}]},
+  {t:'ด้านที่ 5 การเป็นพลเมืองที่เข้มแข็ง',sub:'รับผิดชอบหน้าที่ · เคารพสิทธิ · ทำเพื่อส่วนรวม',comp:'CZ',key:'qCZ',items:[
+    {c:'CZ-A',s:'รับผิดชอบหน้าที่',q:'ฉันทำหน้าที่ของตัวเองในห้องเรียนและโรงเรียนอย่างรับผิดชอบ'},
+    {c:'CZ-B',s:'เคารพสิทธิเพื่อน',q:'ฉันเคารพสิทธิของเพื่อน ไม่แกล้งและไม่รังแกใคร'},
+    {c:'CZ-C',s:'ช่วยงานส่วนรวม',q:'ฉันช่วยดูแลของส่วนรวมและสถานที่สำคัญในท้องถิ่น'}]},
+  {t:'ด้านที่ 6 การอยู่ร่วมกับธรรมชาติและวิทยาการ',sub:'ช่างสังเกต · ใช้อย่างรู้คุณค่า · ดูแลให้ยั่งยืน',comp:'NS',key:'qNS',items:[
+    {c:'NS-A',s:'ช่างสังเกตธรรมชาติ',q:'ฉันช่างสังเกตและชอบตั้งคำถามกับสิ่งที่เห็นในธรรมชาติรอบตัว'},
+    {c:'NS-B',s:'ใช้ของอย่างรู้คุณค่า',q:'ฉันใช้น้ำ ไฟ และของใช้อย่างประหยัด ไม่ทิ้งขยะเรี่ยราด'},
+    {c:'NS-C',s:'ช่วยดูแลให้ยั่งยืน',q:'ฉันบอกได้ว่าการกระทำของคนส่งผลต่อธรรมชาติอย่างไร และช่วยกันดูแลได้อย่างไร'}]}
 ];
+/* ลำดับด้านย่อยแบบแบน — ใช้ประกอบ payload.subAns (รหัส → คำตอบ) */
+function selfFlatSubs(){ var out=[]; SELF_DIMS.forEach(function(d){ d.items.forEach(function(it){ out.push({c:it.c,s:it.s,comp:d.comp}); }); }); return out; }
 
 
 var SELF_DIM_NAMES=SELF_DIMS.map(function(d){ return String(d.t).replace(/^ด้านที่ \d+ /,''); });
@@ -24705,9 +25000,10 @@ function openSelfAssessment(){
   var prof=(typeof getSaveData==='function'&&getSaveData().profile)||{};
   var legend=SELF_SCALE.map(function(s){return '<span>'+(s[2]||'')+' '+s[1]+'</span>';}).join('');
   var qn=0, dimsHtml=SELF_DIMS.map(function(d){
-    var rows=d.items.map(function(q){ qn++; var idx=qn;
+    var rows=d.items.map(function(it){ qn++; var idx=qn;
       var opts=SELF_SCALE.map(function(s){return '<label id="selflab-'+idx+'-'+s[0]+'" onclick="_selfPick('+idx+','+s[0]+')"><input type="radio" name="selfq'+idx+'" value="'+s[0]+'"><div class="nm" style="font-size:20px;line-height:1.15">'+(s[2]||s[0])+'</div><div class="tx">'+s[1]+'</div></label>';}).join('');
-      return '<div class="sat-item"><div class="sat-q"><b>'+idx+'.</b>'+_satEsc(q)+'</div><div class="sat-scale">'+opts+'</div></div>';
+      return '<div class="sat-item"><div class="sat-q"><b>'+idx+'.</b>'+_satEsc(it.q)+
+        '<span class="self-subtag">'+_satEsc(it.s)+'</span></div><div class="sat-scale">'+opts+'</div></div>';
     }).join('');
     return '<div class="sat-dim">'+_satEsc(d.t)+' <span style="font-weight:500;font-size:12.5px;opacity:.9">('+_satEsc(d.sub)+')</span></div>'+rows;
   }).join('');
@@ -24722,7 +25018,7 @@ function openSelfAssessment(){
     '<div class="sat-q" style="font-weight:500;margin-top:4px">เพราะ</div><textarea class="fi" id="self-bestwhy"></textarea>'+
     '<div class="sat-q">2. ด้านที่ฉันอยากฝึกเพิ่มเติมคือ</div>'+dimChoice('selfimprove')+
     '<div class="sat-q" style="font-weight:500;margin-top:4px">สิ่งที่ฉันจะพยายามทำต่อไปคือ</div><textarea class="fi" id="self-improveplan"></textarea></div>'+
-    '<div class="self-note">แบบประเมินตนเองนี้มี '+selfTotalItems()+' ข้อ ครอบคลุมสมรรถนะหลักครบ 6 ด้าน (ข้อละ 1-5 คะแนน) · ใช้เป็นข้อมูล<b>ตรวจสอบประกอบ</b>กับผลการประเมิน A–B–C–D จากเกม (ไม่นำมารวมเป็นคะแนนสมรรถนะของเกมโดยตรง)</div>'+
+    '<div class="self-note">แบบประเมินตนเองนี้มี '+selfTotalItems()+' ข้อ ครอบคลุมสมรรถนะหลักครบ 6 ด้าน และครบทุกด้านย่อย (ข้อละ 1-5 คะแนน) · ใช้เป็นข้อมูล<b>ตรวจสอบประกอบ</b>กับผลการประเมิน A–B–C–D จากเกม (ไม่นำมารวมเป็นคะแนนสมรรถนะของเกมโดยตรง)</div>'+
     '<div class="sat-err" id="self-err"></div>'+
     '<button class="sat-submit" id="self-submit" onclick="submitSelfAssessment()">✅ ส่งแบบประเมินตนเอง</button>';
   document.getElementById('sat-body').innerHTML=html;
@@ -24761,7 +25057,12 @@ function submitSelfAssessment(){
   /* [แก้ V.7.72] เดิมวนตายตัว 10 ข้อ/ด้าน — พอลดเหลือด้านละ 3 ข้อ คีย์ c4..c10 เลยเป็น undefined
      ตอนนี้วนตามจำนวนข้อจริงของแต่ละด้าน ปรับจำนวนข้อทีหลังก็ไม่พังอีก */
   var qn=0; for(var di=0;di<SELF_DIMS.length;di++){ var d=SELF_DIMS[di]; for(var j=1;j<=d.items.length;j++){ qn++; payload[d.key+j]=ans['a'+qn]; } }
-  payload.totalItems=NQ; payload.selfVersion=2; payload.comps=SELF_DIMS.map(function(d){ return d.comp; }).join(',');
+  /* [V.7.74] แนบคำตอบรายด้านย่อยไปด้วย (รหัส → คะแนน) หน้าสรุปผลจึงแยกดูรายด้านย่อยได้
+     โดยไม่ต้องรู้ว่าเวอร์ชันนั้นเรียงข้อไว้อย่างไร — เพิ่ม/ลดข้อทีหลังก็ยังอ่านย้อนหลังได้ */
+  var subAns={}, fl=selfFlatSubs();
+  for(var k2=0;k2<fl.length;k2++){ if(ans['a'+(k2+1)]!=null) subAns[fl[k2].c]=ans['a'+(k2+1)]; }
+  payload.subAns=subAns;
+  payload.totalItems=NQ; payload.selfVersion=3; payload.comps=SELF_DIMS.map(function(d){ return d.comp; }).join(',');
   var btn=document.getElementById('self-submit'); btn.disabled=true; btn.textContent='กำลังส่ง...';
   function done(offline){
     var tot=0; for(var i=1;i<=NQ;i++)tot+=ans['a'+i]; var ov=(tot/NQ).toFixed(2);
@@ -27722,54 +28023,74 @@ function clsOpenSurvey(){
   });
 }
 
-/* [V.7.71 ข้อ 9 ตามที่ครูขอ] แก้ข้อความส่วน "ออกแบบและพัฒนา" ในเกม + ใส่รูป QR Code (เฉพาะผู้ดูแล) */
-var CLS_CRED_FIELDS=[
-  ['credits_name','บรรทัดที่ 1 (ชื่อผู้ออกแบบ)','👨‍🏫 ออกแบบและพัฒนา: นายอาคม อินต๊ะพันธ์','text'],
-  ['credits_contact','บรรทัดที่ 2 (ช่องทางติดต่อ)','📧 Arkhom.aintaphan@gmail.com','text'],
-  ['credits_sub','บรรทัดที่ 3 (ชื่อชุด/ระดับชั้น)','เกมผจญภัยกาญจนบุรี · สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4','text'],
-  ['credits_extra','บรรทัดเพิ่มเติม (ไม่ใส่ก็ได้)','','text'],
-  ['credits_start','ข้อความบนหน้าแรกของเกม (ใต้ปุ่มเริ่มเกม)','www.GamePlearn.com','text'],
-  ['credits_line','เครดิตท้ายหน้าจอ บรรทัดที่ 1','ออกแบบและพัฒนา | นายอาคม อินต๊ะพันธ์','text'],
-  ['credits_line2','เครดิตท้ายหน้าจอ บรรทัดที่ 2 (ไม่ใส่ก็ได้)','','text'],
-  ['credits_line3','เครดิตท้ายหน้าจอ บรรทัดที่ 3 (ไม่ใส่ก็ได้)','','text'],
-  ['credits_qr','รูป QR Code (วางลิงก์รูป หรือกดปุ่มเลือกไฟล์ด้านล่าง)','','qr']
+/* [V.7.71 ข้อ 9 · ขยาย V.7.74 ตามที่ครูขอ] แก้ข้อความ 3 จุดของเกม + รูป QR Code (เฉพาะผู้ดูแล)
+   ทุกบรรทัดมีช่อง "ลิงก์" ของตัวเอง — ใส่แล้วทั้งบรรทัดกดไปเว็บได้ เช่น www.gameplearn.com/support
+   ถ้าพิมพ์ที่อยู่เว็บลงไปในข้อความตรง ๆ ระบบก็ทำให้กดได้เองโดยไม่ต้องกรอกช่องลิงก์ */
+var CLS_CRED_GROUPS=[
+  {t:'🏠 ข้อความบนหน้าแรกของเกม', d:'แสดงใต้ปุ่ม "เริ่มเกม" กลางด้านล่างของหน้าแรก · ใส่ได้ 2 บรรทัด',
+   rows:[['credits_start','บรรทัดที่ 1','www.GamePlearn.com'],
+         ['credits_start2','บรรทัดที่ 2 (ไม่ใส่ก็ได้)','']]},
+  {t:'🖥️ เครดิตท้ายหน้าจอ', d:'แสดงท้ายจอของหน้าเข้าสู่ระบบ · ล็อบบี้ · แผนที่โลก · ใส่ได้ 2 บรรทัด',
+   rows:[['credits_line','บรรทัดที่ 1','www.GamePlearn.com'],
+         ['credits_line2','บรรทัดที่ 2 (ไม่ใส่ก็ได้)','']]},
+  {t:'👨‍🏫 หน้า "ออกแบบและพัฒนา" (ปุ่ม 👨‍🏫 ในเกม)', d:'ใส่ได้ 6 บรรทัด · เว้นว่างไว้ = ไม่แสดงบรรทัดนั้น',
+   rows:[['credits_dev1','บรรทัดที่ 1','ออกแบบและพัฒนา: นายอาคม อินต๊ะพันธ์'],
+         ['credits_dev2','บรรทัดที่ 2','📧 Arkhom.aintaphan@gmail.com'],
+         ['credits_dev3','บรรทัดที่ 3','🌐 www.GamePlearn.com'],
+         ['credits_dev4','บรรทัดที่ 4','เกมผจญภัยกาญจนบุรี · สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4'],
+         ['credits_dev5','บรรทัดที่ 5 (ไม่ใส่ก็ได้)',''],
+         ['credits_dev6','บรรทัดที่ 6 (ไม่ใส่ก็ได้)','']]}
 ];
+function clsCredKeys(){ var k=[]; CLS_CRED_GROUPS.forEach(function(g){ g.rows.forEach(function(r){ k.push(r[0], r[0]+'_url'); }); }); k.push('credits_qr'); return k; }
 function clsOpenCredits(){
   var old=document.getElementById('cls-cred-modal'); if(old) old.remove();
   sbEnsure().then(function(){ return sbFetch('/rest/v1/rpc/rpc_get_settings',{method:'POST',body:'{}'}); })
   .catch(function(){ return []; })
   .then(function(rows){
     var cur={}; (rows||[]).forEach(function(r){ cur[r.skey]=r.sval; });
+    /* ครูที่เคยตั้งค่าไว้ด้วยคีย์รุ่นก่อน — ยกมาใส่ช่องใหม่ให้เห็น จะได้ไม่ต้องพิมพ์ใหม่ */
+    [['credits_dev1','credits_name'],['credits_dev2','credits_contact'],['credits_dev3','credits_sub'],['credits_dev4','credits_extra']]
+      .forEach(function(m){ if(cur[m[0]]==null && cur[m[1]]!=null) cur[m[0]]=cur[m[1]]; });
     var wrap=document.createElement('div');
     wrap.id='cls-cred-modal';
     wrap.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:999;display:flex;align-items:flex-start;justify-content:center;padding:22px 12px;overflow:auto';
-    wrap.innerHTML='<div style="background:#fff;border-radius:14px;padding:16px 20px 20px;width:min(700px,96vw);box-shadow:0 20px 50px rgba(0,0,0,.3)">'+
-      '<div style="display:flex;align-items:center;gap:10px"><b style="font-size:16px;flex:1">👨‍🏫 ส่วน "ออกแบบและพัฒนา" ในเกม</b>'+
+    var groupsHtml=CLS_CRED_GROUPS.map(function(g){
+      return '<div style="border:1px solid var(--line);border-radius:12px;padding:10px 13px 6px;margin-bottom:11px;background:#fcfdff">'+
+        '<div style="font-weight:800;font-size:13.5px">'+esc(g.t)+'</div>'+
+        '<div class="muted" style="font-size:11.5px;margin:1px 0 8px">'+esc(g.d)+'</div>'+
+        g.rows.map(function(r){
+          return '<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:7px">'+
+            '<span style="font-size:12px;font-weight:700;color:#475569;min-width:132px">'+esc(r[1])+'</span>'+
+            '<input class="cls-in" id="cc-'+r[0]+'" value="'+esc(cur[r[0]]||'')+'" placeholder="'+esc(r[2]||'ข้อความ')+'" style="flex:2;min-width:190px" oninput="clsCredPreview()">'+
+            '<input class="cls-in" id="cc-'+r[0]+'_url" value="'+esc(cur[r[0]+'_url']||'')+'" placeholder="ลิงก์ (ไม่ใส่ก็ได้) เช่น www.gameplearn.com/support" style="flex:1.4;min-width:180px" oninput="clsCredPreview()">'+
+            '</div>';
+        }).join('')+'</div>';
+    }).join('');
+    wrap.innerHTML='<div style="background:#fff;border-radius:14px;padding:16px 20px 20px;width:min(760px,96vw);box-shadow:0 20px 50px rgba(0,0,0,.3)">'+
+      '<div style="display:flex;align-items:center;gap:10px"><b style="font-size:16px;flex:1">👨‍🏫 ข้อความและลิงก์ในเกม</b>'+
       '<button class="btn-ghost" style="padding:5px 14px" onclick="document.getElementById(\'cls-cred-modal\').remove()">ปิด</button></div>'+
-      '<div class="muted" style="font-size:12px;margin:6px 0 12px;line-height:1.6">ข้อความเหล่านี้แสดงในหน้า <b>ผู้จัดทำ (ปุ่ม 👨‍🏫)</b> ของเกม · เว้นว่างไว้ = ใช้ข้อความเดิมที่มากับเกม<br>'+
-        'รูป QR Code จะแสดง<b>ด้านซ้ายของข้อความ</b> (จอแคบจะพับขึ้นไปอยู่ด้านบนให้เอง)</div>'+
-      CLS_CRED_FIELDS.map(function(f){
-        if(f[3]==='qr'){
-          return '<div style="margin-bottom:10px"><label style="font-size:12.5px;font-weight:700;display:block;margin-bottom:3px">'+esc(f[1])+'</label>'+
-            '<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">'+
-              '<input class="cls-in" id="cc-'+f[0]+'" value="'+esc(cur[f[0]]||'')+'" placeholder="https://... หรือกดเลือกไฟล์รูป" style="flex:1;min-width:200px" oninput="clsCredPreview()">'+
-              '<input type="file" id="cc-qr-file" accept="image/*" style="display:none" onchange="clsCredPickFile(this)">'+
-              '<button class="btn-ghost" style="padding:6px 12px;font-size:12px" onclick="document.getElementById(\'cc-qr-file\').click()">📁 เลือกไฟล์รูป</button>'+
-              '<button class="btn-ghost" style="padding:6px 12px;font-size:12px;color:#b91c1c" onclick="document.getElementById(\'cc-credits_qr\').value=\'\';clsCredPreview()">ลบรูป</button>'+
-            '</div>'+
-            '<div class="muted" style="font-size:11.5px;margin-top:3px">ไฟล์รูปจะถูกย่อให้กว้างไม่เกิน 400px โดยอัตโนมัติ เพื่อไม่ให้เกมโหลดช้า · '+
-              'รูปนี้แสดง<b>ทั้งในหน้าผู้จัดทำ และที่เครดิตท้ายหน้าจอ</b></div></div>';
-        }
-        return '<div style="margin-bottom:10px"><label style="font-size:12.5px;font-weight:700;display:block;margin-bottom:3px">'+esc(f[1])+'</label>'+
-          '<input class="cls-in" id="cc-'+f[0]+'" value="'+esc(cur[f[0]]||'')+'" placeholder="'+esc(f[2])+'" style="width:100%;box-sizing:border-box"></div>';
-      }).join('')+
+      '<div class="muted" style="font-size:12px;margin:6px 0 12px;line-height:1.6">เว้นว่างไว้ = ใช้ข้อความเดิมที่มากับเกม (บรรทัดที่เคยกรอกแล้วลบออก = ซ่อนบรรทัดนั้น)<br>'+
+        'ช่อง <b>ลิงก์</b> ใส่หรือไม่ใส่ก็ได้ — ถ้าพิมพ์ที่อยู่เว็บไว้ในข้อความอยู่แล้ว ระบบทำให้กดได้เอง</div>'+
+      groupsHtml+
+      '<div style="border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin-bottom:11px;background:#fcfdff">'+
+        '<div style="font-weight:800;font-size:13.5px">🔳 รูป QR Code</div>'+
+        '<div class="muted" style="font-size:11.5px;margin:1px 0 8px">แสดงด้านซ้ายของข้อความในหน้า 👨‍🏫 ออกแบบและพัฒนา (ไม่แสดงที่เครดิตท้ายจอแล้ว)</div>'+
+        '<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">'+
+          '<input class="cls-in" id="cc-credits_qr" value="'+esc(cur.credits_qr||'')+'" placeholder="https://... หรือกดเลือกไฟล์รูป" style="flex:1;min-width:200px" oninput="clsCredPreview()">'+
+          '<input type="file" id="cc-qr-file" accept="image/*" style="display:none" onchange="clsCredPickFile(this)">'+
+          '<button class="btn-ghost" style="padding:6px 12px;font-size:12px" onclick="document.getElementById(\'cc-qr-file\').click()">📁 เลือกไฟล์รูป</button>'+
+          '<button class="btn-ghost" style="padding:6px 12px;font-size:12px;color:#b91c1c" onclick="document.getElementById(\'cc-credits_qr\').value=\'\';clsCredPreview()">ลบรูป</button>'+
+        '</div>'+
+        '<div class="muted" style="font-size:11.5px;margin-top:3px">ไฟล์รูปจะถูกย่อให้กว้างไม่เกิน 400px โดยอัตโนมัติ เพื่อไม่ให้เกมโหลดช้า</div></div>'+
       '<div style="background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:10px 13px;margin-top:6px">'+
-        '<div class="muted" style="font-size:11.5px;margin-bottom:6px">ตัวอย่างที่นักเรียนจะเห็น</div>'+
+        '<div class="muted" style="font-size:11.5px;margin-bottom:6px">ตัวอย่างที่นักเรียนจะเห็น (หน้า 👨‍🏫 ออกแบบและพัฒนา)</div>'+
         '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#0b3a30;border-radius:10px;padding:11px 14px;color:#ffe9b8">'+
           '<img id="cc-prev-qr" style="display:none;width:82px;border-radius:7px;background:#fff;padding:4px;flex:none">'+
-          '<div style="flex:1;min-width:170px;font-size:12.5px"><div id="cc-prev-name" style="font-weight:800;color:#ffe070"></div>'+
-          '<div id="cc-prev-contact"></div><div id="cc-prev-sub" style="opacity:.88"></div><div id="cc-prev-extra" style="opacity:.88"></div></div>'+
-        '</div></div>'+
+          '<div id="cc-prev-dev" style="flex:1;min-width:170px;font-size:12.5px;line-height:1.6"></div>'+
+        '</div>'+
+        '<div class="muted" style="font-size:11.5px;margin:9px 0 6px">หน้าแรก / ท้ายหน้าจอ</div>'+
+        '<div style="background:#0b3a30;border-radius:10px;padding:9px 14px;color:#ffe9b8;font-size:12.5px;text-align:center;line-height:1.6" id="cc-prev-scr"></div>'+
+      '</div>'+
       '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">'+
         '<button class="btn-primary" style="background:#0f766e;padding:7px 18px" onclick="clsCredSave()">💾 บันทึก</button>'+
         '<span class="muted" id="cc-st" style="font-size:12px;align-self:center"></span></div></div>';
@@ -27777,14 +28098,33 @@ function clsOpenCredits(){
     clsCredPreview();
   });
 }
+/* ตัวอย่างในหน้าแก้ไข — วาดด้วยกฎเดียวกับในเกม (มีลิงก์ = ขีดเส้นใต้สีทอง) */
+function clsCredPrevLine(k,dflt,style){
+  var t=String((($('cc-'+k)||{}).value)||'').trim() || (dflt||'');
+  if(!t) return '';
+  var u=String((($('cc-'+k+'_url')||{}).value)||'').trim();
+  var body=u ? ('<u style="color:#ffe070">'+esc(t)+'</u> <span style="opacity:.7;font-size:11px">🔗</span>')
+             : esc(t).replace(/((?:https?:\/\/|www\.)[^\s<>"']+)/gi,'<u style="color:#ffe070">$1</u>');
+  return '<div style="'+(style||'')+'">'+body+'</div>';
+}
 function clsCredPreview(){
-  var g=function(k){ return String((($('cc-'+k)||{}).value)||'').trim(); };
-  var set=function(id,v,dflt){ var el=$(id); if(el) el.textContent=v||dflt||''; };
-  set('cc-prev-name', g('credits_name'), '👨‍🏫 ออกแบบและพัฒนา: นายอาคม อินต๊ะพันธ์');
-  set('cc-prev-contact', g('credits_contact'), '📧 Arkhom.aintaphan@gmail.com');
-  set('cc-prev-sub', g('credits_sub'), 'เกมผจญภัยกาญจนบุรี · สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4');
-  set('cc-prev-extra', g('credits_extra'), '');
-  var qr=$('cc-prev-qr'), v=g('credits_qr');
+  var dev=$('cc-prev-dev');
+  if(dev){
+    var g3=CLS_CRED_GROUPS[2];
+    dev.innerHTML=g3.rows.map(function(r,i){
+      return clsCredPrevLine(r[0], r[2], i===0?'font-weight:800;color:#ffe070':(i>=3?'opacity:.88;font-size:11.5px':''));
+    }).join('');
+  }
+  var scr=$('cc-prev-scr');
+  if(scr){
+    scr.innerHTML='<div style="opacity:.65;font-size:11px">หน้าแรก</div>'+
+      (clsCredPrevLine('credits_start','www.GamePlearn.com')||'<div class="muted">—</div>')+
+      clsCredPrevLine('credits_start2','')+
+      '<div style="opacity:.65;font-size:11px;margin-top:6px">ท้ายหน้าจอ</div>'+
+      (clsCredPrevLine('credits_line','www.GamePlearn.com')||'<div class="muted">—</div>')+
+      clsCredPrevLine('credits_line2','');
+  }
+  var qr=$('cc-prev-qr'), v=String((($('cc-credits_qr')||{}).value)||'').trim();
   if(qr){ if(v){ qr.src=v; qr.style.display=''; } else qr.style.display='none'; }
 }
 /* ย่อรูป QR ก่อนเก็บ — QR ขนาด 400px อ่านได้สบายและไฟล์เล็กพอไม่ถ่วงการเปิดเกม */
@@ -27811,10 +28151,11 @@ function clsCredPickFile(inp){
 function clsCredSave(){
   var st=$('cc-st'); if(st) st.textContent='กำลังบันทึก...';
   var chain=Promise.resolve(), errs=[];
-  CLS_CRED_FIELDS.forEach(function(f){
-    var v=String((($('cc-'+f[0])||{}).value)||'').trim();
-    chain=chain.then(function(){ return sbFetch('/rest/v1/rpc/rpc_set_setting',{method:'POST',body:JSON.stringify({p_key:f[0],p_val:v})}); })
-      .catch(function(e){ errs.push({f:f[1], m:String((e&&e.message)||'')}); });
+  clsCredKeys().forEach(function(k){
+    var el=$('cc-'+k); if(!el) return;
+    var v=String((el.value)||'').trim();
+    chain=chain.then(function(){ return sbFetch('/rest/v1/rpc/rpc_set_setting',{method:'POST',body:JSON.stringify({p_key:k,p_val:v})}); })
+      .catch(function(e){ errs.push({f:k, m:String((e&&e.message)||'')}); });
   });
   sbEnsure().then(function(){ return chain; }).then(function(){
     if(!errs.length){
@@ -27828,7 +28169,7 @@ function clsCredSave(){
     if(/schema cache|Could not find the function|does not exist|PGRST202|404/i.test(m)){
       html='<span style="color:#b91c1c;font-weight:700">ยังบันทึกไม่ได้ — ฐานข้อมูลยังไม่มีฟังก์ชันนี้</span>'+
         '<div style="color:#334155;font-weight:400;margin-top:4px;line-height:1.65">'+
-        'ให้เปิด <b>Supabase → SQL Editor → New query</b> แล้ววางไฟล์ <b>supabase_patch_all_v772.sql</b> ทั้งไฟล์ → กด Run<br>'+
+        'ให้เปิด <b>Supabase → SQL Editor → New query</b> แล้ววางไฟล์ <b>supabase_patch_all_v775.sql</b> ทั้งไฟล์ → กด Run<br>'+
         'รันแล้วยังขึ้นข้อความเดิม ให้รอ 1-2 นาทีแล้วกดบันทึกใหม่ (ระบบกำลังโหลดรายการฟังก์ชันใหม่)</div>';
     } else if(/เฉพาะผู้ดูแล|admin/i.test(m)){
       html='<span style="color:#b91c1c;font-weight:700">บันทึกไม่ได้ — บัญชีนี้ยังไม่ใช่ผู้ดูแลระบบ</span>'+
@@ -28680,7 +29021,7 @@ function clsLoadPublicScores(force){
       clsPub.rows=[];
       var m=String((e&&e.message)||'');
       clsPub.err=/schema cache|Could not find the function|does not exist|404|PGRST202/i.test(m)
-        ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v772.sql ทั้งไฟล์ → Run'
+        ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v775.sql ทั้งไฟล์ → Run'
         : m;
     })
     .then(function(){ clsPub.loading=false;
@@ -28970,6 +29311,17 @@ var SELF_DIM_LABEL=[['qSM','การจัดการตนเอง','SM'],['
                     ['qTW','การรวมพลังทำงานเป็นทีม','TW'],['qCZ','การเป็นพลเมืองที่เข้มแข็ง','CZ'],
                     ['qNS','การอยู่ร่วมกับธรรมชาติฯ','NS']];
 var SELF_LEGACY_KEYS=['c','s','r','p']; /* รุ่นเก่า: 4 ด้านย่อยของการคิดขั้นสูง */
+/* [V.7.74] ชื่อ "ด้านย่อย" สำหรับแสดงผล — สำเนาฝั่ง Dashboard (คนละ <script> กับเกม จึงแชร์ตัวแปรกันไม่ได้)
+   ลำดับและรหัสต้องตรงกับ SELF_DIMS ในเกมเสมอ · test374 เทียบสองชุดนี้ให้อัตโนมัติแล้ว
+   รหัสที่ไม่รู้จัก (ข้อมูลเวอร์ชันอนาคต) จะแสดงเป็นรหัสดิบแทน ไม่ทำให้หน้าพัง */
+var SELF_SUB_LABEL=[
+  ['SM-A','รู้จักและเห็นคุณค่าในตนเอง','SM'],['SM-B','กำกับตนเอง จัดการอารมณ์และเวลา','SM'],['SM-C','ตั้งเป้าหมายและมุ่งมั่นพัฒนาตนเอง','SM'],
+  ['HT-CTC','คิดอย่างมีวิจารณญาณ (คิดก่อนเชื่อ)','HT'],['HT-STM','คิดเชิงระบบ (มองความเกี่ยวข้อง)','HT'],['HT-CRT','คิดสร้างสรรค์','HT'],['HT-PRB','คิดแก้ปัญหา','HT'],
+  ['CM-A','รับสาร (ฟังและอ่านจับใจความ)','CM'],['CM-B','ส่งสาร (พูดและเขียนให้เข้าใจ)','CM'],['CM-C','สื่อสารให้เหมาะกับบุคคลและกาลเทศะ','CM'],
+  ['TW-A','เป็นสมาชิกทีมที่ดีและมีภาวะผู้นำ','TW'],['TW-B','ร่วมมือรวมพลังอย่างเป็นระบบ','TW'],['TW-C','สร้างความสัมพันธ์และจัดการความขัดแย้ง','TW'],
+  ['CZ-A','ปฏิบัติตนอย่างรับผิดชอบตามบทบาทหน้าที่','CZ'],['CZ-B','เคารพสิทธิผู้อื่นและอยู่ร่วมกันในความต่าง','CZ'],['CZ-C','มีส่วนร่วมทำเพื่อส่วนรวมและท้องถิ่น','CZ'],
+  ['NS-A','เข้าใจธรรมชาติ ช่างสังเกตและตั้งคำถาม','NS'],['NS-B','ใช้ทรัพยากรและวิทยาการอย่างรู้คุณค่า','NS'],['NS-C','ร่วมดูแลรักษาเพื่อความยั่งยืน','NS']
+];
 function clsOpenSelfAssess(){
   var old=document.getElementById('cls-self-modal'); if(old) old.remove();
   var wrap=document.createElement('div');
@@ -29011,6 +29363,7 @@ function clsOpenSelfAssess(){
                  :(pl.firstName?String(pl.firstName)+' '+String(pl.lastName||''):'(ไม่ทราบชื่อ)'),
         game: stu?(stu.character_name||''):'',
         mine: !!stu, cls: pl['class']||(stu?'':''), dims:dims, avg: allN?Math.round(tot/allN*100)/100:null,
+        subs: (pl.subAns&&typeof pl.subAns==='object')?pl.subAns:null, /* [V.7.74] คำตอบรายด้านย่อย (มีเฉพาะรุ่น 3 ขึ้นไป) */
         best: Number(pl.bestDim)||0, bestWhy: String(pl.bestReason||'').trim(),
         imp: Number(pl.improveDim)||0, impPlan: String(pl.improvePlan||'').trim(),
         t: r.created_at
@@ -29040,10 +29393,35 @@ function clsOpenSelfAssess(){
           (x.bestWhy?'<b>ที่ทำได้ดีเพราะ:</b> '+esc(x.bestWhy)+' ':'')+
           (x.impPlan?'<b>สิ่งที่จะพยายามต่อ:</b> '+esc(x.impPlan):'')+'</td></tr>'):'');
     }).join('');
+    /* [V.7.74 ตามที่ครูสั่ง "ครบทุกด้าน"] ตารางค่าเฉลี่ยราย "ด้านย่อย" — ครูเห็นว่าองค์ประกอบไหนของแต่ละสมรรถนะยังอ่อน
+       อ่านจาก payload.subAns ที่แบบประเมินรุ่นใหม่แนบมา · ผู้ที่ทำรุ่นเก่าจะไม่ถูกนับในตารางนี้ (ขึ้นจำนวนผู้ตอบตามจริง) */
+    var subStat={}, subN=0;
+    list.forEach(function(x){ if(!x.subs) return; subN++;
+      Object.keys(x.subs).forEach(function(c){ var v=Number(x.subs[c]); if(isNaN(v)||v<=0) return;
+        if(!subStat[c]) subStat[c]={s:0,n:0}; subStat[c].s+=v; subStat[c].n++; }); });
+    var subCodes=SELF_SUB_LABEL.map(function(r){ return r[0]; });
+    Object.keys(subStat).forEach(function(c){ if(subCodes.indexOf(c)<0) subCodes.push(c); });
+    var subHtml='';
+    if(subN){
+      var subLab={}; SELF_SUB_LABEL.forEach(function(r){ subLab[r[0]]=r; });
+      subHtml='<div style="margin-top:14px"><b style="font-size:13.5px">🧩 ค่าเฉลี่ยรายด้านย่อย (องค์ประกอบตามกรอบ CBE)</b>'+
+        '<div class="muted" style="font-size:11.5px;margin:2px 0 6px">จากผู้ตอบแบบประเมินรุ่นที่แยกด้านย่อย <b>'+subN+'</b> คน · เรียงตามลำดับในแบบประเมิน</div>'+
+        '<table class="cls-tbl cls-sub-tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:19%"><col><col style="width:15%"><col style="width:13%"></colgroup>'+
+        '<thead><tr><th>สมรรถนะหลัก</th><th>ด้านย่อย</th><th style="text-align:center">ค่าเฉลี่ย</th><th style="text-align:center">ผู้ตอบ</th></tr></thead><tbody>'+
+        subCodes.map(function(c){
+          var r=subLab[c]||[c,c,String(c).split('-')[0]], st2=subStat[c], av=(st2&&st2.n)?Math.round(st2.s/st2.n*100)/100:null;
+          return '<tr><td style="color:'+(IND_COMP_CLR[r[2]]||'#475569')+';font-weight:700;font-size:11.5px">'+esc(CORE6_SHORT[r[2]]||r[2])+'</td>'+
+            '<td style="font-size:12px">'+esc(r[1])+' <span class="muted" style="font-size:10.5px">'+esc(c)+'</span></td>'+
+            '<td style="text-align:center"><b style="color:'+clr(av)+'">'+(av==null?'–':av.toFixed(2))+'</b>'+
+              '<div style="font-size:10px;color:'+clr(av)+'">'+(av==null?'ยังไม่มีข้อมูล':lab(av))+'</div></td>'+
+            '<td style="text-align:center">'+((st2&&st2.n)||0)+'</td></tr>';
+        }).join('')+'</tbody></table></div>';
+    }
     b.innerHTML=head+
       '<div style="overflow-x:auto"><table class="cls-tbl"><thead><tr><th style="min-width:140px">นักเรียน</th>'+
       SELF_DIM_LABEL.map(function(d){ return '<th style="text-align:center;font-size:10px;line-height:1.2;color:'+(IND_COMP_CLR[d[2]]||'#475569')+'" title="'+esc(d[1])+'">'+esc(CORE6_SHORT[d[2]]||d[1])+'</th>'; }).join('')+
       '<th style="text-align:center">เฉลี่ย</th><th>ทำได้ดีที่สุด</th><th>อยากฝึกเพิ่ม</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>'+
+      subHtml+
       '<div class="muted" style="font-size:12px;margin-top:9px;line-height:1.65">คะแนน 1-5 มาจาก<b>การประเมินตนเองของนักเรียน</b>ครบทั้ง 6 ด้าน (ทำซ้ำได้ ระบบใช้ครั้งล่าสุด) · จากผู้ตอบ <b>'+list.length+'</b> คน<br>'+
       '<b>ใช้ตรวจสอบประกอบ</b>กับคะแนนที่วัดได้จากเกม — ไม่นำมารวมเป็นคะแนนสมรรถนะ · ช่องว่างระหว่าง "สิ่งที่นักเรียนคิดว่าตนทำได้" กับ "สิ่งที่วัดได้จริง" เป็นประเด็นที่น่าคุยกับนักเรียน<br>'+
       'ผู้ที่ทำแบบประเมินรุ่นก่อน (ประเมินเฉพาะการคิดขั้นสูง) จะมีคะแนนเฉพาะด้านการคิดขั้นสูง ด้านอื่นขึ้นเป็น –</div>';
