@@ -2813,7 +2813,7 @@ function clsCredSave(){
     if(/schema cache|Could not find the function|does not exist|PGRST202|404/i.test(m)){
       html='<span style="color:#b91c1c;font-weight:700">ยังบันทึกไม่ได้ — ฐานข้อมูลยังไม่มีฟังก์ชันนี้</span>'+
         '<div style="color:#334155;font-weight:400;margin-top:4px;line-height:1.65">'+
-        'ให้เปิด <b>Supabase → SQL Editor → New query</b> แล้ววางไฟล์ <b>supabase_patch_all_v777.sql</b> ทั้งไฟล์ → กด Run<br>'+
+        'ให้เปิด <b>Supabase → SQL Editor → New query</b> แล้ววางไฟล์ <b>supabase_patch_all_v778.sql</b> ทั้งไฟล์ → กด Run<br>'+
         'รันแล้วยังขึ้นข้อความเดิม ให้รอ 1-2 นาทีแล้วกดบันทึกใหม่ (ระบบกำลังโหลดรายการฟังก์ชันใหม่)</div>';
     } else if(/เฉพาะผู้ดูแล|admin/i.test(m)){
       html='<span style="color:#b91c1c;font-weight:700">บันทึกไม่ได้ — บัญชีนี้ยังไม่ใช่ผู้ดูแลระบบ</span>'+
@@ -3172,6 +3172,7 @@ var CORE6ENG = (function(){
   function lvOf(p){ return p>=80?6:p>=65?5:p>=50?4:3; }
   function num(v){ var n=Number(v); return isNaN(n)?0:n; }
   function has(v){ return v!==''&&v!=null; }
+  function capValOf(c,k){ return (c&&has(c[k]))?Number(c[k]):null; }
   function pack(pct,n,minN,srcTxt){
     if(pct==null||n<minN) return { st:'partial', pct:(pct==null?null:Math.round(pct*10)/10), n:n, need:minN, src:srcTxt };
     return { st:'score', pct:Math.round(pct*10)/10, level:lvOf(pct), n:n, src:srcTxt };
@@ -3186,12 +3187,13 @@ var CORE6ENG = (function(){
       var CN2={CTC:'คิดอย่างมีวิจารณญาณ (CTC)',STM:'คิดเชิงระบบ (STM)',CRT:'คิดสร้างสรรค์ (CRT)',PRB:'คิดแก้ปัญหา (PRB)'};
       out.HT.parts=['A','B','C','D'].map(function(k){ var sv=v2[k];
         return { label:SN[k], pct:(sv==null?null:Math.round(sv/SF[k]*1000)/10), txt:(sv==null?'–':(Math.round(sv*10)/10))+'/'+SF[k], warn:!(v2.status&&v2.status[k]) };
-      }).concat(['CTC','STM','CRT','PRB'].map(function(k){ var cv=v2.comp?v2.comp[k]:null;
-        return { label:CN2[k], pct:(cv==null?null:Math.round(cv*10)/10), txt:(cv==null?'–':Math.round(cv)+'%'), dim:true };
-      }));
+      });
+      out.HT.dims=['CTC','STM','CRT','PRB'].map(function(k){ var cv=v2.comp?v2.comp[k]:null;
+        return { label:CN2[k], pct:(cv==null?null:Math.round(cv*10)/10), txt:(cv==null?'ยังไม่มีหลักฐานจากเกม':Math.round(cv)+'%'), dim:true };
+      });
     }
     /* [V.7.77 ตามที่ครูสั่ง] เก็บ parts = คะแนนรายด้านย่อยของสมรรถนะนั้น ไว้ให้ตารางคะแนนกดดูได้ */
-    function domainScore(stageMap,capKeys,label){
+    function domainScore(stageMap,capKeys,label,dimSpec){
       var first={}, n=0, got=0, tot=0, byStage={}, capParts=[];
       (ev.q||[]).forEach(function(r){
         var sid=String(r.sid||''); if(!stageMap[sid]) return;
@@ -3215,11 +3217,27 @@ var CORE6ENG = (function(){
       var r2=pack(tot?got/tot*100:null, n, MIN_ITEMS, label);
       r2.parts=Object.keys(byStage).map(function(k){ var b=byStage[k];
         return { label:(typeof indStageLabel==='function'?indStageLabel(k):('ด่าน '+k)), pct:Math.round(b.got/b.n*1000)/10, txt:(Math.round(b.got*10)/10)+'/'+b.n+' ข้อ' };
-      }).concat(capParts);
+      }).concat(capParts.map(function(x){ return { label:x.label, pct:x.pct, txt:x.txt }; }));
+      /* [V.7.77 ตามที่ครูสั่ง ข้อ 4] องค์ประกอบย่อยตามกรอบ CBE ของด้านนี้ (เหมือนที่การคิดขั้นสูงมี CTC/STM/CRT/PRB)
+         โยงจากหลักฐานที่มีจริง: ข้อ/ภารกิจรายด่าน → 1 องค์ประกอบ · เกณฑ์กาญ 2050 แต่ละตัว → อีก 1 องค์ประกอบ
+         องค์ประกอบที่เกมยังไม่มีหลักฐานให้ จะบอกตรง ๆ ว่า "ยังไม่มีหลักฐานจากเกม" ไม่เดาคะแนนให้ */
+      if(dimSpec){
+        var sN=0,sG=0; Object.keys(byStage).forEach(function(k){ sN+=byStage[k].n; sG+=byStage[k].got; });
+        var dims=[];
+        if(dimSpec.stage) dims.push({ label:dimSpec.stage, pct:(sN?Math.round(sG/sN*1000)/10:null), txt:(sN?((Math.round(sG*10)/10)+'/'+sN+' ข้อ'):'ยังไม่มีหลักฐานจากเกม'), dim:true });
+        Object.keys(dimSpec.cap||{}).forEach(function(ck){
+          var found=capValOf(c,ck);
+          dims.push({ label:dimSpec.cap[ck], pct:(found==null?null:Math.round(found/4*1000)/10), txt:(found==null?'ยังไม่มีหลักฐานจากเกม':(found+'/4')), dim:true });
+        });
+        (dimSpec.none||[]).forEach(function(nm){ dims.push({ label:nm, pct:null, txt:'ยังไม่มีหลักฐานจากเกม (ครูสังเกตในชั้นเรียนประกอบ)', dim:true }); });
+        r2.dims=dims;
+      }
       return r2;
     }
-    out.NS=domainScore(NS_STAGES,['EE','ST'],'ข้อ/ภารกิจด้านทรัพยากร-สิ่งแวดล้อม + เกณฑ์กาญ 2050 (EE·ST)');
-    out.CZ=domainScore(CZ_STAGES,['SD','PA'],'ข้อ/ภารกิจด้านส่วนรวม-อนุรักษ์ + เกณฑ์กาญ 2050 (SD·PA)');
+    out.NS=domainScore(NS_STAGES,['EE','ST'],'ข้อ/ภารกิจด้านทรัพยากร-สิ่งแวดล้อม + เกณฑ์กาญ 2050 (EE·ST)',
+      { stage:'ใช้ทรัพยากรและวิทยาการอย่างรู้คุณค่า', cap:{ EE:'เข้าใจธรรมชาติ ช่างสังเกตและตั้งคำถาม (จากเกณฑ์ EE)', ST:'ร่วมดูแลรักษาเพื่อความยั่งยืน (จากเกณฑ์ ST)' } });
+    out.CZ=domainScore(CZ_STAGES,['SD','PA'],'ข้อ/ภารกิจด้านส่วนรวม-อนุรักษ์ + เกณฑ์กาญ 2050 (SD·PA)',
+      { stage:'ปฏิบัติตนอย่างรับผิดชอบตามบทบาทหน้าที่', cap:{ SD:'มีส่วนร่วมทำเพื่อส่วนรวมและท้องถิ่น (จากเกณฑ์ SD)', PA:'เคารพสิทธิผู้อื่นและอยู่ร่วมกันในความต่าง (จากเกณฑ์ PA)' } });
     /* [V.7.70 ข้อ 8 · ด้านการสื่อสาร] ใช้ "คะแนนการสื่อสาร" ที่ครูให้แยกช่อง (commScore1-3)
        ถ้าเป็นข้อมูลเก่าที่ตรวจไว้ก่อนมีช่องนี้ ถอยไปใช้คะแนนการคิดแทนชั่วคราว พร้อมบอกครูตรงหน้าจอ */
     var rv=(ev.c||[]).filter(function(r){ return has(r.trv)&&(has(r.cw1)||has(r.cw2)||has(r.cw3)||has(r.tw1)||has(r.tw2)||has(r.tw3)); })
@@ -3228,7 +3246,11 @@ var CORE6ENG = (function(){
       var useComm=(has(rv.cw1)||has(rv.cw2)||has(rv.cw3));
       var sum=useComm ? (num(rv.cw1)+num(rv.cw2)+num(rv.cw3)) : (num(rv.tw1)+num(rv.tw2)+num(rv.tw3));
       var cmv=useComm?[rv.cw1,rv.cw2,rv.cw3]:[rv.tw1,rv.tw2,rv.tw3];
+      var cmAvg=(num(cmv[0])+num(cmv[1])+num(cmv[2]))/3;
       out.CM={ parts:cmv.map(function(x,i){ return { label:'คำตอบเขียนข้อที่ '+(i+1)+(useComm?' (ช่อง 💬 การสื่อสาร)':' (ใช้คะแนนการคิดชั่วคราว)'), pct:Math.round(num(x)/4*1000)/10, txt:num(x)+'/4' }; }),
+        dims:[{ label:'ส่งสาร (เขียนอธิบายให้ผู้อื่นเข้าใจ)', pct:Math.round(cmAvg/4*1000)/10, txt:(Math.round(cmAvg*10)/10)+'/4', dim:true },
+              { label:'รับสาร (ฟังและอ่านจับใจความ)', pct:null, txt:'ยังไม่มีหลักฐานจากเกม (ครูสังเกตในชั้นเรียนประกอบ)', dim:true },
+              { label:'สื่อสารให้เหมาะกับบุคคลและกาลเทศะ', pct:null, txt:'ยังไม่มีหลักฐานจากเกม (ครูสังเกตในชั้นเรียนประกอบ)', dim:true }],
         st:'score', pct:Math.round(sum/12*1000)/10, level:lvOf(sum/12*100), n:3,
         src: useComm ? 'คำตอบเขียน 3 ข้อ · ช่อง 💬 การสื่อสาร ที่ครูให้ (0-4 ต่อข้อ รวม 12)'
                      : 'คำตอบเขียน 3 ข้อ — ยังไม่มีคะแนนช่อง 💬 การสื่อสาร จึงใช้คะแนนการคิดแทนชั่วคราว (เปิดหน้า 📝 แล้วกดบันทึกอีกครั้งเพื่อให้คะแนนแยกด้าน)' };
@@ -3255,6 +3277,9 @@ var CORE6ENG = (function(){
       'ดัชนีพฤติกรรม: เล่นครบ '+nDone+'/'+TOTAL_STAGES+' ด่าน'+(improve!=null?(' · พัฒนาการจากครั้งแรกเฉลี่ย '+Math.round(improve*100)+'%'):''));
     out.SM.parts=[{ label:'ทำด่านสำเร็จด้วยตนเอง (น้ำหนัก 50%)', pct:Math.round(coverage*1000)/10, txt:nDone+'/'+TOTAL_STAGES+' ด่าน' },
       { label:'พัฒนาการเมื่อกลับมาเล่นซ้ำ (น้ำหนัก 50%)', pct:(improve==null?null:Math.round(improve*1000)/10), txt:(improve==null?'ยังไม่เคยเล่นซ้ำ':Math.round(improve*100)+'%') }];
+    out.SM.dims=[{ label:'กำกับตนเอง จัดการเวลาและงานของตัวเอง', pct:Math.round(coverage*1000)/10, txt:nDone+'/'+TOTAL_STAGES+' ด่าน', dim:true },
+      { label:'ตั้งเป้าหมายและมุ่งมั่นพัฒนาตนเอง', pct:(improve==null?null:Math.round(improve*1000)/10), txt:(improve==null?'ยังไม่เคยเล่นซ้ำ จึงยังไม่มีหลักฐาน':Math.round(improve*100)+'%'), dim:true },
+      { label:'รู้จักและเห็นคุณค่าในตนเอง', pct:null, txt:'ยังไม่มีหลักฐานจากเกม (ดูจากแบบประเมินตนเอง/การสังเกต)', dim:true }];
     if(out.SM.st==='score') out.SM.note='ข้อมูลเชิงพฤติกรรม (ไม่ใช่คะแนนวิชาการ)';
     /* [V.7.70 ข้อ 8 · ด้านการทำงานเป็นทีม] เพื่อนร่วมทีมประเมินกันเองในเกม 3 ข้อ (ข้อละ 0-4 รวม 12)
        เฉลี่ยจากเพื่อนทุกคนที่ประเมินให้ — ตรงหลัก CBE ที่แนะนำการประเมินแบบพหุภาคี */
@@ -3264,8 +3289,11 @@ var CORE6ENG = (function(){
       var tot12=0, q1=0,q2=0,q3=0; pr.forEach(function(r){ tot12+=Math.max(0,Math.min(12,num(r.p1)+num(r.p2)+num(r.p3))); q1+=num(r.p1); q2+=num(r.p2); q3+=num(r.p3); });
       var avg12=tot12/pr.length, pct=avg12/12*100;
       var TWQ=['ช่วยคิดและเสนอความเห็นให้ทีม','ทำหน้าที่ที่ตกลงกันไว้จนสำเร็จ','รับฟังเมื่อคิดต่างกัน ไม่เอาแต่ใจ'];
+      var TWD=['เป็นสมาชิกทีมที่ดีและมีภาวะผู้นำ','ร่วมมือรวมพลังอย่างเป็นระบบ','สร้างความสัมพันธ์และจัดการความขัดแย้ง'];
       out.TW={ parts:[q1,q2,q3].map(function(x,i){ var a=x/pr.length;
         return { label:TWQ[i], pct:Math.round(a/4*1000)/10, txt:(Math.round(a*10)/10)+'/4' }; }),
+        dims:[q1,q2,q3].map(function(x,i){ var a=x/pr.length;
+        return { label:TWD[i], pct:Math.round(a/4*1000)/10, txt:(Math.round(a*10)/10)+'/4', dim:true }; }),
         st:'score', pct:Math.round(pct*10)/10, level:lvOf(pct), n:pr.length,
         src:'เพื่อนร่วมทีมประเมิน '+pr.length+' คน · เฉลี่ย '+(Math.round(avg12*10)/10)+'/12 (ช่วยคิด · ทำหน้าที่จนสำเร็จ · รับฟังเมื่อคิดต่าง)' };
     } else {
@@ -3657,6 +3685,11 @@ function clsPubFilterHtml(){
 }
 /* โหลดหลายห้องพร้อมกันแล้วรวมเป็นชุดข้อมูลเดียว — ใช้ท่อคำนวณเดิมทั้งหมด (CV2 + CORE6ENG) */
 function clsLoadPublicRooms(force){
+  /* [V.7.77] ไม่ได้เลือกตัวกรองอะไรเลย = ไม่ใช่โหมดดูห้องคนอื่น — ห้ามโหลดทุกห้องในระบบมาทับข้อมูลห้องตัวเอง */
+  if(!clsPubActive()){
+    if(cls.roBackup){ cls.students=cls.roBackup.students; cls.stats=cls.roBackup.stats; cls.counts=cls.roBackup.counts; cls.roBackup=null; }
+    cls.roRooms=null; cls.roMore=0; cls.statsReady=true; clsRender(); return;
+  }
   var m=clsPubMatch();
   if(!m.length){ cls.roRooms=null; cls.students=[]; cls.stats={}; cls.counts={}; cls.statsReady=true; clsRender(); return; }
   var ids=m.map(function(r){ return r.room_id; }).sort();
@@ -3697,7 +3730,7 @@ function clsLoadPublicRooms(force){
   }).catch(function(e){
     var mm=String((e&&e.message)||'');
     cls.roErr=/schema cache|Could not find the function|does not exist|404|PGRST202/i.test(mm)
-      ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v777.sql ทั้งไฟล์ → Run'
+      ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v778.sql ทั้งไฟล์ → Run'
       : mm;
     cls.statsReady=true; clsRender();
   });
@@ -3804,7 +3837,7 @@ function clsLoadPublicScores(force){
       clsPub.rows=[];
       var m=String((e&&e.message)||'');
       clsPub.err=/schema cache|Could not find the function|does not exist|404|PGRST202/i.test(m)
-        ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v777.sql ทั้งไฟล์ → Run'
+        ? 'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor แล้ววาง supabase_patch_all_v778.sql ทั้งไฟล์ → Run'
         : m;
     })
     .then(function(){ clsPub.loading=false;
@@ -3926,9 +3959,9 @@ function clsAchCell(score, full, bg, extra){
   if(!a) return '<td style="'+base+'"><span class="muted">–</span></td>';
   var clr=a.lv?CLS_LV_CLR[a.lv]:'#94a3b8';
   var tip=(a.lv?('ระดับ '+a.lv+' '+(CORE6_LVNAME[a.lv]||'')):'ยังไม่ถึงเกณฑ์ (ต่ำกว่า 50%)')+' — '+a.pct+'% ของคะแนนเต็ม '+full;
+  /* [V.7.77 ตามที่ครูสั่ง] ตัดบรรทัด % ออก เหลือคะแนนกับ "สี" ที่บอกระดับ (ตัวเลข % ยังดูได้จาก tooltip) */
   return '<td style="'+base+'" title="'+esc(tip)+'">'+
-    '<b style="display:inline-block;min-width:34px;background:'+clr+';color:#fff;border-radius:7px;padding:1px 7px;font-size:12px">'+(Math.round(Number(score)*10)/10)+'</b>'+
-    '<div style="font-size:10px;color:'+clr+';font-weight:700;margin-top:1px">'+a.pct+'%</div></td>';
+    '<b style="display:inline-block;min-width:34px;background:'+clr+';color:#fff;border-radius:7px;padding:2px 9px;font-size:12.5px">'+(Math.round(Number(score)*10)/10)+'</b></td>';
 }
 /* [V.7.71 ข้อ 10 ตามที่ครูขอ] สมรรถนะหลัก 6 ด้านแยกเป็น "คอลัมน์ละด้าน"
    ชื่อด้านย้ายไปอยู่หัวตาราง · ในเซลล์แสดงเป็น "ตัวเลข %" และใช้สีพื้นแทนระดับ 3-6
@@ -3944,8 +3977,8 @@ function clsCore6Cells(t, sid){
       var clr=CLS_LV_CLR[r.level]||'#64748b';
       return '<td style="'+base+'"'+click+
         ' title="'+esc(tip+' — ระดับ '+r.level+' '+(CORE6_LVNAME[r.level]||'')+' ('+r.pct+'%)\n'+(r.src||'')+'\n(กดเพื่อดูคะแนนรายด้านย่อย)')+'">'+
-        '<b style="display:inline-block;min-width:38px;background:'+clr+';color:#fff;border-radius:7px;padding:1px 6px;font-size:12px">'+r.pct+'%</b>'+
-        '<div style="font-size:10px;font-weight:800;color:'+clr+';margin-top:1px">ระดับ '+r.level+'</div></td>';
+        /* [V.7.77] ตัดบรรทัด "ระดับ X" ออก เหลือคะแนน % กับสีที่บอกระดับ (ระดับยังดูได้จาก tooltip และแถบสีด้านล่างตาราง) */
+        '<b style="display:inline-block;min-width:38px;background:'+clr+';color:#fff;border-radius:7px;padding:2px 9px;font-size:12.5px">'+r.pct+'%</b></td>';
     }
     var isNone=(r&&r.st==='none');
     var why=isNone?'ไม่มีหลักฐานด้านนี้'
@@ -3971,45 +4004,52 @@ function clsC6Pick(sid, k){
   row.style.display='';
   try{ box.scrollIntoView({block:'nearest'}); }catch(e){}
 }
-/* กล่องรายละเอียด "รายด้านย่อย" ของสมรรถนะ 1 ด้าน */
+/* กล่องรายละเอียดของสมรรถนะ 1 ด้าน — [V.7.77 ข้อ 3-4] แยกเป็น 2 แถวชัดเจน
+   แถวบน = "หลักฐานที่ใช้คิดคะแนน" (การคิดขั้นสูงคือ A·B·C·D · ด้านอื่นคือข้อ/ภารกิจรายด่าน)
+   แถวล่าง = "องค์ประกอบย่อยตามกรอบ CBE" (การคิดขั้นสูงคือ CTC/STM/CRT/PRB · ด้านอื่นมีของตัวเองครบทุกด้านแล้ว) */
+function clsC6Bars(list){
+  return '<div style="display:flex;gap:8px;flex-wrap:wrap">'+list.map(function(pp){
+    var pct=(pp.pct==null?null:Math.max(0,Math.min(100,pp.pct)));
+    var clr=(pct==null)?'#cbd5e1':(CLS_LV_CLR[pct>=80?6:pct>=65?5:pct>=50?4:3]||'#64748b');
+    return '<div style="flex:1;min-width:200px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 9px">'+
+      '<div style="display:flex;justify-content:space-between;gap:6px;font-size:11.5px;color:#334155">'+
+        '<span>'+esc(pp.label)+'</span><b style="white-space:nowrap;color:'+(pct==null?'#94a3b8':'#334155')+'">'+esc(pp.txt||'')+'</b></div>'+
+      '<div style="height:6px;background:#e2e8f0;border-radius:3px;margin-top:4px"><div style="height:6px;width:'+(pct==null?0:Math.max(2,pct))+'%;background:'+clr+';border-radius:3px"></div></div>'+
+      (pp.warn?'<div style="font-size:10px;color:#b45309;margin-top:2px">• ข้อมูลส่วนนี้ยังไม่ครบตามเกณฑ์</div>':'')+'</div>';
+  }).join('')+'</div>';
+}
 function clsC6PartsHtml(t,k){
   var c=CORE6.filter(function(x){ return x[0]===k; })[0]||[k,k,'#475569'];
   var r=(t&&t.c6&&t.c6[k])||null;
-  var head='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">'+
-    '<b style="color:'+c[2]+';font-size:13px">'+esc(c[1])+'</b>'+
+  var head='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:'+c[2]+';color:#fff;border-radius:8px 8px 0 0;padding:5px 11px">'+
+    '<b style="font-size:13px">'+esc(c[1])+'</b>'+
     ((r&&r.st==='score')
-      ? '<span style="background:'+(CLS_LV_CLR[r.level]||'#64748b')+';color:#fff;border-radius:999px;padding:1px 10px;font-weight:800;font-size:12px">ระดับ '+r.level+' · '+r.pct+'%</span>'
-      : '<span class="muted" style="font-size:12px">'+esc(r&&r.st==='pending'?'รอผู้ประเมิน':(r&&r.st==='none'?'ไม่มีหลักฐานด้านนี้':'ข้อมูลยังไม่พอสรุประดับ'))+'</span>')+
-    '<span class="muted" style="font-size:11px;flex:1;min-width:200px">'+esc((r&&r.src)||'')+'</span></div>';
-  var parts=(r&&r.parts)||[];
-  if(!parts.length) return '<div style="border:1px solid var(--line);border-left:4px solid '+c[2]+';border-radius:9px;padding:8px 11px;background:#fff;margin-bottom:8px">'+head+
-    '<div class="muted" style="font-size:11.5px">ยังไม่มีคะแนนรายด้านย่อยของด้านนี้ (ต้องมีข้อมูลการเล่น/การประเมินก่อน)</div></div>';
-  var bars=parts.map(function(pp){
-    var pct=(pp.pct==null?null:Math.max(0,Math.min(100,pp.pct)));
-    var clr=(pct==null)?'#cbd5e1':(CLS_LV_CLR[pct>=80?6:pct>=65?5:pct>=50?4:3]||c[2]);
-    return '<div style="flex:1;min-width:190px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 9px">'+
-      '<div style="display:flex;justify-content:space-between;gap:6px;font-size:11.5px;color:#334155">'+
-        '<span'+(pp.dim?' style="font-weight:700"':'')+'>'+esc(pp.label)+'</span><b>'+esc(pp.txt||'')+'</b></div>'+
-      '<div style="height:6px;background:#e2e8f0;border-radius:3px;margin-top:4px"><div style="height:6px;width:'+(pct==null?0:Math.max(2,pct))+'%;background:'+clr+';border-radius:3px"></div></div>'+
-      (pp.warn?'<div style="font-size:10px;color:#b45309;margin-top:2px">• ข้อมูลส่วนนี้ยังไม่ครบตามเกณฑ์</div>':'')+'</div>';
-  }).join('');
-  return '<div style="border:1px solid var(--line);border-left:4px solid '+c[2]+';border-radius:9px;padding:8px 11px;background:#fbfdff;margin-bottom:8px">'+head+
-    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+bars+'</div>'+
-    (k==='HT'?'<div class="muted" style="font-size:10.5px;margin-top:5px">A·B·C·D = แหล่งหลักฐาน 4 แหล่ง (เต็ม 20·30·25·25) · CTC/STM/CRT/PRB = องค์ประกอบการคิด 4 ด้าน</div>':'')+
-    '</div>';
+      ? '<span style="background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:1px 10px;font-weight:800;font-size:12px">ระดับ '+r.level+' · '+r.pct+'%</span>'
+      : '<span style="font-size:12px;opacity:.92">'+esc(r&&r.st==='pending'?'รอผู้ประเมิน':(r&&r.st==='none'?'ไม่มีหลักฐานด้านนี้':'ข้อมูลยังไม่พอสรุประดับ'))+'</span>')+
+    '<span style="font-size:10.5px;opacity:.9;flex:1;min-width:200px;text-align:right">'+esc((r&&r.src)||'')+'</span></div>';
+  var parts=(r&&r.parts)||[], dims=(r&&r.dims)||[];
+  var body='';
+  if(parts.length) body+='<div style="font-size:11px;font-weight:800;color:#475569;margin:2px 0 4px">📄 หลักฐานที่ใช้คิดคะแนน</div>'+clsC6Bars(parts);
+  if(dims.length) body+='<div style="font-size:11px;font-weight:800;color:'+c[2]+';margin:9px 0 4px;padding-top:7px;border-top:1px dashed var(--line)">🧩 องค์ประกอบย่อยของสมรรถนะด้านนี้ (ตามกรอบ CBE)</div>'+clsC6Bars(dims);
+  if(!body) body='<div class="muted" style="font-size:11.5px">ยังไม่มีคะแนนรายด้านย่อยของด้านนี้ (ต้องมีข้อมูลการเล่น/การประเมินก่อน)</div>';
+  return '<div style="border:1px solid '+c[2]+';border-radius:9px;background:#fbfdff;margin-bottom:9px;overflow:hidden">'+head+
+    '<div style="padding:8px 11px">'+body+
+    (k==='HT'?'<div class="muted" style="font-size:10.5px;margin-top:6px">A·B·C·D = แหล่งหลักฐาน 4 แหล่ง (เต็ม 20·30·25·25) · CTC/STM/CRT/PRB = องค์ประกอบการคิด 4 ด้านตามกรอบ CBE</div>':'')+
+    '</div></div>';
 }
 /* [ข้อ 8] รายละเอียดสมรรถนะหลัก 6 ด้านของนักเรียนคนนั้น (แสดงในแถวที่คลิกขยาย) */
 function clsCore6Detail(t){
   var c6=t&&t.c6; if(!c6) return '';
-  return '<div style="margin-top:8px;border:1px solid var(--line);border-radius:9px;overflow:hidden">'+
-    '<div style="background:#faf5ff;padding:4px 10px;font-size:11.5px;font-weight:800;color:#5b21b6">🧩 สมรรถนะหลัก 6 ด้าน (ผลระหว่างเรียน)</div>'+
-    CORE6.map(function(c){
+  /* [V.7.77 ข้อ 2] แถบหัวเรื่องสีเข้ม + แถวสลับสี + เส้นสีประจำด้าน อ่านง่ายกว่าเดิมที่กลืนกันไปหมด */
+  return '<div style="margin-top:8px;border:1px solid #7c3aed;border-radius:9px;overflow:hidden">'+
+    '<div style="background:#7c3aed;color:#fff;padding:5px 11px;font-size:12.5px;font-weight:800">🧩 สมรรถนะหลัก 6 ด้าน (ผลระหว่างเรียน) <span style="font-weight:500;opacity:.9">— กดที่ช่องสมรรถนะบนตารางเพื่อดูรายด้านย่อย</span></div>'+
+    CORE6.map(function(c,ci){
       var k=c[0], r=c6[k]||{st:'none'};
       var val=(r.st==='score')
         ? '<b style="color:'+CLS_LV_CLR[r.level]+'">ระดับ '+r.level+'</b> <span class="muted">('+(r.pct==null?'–':r.pct)+'%)</span>'
         : (r.st==='none'?'<span class="muted">ไม่มีการประเมิน</span>'
           :(r.st==='pending'?'<span style="color:#b45309">รอครูตรวจคำตอบเขียน</span>':'<span class="muted">ข้อมูลยังไม่พอสรุป</span>'));
-      return '<div style="display:flex;gap:8px;align-items:baseline;padding:4px 10px;border-top:1px solid var(--line);font-size:11.5px;flex-wrap:wrap">'+
+      return '<div style="display:flex;gap:8px;align-items:baseline;padding:5px 10px;border-top:1px solid var(--line);border-left:4px solid '+c[2]+';font-size:11.5px;flex-wrap:wrap;background:'+(ci%2?'#faf9ff':'#fff')+'">'+
         '<b style="color:'+c[2]+';min-width:170px">'+esc(c[1])+'</b>'+val+
         '<span class="muted" style="flex:1;min-width:200px;font-size:10.5px">'+esc(r.src||'')+(r.note?(' · '+esc(r.note)):'')+'</span></div>';
     }).join('')+'</div>';
@@ -4537,40 +4577,34 @@ function clsScoresHtml(r){
       '<div id="c6pick-'+esc(s.id)+'"></div>'+ /* [V.7.77] ช่องแสดงรายละเอียด "รายสมรรถนะ" เมื่อกดที่ช่องนั้น */
       '<div id="c6ov-'+esc(s.id)+'">';         /* ภาพรวมทั้ง 6 ด้าน — แสดงเมื่อคลิกทั้งแถว */
     if(v&&v.dataStatus!=='NO_DATA'){
-      det+='<div style="font-size:12px;color:#334155;margin-bottom:6px">🧠 <b>การคิดขั้นสูง</b> รวม <b>'+(Math.round(v.total*10)/10)+'</b>/100 · '+lvHtml+'</div>';
+      /* [V.7.77 ข้อ 2-3 ตามที่ครูสั่ง] จัดเป็น "การ์ดมีแถบสีหัวเรื่อง" แยกส่วนให้อ่านง่าย
+         และแยก A·B·C·D (หลักฐาน) กับ CTC/STM/CRT/PRB (องค์ประกอบการคิด) เป็นคนละบรรทัด */
       var CN={CTC:'คิดอย่างมีวิจารณญาณ',STM:'คิดเชิงระบบ',CRT:'คิดสร้างสรรค์',PRB:'คิดแก้ปัญหา'};
-      var CCLR={CTC:'#2563eb',STM:'#0e7490',CRT:'#b45309',PRB:'#7c3aed'};
-      /* [V.7.72 ข้อ 3] คะแนนราย "แหล่งหลักฐาน" A·B·C·D ย้ายจากตารางหลักมาอยู่ตรงนี้ (ตารางหลักจะได้พอดีจอ) */
       var SRCF={A:20,B:30,C:25,D:25}, SRCT={A:'ข้อคิดวิเคราะห์ระหว่างด่าน',B:'ภารกิจและมินิเกม',C:'ข้อคิดวิเคราะห์ในแบบทดสอบหลังเรียน',D:'เกณฑ์ผลงานกาญจนบุรี 2050'};
-      det+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">'+
-        ['A','B','C','D'].map(function(k){
-          var sv=v[k], ok=(v.status&&v.status[k]);
-          return '<div style="flex:1;min-width:132px;background:#f7fee7;border:1px solid #d9f99d;border-radius:8px;padding:6px 9px" title="'+esc(SRCT[k])+'">'+
-            '<div style="display:flex;justify-content:space-between;font-size:11px;color:#3f6212"><span><b>'+k+'</b> · '+esc(SRCT[k])+'</span>'+
-              '<b>'+(sv==null?'–':(Math.round(sv*10)/10))+'/'+SRCF[k]+'</b></div>'+
-            '<div style="height:6px;background:#e7f5c8;border-radius:3px;margin-top:4px"><div style="height:6px;width:'+(sv==null?0:Math.max(2,Math.min(100,sv/SRCF[k]*100)))+'%;background:#65a30d;border-radius:3px"></div></div>'+
-            (ok?'':'<div style="font-size:10px;color:#b45309;margin-top:2px">• ข้อมูลส่วนนี้ยังไม่ครบตามเกณฑ์</div>')+
-          '</div>';
-        }).join('')+'</div>'+
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">'+
-        ['CTC','STM','CRT','PRB'].map(function(k){ var cv=v.comp[k];
-          return '<div style="flex:1;min-width:140px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 9px">'+
-            '<div style="display:flex;justify-content:space-between;font-size:11px;color:#475569"><span><b style="color:'+CCLR[k]+'">'+k+'</b> · '+CN[k]+'</span><b>'+(cv==null?'–':Math.round(cv)+'%')+'</b></div>'+
-            '<div style="height:6px;background:#e2e8f0;border-radius:3px;margin-top:4px"><div style="height:6px;width:'+(cv==null?0:Math.max(2,Math.min(100,Math.round(cv))))+'%;background:'+CCLR[k]+';border-radius:3px"></div></div></div>';
-        }).join('')+'</div>';
-      det+='<div style="font-size:12px;color:#475569">'+
-        (v.dataStatus==='COMPLETE_STRICT'
-          ?'✅ ข้อมูลครบตามเกณฑ์ทางการ · คะแนนสมบูรณ์ '+v.strictTotal+'/100 ระดับ '+v.strictLevel+(v.strictNote?' <span style="color:#b45309">('+esc(v.strictNote)+')</span>':'')
-          :'ℹ️ คะแนนฉบับข้อมูลเท่าที่มี (Provisional)'+(v.missing.length?' · ยังขาด: '+esc(v.missing.map(function(m){ var p=m.split(':'); return p[0]+' ('+clsV2StText(p[1])+')'; }).join(' · ')):''))+
-        (t.cap>0?' · ด่านกาญ 2050 คะแนนดิบ '+t.cap+'/24':'')+
-        '</div>';
+      det+='<div style="border:1px solid #047857;border-radius:9px;overflow:hidden;margin-bottom:9px">'+
+        '<div style="background:#047857;color:#fff;padding:5px 11px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
+          '<b style="font-size:13px">🧠 การคิดขั้นสูง</b>'+
+          '<span style="background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:1px 10px;font-weight:800;font-size:12px">รวม '+(Math.round(v.total*10)/10)+'/100 · ระดับ '+v.level+' '+esc(v.levelLabel||'')+'</span></div>'+
+        '<div style="padding:8px 11px;background:#fff">'+
+          '<div style="font-size:11px;font-weight:800;color:#475569;margin:0 0 4px">📄 หลักฐานที่ใช้คิดคะแนน (A·B·C·D)</div>'+
+          clsC6Bars(['A','B','C','D'].map(function(k){ var sv=v[k];
+            return { label:k+' · '+SRCT[k], pct:(sv==null?null:sv/SRCF[k]*100), txt:(sv==null?'–':(Math.round(sv*10)/10))+'/'+SRCF[k], warn:!(v.status&&v.status[k]) }; }))+
+          '<div style="font-size:11px;font-weight:800;color:#047857;margin:9px 0 4px;padding-top:7px;border-top:1px dashed var(--line)">🧩 องค์ประกอบย่อยของการคิดขั้นสูง (ตามกรอบ CBE)</div>'+
+          clsC6Bars(['CTC','STM','CRT','PRB'].map(function(k){ var cv=v.comp[k];
+            return { label:k+' · '+CN[k], pct:(cv==null?null:cv), txt:(cv==null?'ยังไม่มีหลักฐานจากเกม':Math.round(cv)+'%') }; }))+
+          '<div style="font-size:11.5px;color:#475569;margin-top:8px">'+
+            (v.dataStatus==='COMPLETE_STRICT'
+              ?'✅ ข้อมูลครบตามเกณฑ์ทางการ · คะแนนสมบูรณ์ '+v.strictTotal+'/100 ระดับ '+v.strictLevel+(v.strictNote?' <span style="color:#b45309">('+esc(v.strictNote)+')</span>':'')
+              :'ℹ️ คะแนนฉบับข้อมูลเท่าที่มี (Provisional)'+(v.missing.length?' · ยังขาด: '+esc(v.missing.map(function(m){ var p=m.split(':'); return p[0]+' ('+clsV2StText(p[1])+')'; }).join(' · ')):''))+
+            (t.cap>0?' · ด่านกาญ 2050 คะแนนดิบ '+t.cap+'/24':'')+
+          '</div></div></div>';
     } else det+='<div class="muted" style="font-size:12.5px">ยังไม่มีข้อมูลการเล่นพอสรุปสมรรถนะ</div>';
     det+=clsCore6Detail(t); /* [V.7.69 ข้อ 8] สมรรถนะหลัก 6 ด้านรายคน */
     /* [เทียบข้อมูลเดิม] แถวอ้างอิงจากระบบ Google Sheet — โชว์เสมอ (สำคัญที่สุดตอนข้อมูลใหม่หาย/ย้ายไม่ครบ) */
     if(t.legacy){ var L=t.legacy, nv=function(x){ return x==null?'–':(Math.round(Number(x)*10)/10); };
       var hasNew=(v&&v.dataStatus!=='NO_DATA');
       var dTot=(L.total!=null&&hasNew)?Math.round((v.total-Number(L.total))*10)/10:null;
-      det+='<div style="font-size:11.5px;color:#64748b;margin-top:6px;background:#fff;border:1px dashed #cbd5e1;border-radius:8px;padding:5px 9px">'+
+      det+='<div style="font-size:11.5px;color:#475569;margin-top:8px;background:#f1f5f9;border:1px solid #cbd5e1;border-left:4px solid #94a3b8;border-radius:8px;padding:6px 10px">'+
         '📜 <b>ค่าอ้างอิงจากฐานข้อมูลเดิม (Google Sheet)</b>: A '+nv(L.a)+' · B '+nv(L.b)+' · C '+nv(L.c)+' · D '+nv(L.d)+' · รวม <b>'+nv(L.total)+'</b> · ระดับ '+nv(L.level)+
         (dTot!=null?(' · ต่างจากที่คิดใหม่ '+(dTot>0?'+':'')+dTot+(Math.abs(dTot)>2?' <b style="color:#b45309">← ควรตรวจ (ข้อมูลบางชีตอาจย้ายไม่ครบ)</b>':' ✓ ใกล้เคียงกัน')):
          ' · <b style="color:#b45309">ประวัติการเล่นฝั่งใหม่ยังว่าง — รัน migrateToSupabase ให้ครบทุกเฟส (ต้องขึ้น 🎉)</b>')+
@@ -4578,7 +4612,8 @@ function clsScoresHtml(r){
     /* [ข้อ 7] แก้ไขข้อมูลนักเรียนได้จากหน้าคะแนนโดยตรง — [V.7.73] ห้องของครูท่านอื่น = ดูอย่างเดียว ไม่โชว์ปุ่มจัดการ */
     det+='</div>'; /* ปิดกล่องภาพรวม */
     if(s._masked){ det+='<div class="muted" style="margin-top:8px;font-size:11.5px">🔒 ห้องของครูท่านอื่น — ดูได้อย่างเดียว แก้ไขหรือลบข้อมูลไม่ได้ และไม่แสดงชื่อ-นามสกุลจริง</div></td></tr>'; return main+det; }
-    det+='<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">'+
+    det+='<div style="margin-top:10px;padding-top:8px;border-top:2px solid #e2e8f0;display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+      '<span style="font-size:11px;font-weight:800;color:#64748b">⚙️ จัดการข้อมูลนักเรียน</span>'+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#1d4ed8" onclick="clsEditStudent(\''+esc(s.id)+'\')">✏️ แก้ไขข้อมูลนักเรียน</button>'+
       (s.group_ref?'<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#7c3aed" onclick="clsSplitGroup(\''+esc(s.group_ref)+'\')">🔀 แยกกลุ่มนี้เป็นรายคน</button>':'')+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#0e7490" onclick="clsSplitNamed(\''+esc(s.id)+'\')" title="บัญชีเก่าที่กรอกชื่อ 2 คนรวมในช่องเดียว — แยกเป็นนักเรียน 2 คน คัดลอกคะแนน/ประวัติให้ครบทั้งคู่">👥➗ แยกชื่อรวมเป็น 2 คน</button>'+
@@ -4679,10 +4714,11 @@ function clsRender(){
          '<select class="cls-in" id="cls-listed" style="min-width:240px" onchange="clsListedWarn(this,\'cls-listed-warn\')">'+
            '<option value="1">โค้ดหรือค้นหาชื่อโรงเรียน (แนะนำ)</option>'+
            '<option value="0">โค้ดเท่านั้น</option>'+
-         '</select>'+
-         '<div id="cls-listed-warn" style="max-width:340px">'+clsListedWarnHtml('1')+'</div></div>'+
+         '</select></div>'+
        '<button class="btn-primary" style="background:#1d4ed8" onclick="clsCreateRoom()">+ สร้างห้อง</button>'+
      '</div>'+
+     /* [V.7.77 ข้อ 5] คำเตือนอยู่บรรทัดของตัวเองเต็มความกว้าง — เดิมอยู่ในคอลัมน์เดียวกับ select ทำให้ฟอร์มดันขึ้นไปกองกัน */
+     '<div id="cls-listed-warn" style="margin-top:8px">'+clsListedWarnHtml('1')+'</div>'+
      '<div class="muted" style="font-size:11.5px;margin-top:7px">ชื่อห้องจะถูกตั้งเป็น <b>ระดับชั้น/ห้องที่</b> เช่น ป.4 + 1 → <b>ป.4/1</b> (ใช้กับกระดานอันดับ "รายชั้น" และรายงานทุกหน้า) · ทุกช่องรวมถึงวิธีเข้าห้อง <b>แก้ไขภายหลังได้</b>ที่ปุ่ม ✏️ ของห้องนั้น</div>'+
      '<div class="err" id="cls-create-err" style="margin-top:8px"></div></div>';
   // รายการห้อง
