@@ -3198,17 +3198,36 @@ var CORE6ENG = (function(){
   var CZ_STAGES={'2':1,'6':1,'7':1,'hellfire':1};
   var MIN_ITEMS=4;
   function lvOf(p){ return p>=80?6:p>=65?5:p>=50?4:3; }
+  /* ============================================================================
+     [V.7.99.1 ข้อ 3 ตามที่ครูเลือก] เพดานระดับตาม "ปริมาณหลักฐาน" — เกณฑ์ 4 / 8 / 15 ชิ้น
+     ปัญหาเดิมที่ครูสังเกตเห็น: บางสมรรถนะเก็บหลักฐานแค่ 4-12 คะแนนก็ขึ้นระดับ 6 ได้แล้ว
+       เพราะระบบดูแต่ "เปอร์เซ็นต์" ไม่ได้ดูว่าเก็บหลักฐานมากพอจะสรุปได้จริงหรือยัง
+     กติกาใหม่:  ต่ำกว่า 4 ชิ้น = ยังไม่ตัดสินระดับ ("ข้อมูลยังไม่พอสรุป")
+                 4-7 ชิ้น  = ตัดสินได้สูงสุดระดับ 4
+                 8-14 ชิ้น = ตัดสินได้สูงสุดระดับ 5
+                 15 ชิ้นขึ้นไป = เปิดถึงระดับ 6
+     คะแนน % ยังแสดงตามจริงเสมอ ไม่ถูกตัดทอน — จำกัดเฉพาะ "ระดับ" ที่สรุป
+     ครูมีสิทธิ์ปรับระดับขึ้นเองได้ที่หน้าเทียบผล ถ้าเห็นหลักฐานอื่นนอกเกม
+     ============================================================================ */
+  var EV_L4=4, EV_L5=8, EV_L6=15;
+  function capOf(n){ return (n>=EV_L6)?6:(n>=EV_L5)?5:4; }
   function num(v){ var n=Number(v); return isNaN(n)?0:n; }
   function has(v){ return v!==''&&v!=null; }
   function capValOf(c,k){ return (c&&has(c[k]))?Number(c[k]):null; }
-  function pack(pct,n,minN,srcTxt){
+  function pack(pct,n,minN,srcTxt,opt){
+    opt=opt||{};
     if(pct==null||n<minN) return { st:'partial', pct:(pct==null?null:Math.round(pct*10)/10), n:n, need:minN, src:srcTxt };
-    return { st:'score', pct:Math.round(pct*10)/10, level:lvOf(pct), n:n, src:srcTxt };
+    var raw=lvOf(pct), cap=(opt.cap!=null?opt.cap:capOf(n));
+    var o={ st:'score', pct:Math.round(pct*10)/10, level:Math.min(raw,cap), rawLevel:raw, evN:n, cap:cap, n:n, src:srcTxt };
+    if(raw>cap){ o.capped=true;
+      o.capNote='หลักฐาน '+n+' ชิ้น จึงสรุปได้สูงสุดระดับ '+cap+' (คะแนนอยู่ในช่วงระดับ '+raw+') — เล่นด่านของด้านนี้เพิ่มจะเปิดระดับสูงขึ้น หรือครูปรับระดับเองได้ที่หน้าเทียบผล'; }
+    return o;
   }
   function compute(ev,v2,stat){
     ev=ev||{}; var out={};
     out.HT = (v2&&v2.dataStatus!=='NO_DATA'&&v2.total!=null)
-      ? { st:'score', pct:Math.round(v2.total*10)/10, level:v2.level, n:4, src:'คะแนนรวม HOTS (A20·B30·C25·D25)', strict:v2.dataStatus }
+      ? { st:'score', pct:Math.round(v2.total*10)/10, level:v2.level, n:4, capExempt:true,
+          src:'คะแนนรวม HOTS (A20·B30·C25·D25) — หลักฐานรวมกว่า 90 ชิ้น จึงไม่ติดเพดานปริมาณหลักฐาน', strict:v2.dataStatus }
       : { st:'partial', pct:null, n:0, need:1, src:'คะแนนรวม HOTS' };
     if(v2&&v2.dataStatus!=='NO_DATA'){
       var SF={A:20,B:30,C:25,D:25}, SN={A:'A ข้อคิดวิเคราะห์ระหว่างด่าน',B:'B ภารกิจและมินิเกม',C:'C แบบทดสอบหลังเรียน',D:'D เกณฑ์ผลงานกาญจนบุรี 2050'};
@@ -3242,14 +3261,18 @@ var CORE6ENG = (function(){
     function kruVal(code){ if(!kdd) return null; var v=Number(kdd[code]); return (isNaN(v)||v<=0)?null:Math.max(0,Math.min(4,v)); }
     function kruAvgOf(codes){ if(!kdd) return null; var s=0,n=0; codes.forEach(function(c2){ var v=kruVal(c2); if(v!=null){ s+=v; n++; } }); return n?(s/n):null; }
     /* รวมหลักฐานของ 1 ด้านย่อย: ฐานจากเกม (ถ้ามี) + ข้อสอบติดป้าย + ครูสังเกต → pct = ค่าเฉลี่ยของแหล่งที่มีจริง */
+    /* [V.7.99.1 ข้อ 3 ตามที่ครูเลือก "ถอดออกทั้งหมด"]
+       คะแนนของด้านย่อยมาจาก "หลักฐานในเกม" เท่านั้น — คะแนนครูสังเกตไม่ถูกนำมาเฉลี่ยรวมอีกต่อไป
+       (ตรงหลัก CBE: ครู/เพื่อน/ตนเอง = หลักฐานประกอบ ใช้เทียบเคียงว่าสอดคล้องหรือไม่ ห้ามเฉลี่ยรวมเป็นคะแนนเดียว)
+       คะแนนครูยังเก็บครบและแสดงคู่กันในหน้าเทียบผล */
     function mkDim(label, code, basePieces){
-      var pcts=[], txts=[], gPcts=[];
-      (basePieces||[]).forEach(function(bp){ if(bp&&bp.pct!=null){ pcts.push(bp.pct); gPcts.push(bp.pct); txts.push(bp.txt); } });
-      var qd=qdTxt(code); if(qd){ pcts.push(qd.pct); gPcts.push(qd.pct); txts.push('ข้อสอบด้านนี้ '+qd.txt); }
-      var kv=kruVal(code); if(kv!=null){ pcts.push(kv/4*100); txts.push('ครูสังเกต '+kv+'/4'); }
-      var p=null; if(pcts.length){ var s2=0; pcts.forEach(function(x){ s2+=x; }); p=Math.round(s2/pcts.length*10)/10; }
+      var gPcts=[], txts=[], nEv=0;
+      (basePieces||[]).forEach(function(bp){ if(bp&&bp.pct!=null){ gPcts.push(bp.pct); txts.push(bp.txt); nEv+=(bp.n||1); } });
+      var qd=qdTxt(code); if(qd){ gPcts.push(qd.pct); txts.push('ข้อสอบด้านนี้ '+qd.txt); nEv+=qd.n; }
       var g=null; if(gPcts.length){ var s3=0; gPcts.forEach(function(x){ s3+=x; }); g=Math.round(s3/gPcts.length*10)/10; }
-      return { label:label, code:code, pct:p, game:g, txt:(txts.length?txts.join(' · '):'ยังไม่มีหลักฐาน (ครูสังเกตเพิ่มได้ที่ปุ่ม 🧑\u200d🏫 ครูประเมินสมรรถนะ)'), dim:true };
+      var kv=kruVal(code); if(kv!=null) txts.push('ครูสังเกต '+kv+'/4 (หลักฐานประกอบ ไม่รวมในคะแนน)');
+      return { label:label, code:code, pct:g, game:g, kru:kv, evN:nEv,
+        txt:(txts.length?txts.join(' · '):'ยังไม่มีหลักฐานจากเกมในด้านย่อยนี้'), dim:true };
     }
     if(out.HT&&out.HT.dims){ out.HT.dims.forEach(function(d,i){
       d.code='HT-'+['CTC','STM','CRT','PRB'][i]; d.game=d.pct;
@@ -3316,15 +3339,22 @@ var CORE6ENG = (function(){
                mkDim('รับสาร (ฟังและอ่านจับใจความ)','CM-A',[]),
                mkDim('สื่อสารให้เหมาะกับบุคคลและกาลเทศะ','CM-C',[]) ];
     }
+    /* [V.7.99.1 ข้อ 3 ตามที่ครูเลือก] ด้านการสื่อสาร: หลักฐานในเกมมีแค่คำตอบเขียน 3 ข้อ (12 คะแนน)
+       เดิมตอบดีหมดก็ได้ระดับ 6 ทันที ทั้งที่วัดได้เฉพาะ "ส่งสารด้วยการเขียน" ด้านเดียว
+       ครูเลือก: ยังให้ระดับได้ แต่ "จำกัดเพดานไว้ที่ระดับ 4" พร้อมบอกเหตุผลตรง ๆ
+       และถอดคะแนนครูสังเกตออกจากสูตร (เป็นหลักฐานประกอบ แสดงแยกในหน้าเทียบผล) */
     function cmScore(cmv, who, noteTxt){
       var sum=num(cmv[0])+num(cmv[1])+num(cmv[2]);
       var wPct=sum/12*100;
-      var pct=(kruCM!=null)?(wPct*0.7+(kruCM/4*100)*0.3):wPct;
-      var cmAvg=sum/3;
+      var cmAvg=sum/3, raw=lvOf(wPct);
       var o={ parts:cmv.map(function(x,i){ return { label:'คำตอบเขียนข้อที่ '+(i+1)+who, pct:Math.round(num(x)/4*1000)/10, txt:num(x)+'/4' }; }),
-        dims:cmDims({ pct:Math.round(cmAvg/4*1000)/10, txt:(Math.round(cmAvg*10)/10)+'/4'+who }),
-        st:'score', pct:Math.round(pct*10)/10, level:lvOf(pct), n:3+(kruCM!=null?1:0),
-        src:'คำตอบเขียน 3 ข้อ'+who+(kruCM!=null?' 70% + ครูสังเกตด้านสื่อสาร 30%':'') };
+        dims:cmDims({ pct:Math.round(cmAvg/4*1000)/10, txt:(Math.round(cmAvg*10)/10)+'/4'+who, n:3 }),
+        st:'score', pct:Math.round(wPct*10)/10, level:Math.min(raw,4), rawLevel:raw, cap:4, evN:3, n:3,
+        src:'คำตอบเขียน 3 ข้อในด่านกาญ 2050'+who+' — บทเรียนนี้วัดการสื่อสารผ่านการเขียนเท่านั้น' };
+      if(raw>4){ o.capped=true;
+        o.capNote='หลักฐานด้านสื่อสารมีเพียง 3 ชิ้น (คำตอบเขียน) และวัดได้เฉพาะการส่งสารด้วยการเขียน จึงสรุปได้สูงสุดระดับ 4 (คะแนนอยู่ในช่วงระดับ '+raw+') — ครูปรับระดับขึ้นเองได้ที่หน้าเทียบผลถ้าเห็นหลักฐานการฟัง/พูดในชั้นเรียน'; }
+      else { o.capNote='หลักฐานด้านสื่อสารมีเพียง 3 ชิ้น จึงสรุปได้สูงสุดระดับ 4 เท่านั้น'; }
+      if(kruCM!=null) o.kruNote='ครูสังเกตด้านสื่อสารเฉลี่ย '+(Math.round(kruCM*100)/100)+'/4 (หลักฐานประกอบ ไม่รวมในคะแนน)';
       o.gamePct=Math.round(wPct*10)/10;
       if(noteTxt) o.note=noteTxt;
       return o;
@@ -3337,9 +3367,12 @@ var CORE6ENG = (function(){
     } else if(rvAi){
       out.CM=cmScore([rvAi.ai1,rvAi.ai2,rvAi.ai3],' (AI ตรวจ)','คะแนนอัตนัยจาก AI บันทึกอัตโนมัติ — รอครูยืนยัน/ปรับที่ปุ่ม 📝 ตรวจสอบอัตนัย');
     } else if(kruCM!=null){
-      out.CM={ st:'score', pct:Math.round(kruCM/4*1000)/10, level:lvOf(kruCM/4*100), n:1,
-        parts:[{ label:'ครูประเมินจากการสังเกต (เฉลี่ยด้านสื่อสาร)', pct:Math.round(kruCM/4*1000)/10, txt:(Math.round(kruCM*100)/100)+'/4' }],
-        dims:cmDims(null), src:'ครูประเมินจากการสังเกต — ยังไม่มีคำตอบเขียนจากด่านกาญ 2050' };
+      /* [V.7.99.1 ข้อ 3] มีแต่คะแนนครู = หลักฐานประกอบล้วน ไม่พอตัดสินระดับตามหลัก CBE
+         (ห้ามปรับระดับจากหลักฐานประกอบเพียงแหล่งเดียว) — แสดงคะแนนครูให้ดู แต่ไม่สรุประดับ */
+      out.CM={ st:'partial', pct:null, n:0, need:1,
+        parts:[{ label:'ครูประเมินจากการสังเกต (หลักฐานประกอบ ไม่ใช้ตัดสินระดับ)', pct:Math.round(kruCM/4*1000)/10, txt:(Math.round(kruCM*100)/100)+'/4' }],
+        dims:cmDims(null), kruNote:'ครูสังเกตด้านสื่อสารเฉลี่ย '+(Math.round(kruCM*100)/100)+'/4',
+        src:'ยังไม่มีคำตอบเขียนจากด่านกาญ 2050 — มีเพียงหลักฐานประกอบจากครู จึงยังไม่สรุประดับ' };
     } else {
       out.CM={ st:((ev.c||[]).length?'pending':'partial'), pct:null, n:0, need:1, dims:cmDims(null),
         src:'คำตอบเขียน 3 ข้อในด่านกาญ 2050 — '+((ev.c||[]).length?'รอผลตรวจ (AI จะบันทึกให้ทันทีในรุ่นนี้ · ครูดูที่ปุ่ม 📝 ตรวจสอบอัตนัย)':'ยังไม่ได้ทำด่านกาญ 2050') };
@@ -3358,20 +3391,22 @@ var CORE6ENG = (function(){
     });
     var improve=impN?impSum/impN:null;
     var smPct=(improve==null)?(coverage*70):((coverage*0.5+improve*0.5)*100);
-    /* [V.7.80 โมเดล 4 ฝ่าย] SM = พฤติกรรมจากเกม 50% + ครูสังเกต 50% (เพราะดัชนีเกมเป็นการอนุมาน) */
+    /* [V.7.99.1 ข้อ 3 ตามที่ครูเลือก] ถอดคะแนนครูออกจากสูตร — คะแนนมาจากหลักฐานพฤติกรรมในเกมเท่านั้น
+       หลักฐาน 1 ชิ้น = 1 ด่านที่เล่นสำเร็จด้วยตัวเอง (เล่นครบ 12 ด่าน = 12 ชิ้น → เพดานระดับ 5)
+       คะแนนครูสังเกตยังเก็บครบและแสดงคู่กันในหน้าเทียบผล ในฐานะหลักฐานประกอบ */
     var kruSM=kruAvgOf(['SM-A','SM-B','SM-C']);
     var smBase=nDone?smPct:null;
-    var smFinal=(smBase!=null&&kruSM!=null)?(smBase*0.5+(kruSM/4*100)*0.5):(smBase!=null?smBase:(kruSM!=null?(kruSM/4*100):null));
-    out.SM=pack(smFinal, (smBase!=null?nDone:(kruSM!=null?1:0)), (smBase!=null&&kruSM==null)?3:1,
-      (smBase!=null?('ดัชนีพฤติกรรม: เล่นครบ '+nDone+'/'+TOTAL_STAGES+' ด่าน'+(improve!=null?(' · พัฒนาการจากครั้งแรกเฉลี่ย '+Math.round(improve*100)+'%'):'')):'')+
-      (kruSM!=null?((smBase!=null?' · ':'')+'ครูประเมินจากการสังเกต'+(smBase!=null?' 50%':'')):''));
+    out.SM=pack(smBase, nDone, EV_L4,
+      (smBase!=null?('ดัชนีพฤติกรรมจากการเล่น: ทำสำเร็จ '+nDone+'/'+TOTAL_STAGES+' ด่าน'+(improve!=null?(' · พัฒนาการจากครั้งแรกเฉลี่ย '+Math.round(improve*100)+'%'):'')):'ยังไม่มีข้อมูลการเล่น')+
+      (kruSM!=null?' · ครูสังเกตเฉลี่ย '+(Math.round(kruSM*100)/100)+'/4 (หลักฐานประกอบ ไม่รวมในคะแนน)':''));
+    if(kruSM!=null) out.SM.kruNote='ครูสังเกตด้านจัดการตนเองเฉลี่ย '+(Math.round(kruSM*100)/100)+'/4';
     out.SM.parts=[{ label:'ทำด่านสำเร็จด้วยตนเอง', pct:Math.round(coverage*1000)/10, txt:nDone+'/'+TOTAL_STAGES+' ด่าน' },
       { label:'พัฒนาการเมื่อกลับมาเล่นซ้ำ', pct:(improve==null?null:Math.round(improve*1000)/10), txt:(improve==null?'ยังไม่เคยเล่นซ้ำ':Math.round(improve*100)+'%') }];
-    if(kruSM!=null) out.SM.parts.push({ label:'ครูประเมินจากการสังเกต (เฉลี่ย 3 ด้านย่อย · น้ำหนัก 50%)', pct:Math.round(kruSM/4*1000)/10, txt:(Math.round(kruSM*100)/100)+'/4' });
+    if(kruSM!=null) out.SM.parts.push({ label:'ครูประเมินจากการสังเกต (หลักฐานประกอบ · ไม่รวมในคะแนน)', pct:Math.round(kruSM/4*1000)/10, txt:(Math.round(kruSM*100)/100)+'/4' });
     out.SM.gamePct=(smBase==null?null:Math.round(smBase*10)/10);
     out.SM.dims=[
-      mkDim('กำกับตนเอง จัดการเวลาและงานของตัวเอง','SM-B', nDone?[{ pct:Math.round(coverage*1000)/10, txt:nDone+'/'+TOTAL_STAGES+' ด่าน' }]:[]),
-      mkDim('ตั้งเป้าหมายและมุ่งมั่นพัฒนาตนเอง','SM-C', improve==null?[]:[{ pct:Math.round(improve*1000)/10, txt:'พัฒนาการเล่นซ้ำ '+Math.round(improve*100)+'%' }]),
+      mkDim('กำกับตนเอง จัดการเวลาและงานของตัวเอง','SM-B', nDone?[{ pct:Math.round(coverage*1000)/10, txt:nDone+'/'+TOTAL_STAGES+' ด่าน', n:nDone }]:[]),
+      mkDim('ตั้งเป้าหมายและมุ่งมั่นพัฒนาตนเอง','SM-C', improve==null?[]:[{ pct:Math.round(improve*1000)/10, txt:'พัฒนาการเล่นซ้ำ '+Math.round(improve*100)+'%', n:impN }]),
       mkDim('รู้จักและเห็นคุณค่าในตนเอง','SM-A',[]) ];
     if(out.SM.st==='score') out.SM.note='ข้อมูลเชิงพฤติกรรม (ไม่ใช่คะแนนวิชาการ)';
     /* [V.7.70 ข้อ 8 · ด้านการทำงานเป็นทีม] เพื่อนร่วมทีมประเมินกันเองในเกม 3 ข้อ (ข้อละ 0-4 รวม 12)
@@ -3388,24 +3423,26 @@ var CORE6ENG = (function(){
       pr.forEach(function(r){ tot12+=Math.max(0,Math.min(12,num(r.p1)+num(r.p2)+num(r.p3))); q1+=num(r.p1); q2+=num(r.p2); q3+=num(r.p3); });
       avg12=tot12/pr.length; peerPct=avg12/12*100;
     }
-    var twPct=null,twSrc='',twN=0;
-    if(peerPct!=null&&kruTW!=null){ twPct=peerPct*0.6+(kruTW/4*100)*0.4; twN=pr.length+1;
-      twSrc='เพื่อนประเมิน '+pr.length+' คน 60% + ครูสังเกต 40%'; }
-    else if(peerPct!=null){ twPct=peerPct; twN=pr.length;
-      twSrc='เพื่อนร่วมทีมประเมิน '+pr.length+' คน · เฉลี่ย '+(Math.round(avg12*10)/10)+'/12 (ยังไม่มีคะแนนครูสังเกต)'; }
-    else if(kruTW!=null){ twPct=kruTW/4*100; twN=1; twSrc='ครูประเมินจากการสังเกต (ยังไม่มีเพื่อนประเมิน)'; }
-    if(twPct!=null){
-      out.TW={ st:'score', pct:Math.round(twPct*10)/10, level:lvOf(twPct), n:twN, src:twSrc,
-        parts:(pr.length?[q1,q2,q3].map(function(x,i){ var a=x/pr.length;
-          return { label:TWQ[i]+' (เพื่อน '+pr.length+' คน)', pct:Math.round(a/4*1000)/10, txt:(Math.round(a*10)/10)+'/4' }; }):[]),
-        dims:TWD.map(function(lbl,i){ var base=[];
-          if(pr.length){ var a=[q1,q2,q3][i]/pr.length; base=[{ pct:Math.round(a/4*1000)/10, txt:(Math.round(a*10)/10)+'/4 (เพื่อน '+pr.length+' คน)' }]; }
-          return mkDim(lbl,TWC[i],base); }) };
-      if(kruTW!=null) out.TW.parts.push({ label:'ครูประเมินจากการสังเกต (เฉลี่ย 3 ด้านย่อย'+(pr.length?' · น้ำหนัก 40%':'')+')', pct:Math.round(kruTW/4*1000)/10, txt:(Math.round(kruTW*100)/100)+'/4' });
-    } else {
-      out.TW={ st:(grpN?'pending':'none'), pct:null, dims:TWD.map(function(lbl,i){ return mkDim(lbl,TWC[i],[]); }),
-        src:'ยังไม่มีผลประเมิน — นักเรียนกดปุ่ม 🤝 บนแผนที่เพื่อประเมินเพื่อนร่วมห้อง (เล่นคนเดียวก็ประเมินได้) · หรือครูให้คะแนนจากการสังเกตที่ปุ่ม 🧑\u200d🏫' };
-    }
+    /* ============================================================================
+       [V.7.99.1 ข้อ 3 ตามที่ครูเลือก] ด้านการรวมพลังทำงานเป็นทีม
+       เกมภาค 1 "ไม่มีหลักฐานหลัก" ของด้านนี้เลย — ไม่มีด่านที่บันทึกการแบ่งงาน การช่วยเหลือ
+       หรือการตัดสินใจร่วมกันเป็นข้อมูล มีเพียงเพื่อนประเมินกับครูสังเกต ซึ่งทั้งคู่เป็น "หลักฐานประกอบ"
+       หลัก CBE ระบุชัดว่าห้ามปรับ/ตัดสินระดับจากหลักฐานประกอบเพียงอย่างเดียว
+       ⇒ Dashboard จึงขึ้นว่า "ไม่มีการประเมินในบทเรียนนี้" ตรงไปตรงมา ไม่เดาคะแนนให้
+         (ผลเพื่อน/ครูยังเก็บครบและแสดงในหน้าเทียบผล เพื่อให้ครูใช้ตัดสินเองได้)
+       ด่านที่เล่นร่วมกันจริงจะมาในภาค 2 (Kan Adventure 2)
+       ============================================================================ */
+    out.TW={ st:'none', pct:null, noAssess:true, n:0,
+      dims:TWD.map(function(lbl,i){ var base=[];
+        if(pr.length){ var a=[q1,q2,q3][i]/pr.length; base=[]; }
+        return mkDim(lbl,TWC[i],base); }),
+      parts:(pr.length?[q1,q2,q3].map(function(x,i){ var a=x/pr.length;
+        return { label:TWQ[i]+' — เพื่อนประเมิน '+pr.length+' คน (หลักฐานประกอบ)', pct:Math.round(a/4*1000)/10, txt:(Math.round(a*10)/10)+'/4' }; }):[]),
+      src:'บทเรียนนี้ไม่มีการประเมินด้านการทำงานเป็นทีม — เกมภาค 1 ไม่ได้เก็บหลักฐานการทำงานร่วมกันเป็นข้อมูล'+
+          (pr.length||kruTW!=null?' · มีเพียงหลักฐานประกอบ ('+(pr.length?('เพื่อนประเมิน '+pr.length+' คน'):'')+(pr.length&&kruTW!=null?' และ ':'')+(kruTW!=null?'ครูสังเกต':'')+') ดูได้ที่หน้าเทียบผล และครูตัดสินระดับเองได้ที่นั่น':'') };
+    if(kruTW!=null) out.TW.parts.push({ label:'ครูประเมินจากการสังเกต (หลักฐานประกอบ)', pct:Math.round(kruTW/4*1000)/10, txt:(Math.round(kruTW*100)/100)+'/4' });
+    if(peerPct!=null) out.TW.peerPct=Math.round(peerPct*10)/10;
+    if(kruTW!=null) out.TW.kruNote='ครูสังเกตด้านทีมเฉลี่ย '+(Math.round(kruTW*100)/100)+'/4';
     if(out.TW) out.TW.gamePct=null; /* เกมไม่ได้วัดทีมโดยตรง — คอลัมน์ชิ้นงานของหน้าเทียบจึงว่าง */
     out.NS.gamePct=(out.NS.st==='score'&&out.NS.pct!=null)?out.NS.pct:null;
     out.CZ.gamePct=(out.CZ.st==='score'&&out.CZ.pct!=null)?out.CZ.pct:null;
@@ -3638,7 +3675,7 @@ function clsFillKru(){
   .catch(function(e){
     var m=String((e&&e.message)||'');
     box.innerHTML='<div class="err" style="display:block">'+(/does not exist|42P01|schema cache|400|404/i.test(m)
-      ?'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor → วาง supabase_patch_all_v780.sql ทั้งไฟล์ → Run แล้วกดปุ่มนี้ใหม่'
+      ?'ยังไม่ได้รันไฟล์ SQL รุ่นล่าสุด — เปิด Supabase → SQL Editor → วาง supabase_patch_all_v7991.sql ทั้งไฟล์ → Run แล้วกดปุ่มนี้ใหม่'
       :('โหลดไม่สำเร็จ: '+esc(m)))+'</div>';
   });
 }
@@ -3649,7 +3686,7 @@ function clsKruRenderList(){
     '<b style="font-size:14px">🧑‍🏫 ครูประเมินสมรรถนะจากการสังเกต</b>'+
     '<span class="cls-chip" style="background:#ccfbf1;color:#115e59">บันทึกแล้ว '+done+' / '+K.studs.length+' คน</span>'+
     '<span class="muted" style="font-size:11.5px">ให้คะแนน 1-4 จากพฤติกรรมจริงในชั้นเรียน ครบ 6 สมรรถนะ 19 ด้านย่อย · ด้านที่ยังไม่ได้สังเกตให้เว้นไว้ (ระบบไม่เดา) · '+
-    'คะแนนครูถ่วงรวมอัตโนมัติ: ทีม 40% · จัดการตนเอง 50% · สังเกตการสื่อสาร 30% — ด้านที่เกมวัดได้ดีอยู่แล้ว (คิดขั้นสูง/พลเมือง/ธรรมชาติ) แสดงเป็นหลักฐานเสริม</span></div>'+
+    '<b>คะแนนครูเป็นหลักฐานประกอบ ไม่ถูกนำไปเฉลี่ยรวมเป็นคะแนนสมรรถนะ</b> (ตามหลัก CBE) — ใช้เทียบเคียงกับผลจากเกมในหน้า 📊 เทียบผล และครูตัดสินระดับสุดท้ายได้ที่นั่น</span></div>'+
     '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">'+
     K.studs.map(function(s){
       var nm=((s.first_name||'')+' '+(s.last_name||'')).trim()||s.character_name||('เลขที่ '+(s.student_number||'?'));
@@ -3723,11 +3760,32 @@ function clsKruSave(){
   .catch(function(e){
     var m=String((e&&e.message)||'');
     if(stEl) stEl.innerHTML='<span style="color:#b91c1c">'+(/does not exist|404|schema cache|PGRST202/i.test(m)
-      ?'ยังไม่ได้รัน supabase_patch_all_v780.sql — รันก่อนแล้วบันทึกใหม่'
+      ?'ยังไม่ได้รัน supabase_patch_all_v7991.sql — รันก่อนแล้วบันทึกใหม่'
       :('บันทึกไม่สำเร็จ: '+esc(m)))+'</span>';
   });
 }
 
+/* ============================================================================
+   [V.7.99.1 ข้อ 6 ตามที่ครูเลือก "ทับผลคำนวณถาวร"]
+   ระดับที่ครูกดตัดสินในหน้าเทียบผล จะกลายเป็นผลสุดท้ายของสมรรถนะนั้น
+   - ทับได้ทั้งกรณีที่ระบบให้ระดับไว้แล้ว และกรณีที่ระบบบอกว่า "ข้อมูลไม่พอ/ไม่มีการประเมิน"
+   - เก็บค่าที่ระบบคำนวณไว้เดิมใน sysLevel เสมอ ครูย้อนดูได้ว่าต่างจากระบบแค่ไหน
+   - ครูเลือก "ไม่ประเมินด้านนี้" (ค่า 0) = บังคับให้ขึ้นว่าไม่มีการประเมินในบทเรียนนี้
+   ============================================================================ */
+function clsApplyKruFinal(c6, fin){
+  if(!c6||!fin||!fin.comp) return;
+  ['SM','HT','CM','TW','CZ','NS'].forEach(function(k){
+    var v=fin.comp[k]; if(v===undefined||v===null||v==='') return;
+    var lv=Number(v); if(isNaN(lv)) return;
+    var r=c6[k]||(c6[k]={});
+    if(r.sysLevel===undefined) r.sysLevel=(r.st==='score'?r.level:null);
+    if(r.sysSt===undefined) r.sysSt=r.st||'partial';
+    if(lv===0){ r.st='none'; r.noAssess=true; r.level=null; r.kruFinal=0; }
+    else { r.st='score'; r.level=lv; r.kruFinal=lv; r.noAssess=false; r.capped=false;
+           if(r.pct==null) r.pct=Math.round(((lv-3)/3*40+50)*10)/10; /* ไม่มีคะแนนจากเกม → แสดงค่าประมาณกลางช่วงของระดับที่ครูให้ */ }
+    r.kruFinalAt=fin.at||''; r.kruFinalNote=(fin.note&&fin.note[k])||'';
+  });
+}
 /* [รวม Dashboard] โหลดข้อมูลการเล่นของนักเรียนทุกห้อง → สรุปคะแนนรายคน (คะแนนเก็บ/สอบ/กาญ 2050) */
 function clsLoadStats(){
   cls.stats=cls.stats||{}; cls.statsReady=false;
@@ -3735,6 +3793,7 @@ function clsLoadStats(){
   if(!ids.length){ cls.statsReady=true; clsRender(); return; }
   var chunks=[]; for(var i=0;i<ids.length;i+=150) chunks.push(ids.slice(i,i+150));
   var stats={};
+  cls.kruFinal={}; /* [V.7.99.1 ข้อ 6] ระดับที่ครูกดตัดสิน — student_id → {comp:{SM:5,...}, note:{}, at} */
   function S(id){ return stats[id]||(stats[id]={pb:{},boss:0,bossN:0,cap:0,plays:0,last:0,ev:{q:[],p:[],c:[],k:[],b:[],pr:[],kru:[]}}); }
   /* [เฟส 3d] ดึงข้อมูลละเอียดพอคิดสูตร Dashboard V.2 (A/B/C/D) ได้ครบ — แยก 2 คำขอ: คำถามรายข้อ (แถวเยอะ ฟิลด์น้อย) กับที่เหลือ (แถวน้อย ฟิลด์เยอะ) */
   var SEL_Q='student_id,stage_id,question_id,correct,credit,created_at,att:raw->>attemptNo,sess:raw->>sessionId,cw:raw->>creditWeight,asb:raw->>assistedBy';
@@ -3746,7 +3805,9 @@ function clsLoadStats(){
         sbFetchAll('/rest/v1/events?kind=eq.question&select='+SEL_Q+'&student_id=in.('+ch.join(',')+')'),
         sbFetchAll('/rest/v1/events?kind=in.(progress,boss,capstone,pilok,peer)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')'),
         /* [V.7.80] ครูประเมินสมรรถนะจากการสังเกต (surveys.kind=kru_assess) — โหลดไม่ได้ = ข้าม ไม่ให้ทั้งหน้าล้ม */
-        sbFetchAll('/rest/v1/surveys?kind=eq.kru_assess&select=student_id,payload,created_at&student_id=in.('+ch.join(',')+')').catch(function(){ return []; })
+        sbFetchAll('/rest/v1/surveys?kind=eq.kru_assess&select=student_id,payload,created_at&student_id=in.('+ch.join(',')+')').catch(function(){ return []; }),
+        /* [V.7.99.1 ข้อ 6] ระดับที่ครูตัดสินขั้นสุดท้าย (surveys.kind=kru_final) — ทับผลคำนวณถาวรตามที่ครูเลือก */
+        sbFetchAll('/rest/v1/surveys?kind=eq.kru_final&select=student_id,payload,created_at&student_id=in.('+ch.join(',')+')').catch(function(){ return []; })
       ]);
     }).then(function(rr){
       (rr[0]||[]).forEach(function(e){
@@ -3785,6 +3846,12 @@ function clsLoadStats(){
         var pl=e.payload||{};
         s.ev.kru.push({ dims:(pl.dims&&typeof pl.dims==='object')?pl.dims:null, t:t });
       });
+      /* [V.7.99.1 ข้อ 6] ระดับที่ครูตัดสิน — ทับผลคำนวณเสมอ (ครูคือผู้ตัดสินขั้นสุดท้ายตามหลัก CBE) */
+      (rr[3]||[]).forEach(function(e){
+        var pl=e.payload||{};
+        cls.kruFinal[e.student_id]={ comp:(pl.comp&&typeof pl.comp==='object')?pl.comp:{},
+          note:(pl.note&&typeof pl.note==='object')?pl.note:{}, at:e.created_at, by:pl.by||'' };
+      });
     });
   });
   /* [เทียบข้อมูลเดิม] ดึงผลสรุป V.2 อ้างอิงที่ย้ายมาจากชีต (migrateV2Summary → run_id=LEGACY-SHEETS) */
@@ -3808,6 +3875,7 @@ function clsLoadStats(){
       pick.forEach(function(r){ if(r.sc>s.boss) s.boss=r.sc; });
       try{ s.v2=CV2.compute(s.ev); }catch(e){ s.v2=null; }
       try{ s.c6=CORE6ENG.compute(s.ev,s.v2,s); }catch(e){ s.c6=null; }
+      clsApplyKruFinal(s.c6, (cls.kruFinal||{})[k]);
       /* [V.7.80] มีคำตอบเขียนแล้วแต่ครูยังไม่กดยืนยัน (AI บันทึกชั่วคราวอยู่) → ใช้ทำตัวเลขบนปุ่ม 📝 ตรวจสอบอัตนัย */
       s.capPend=((s.ev.c||[]).length>0)&&!(s.ev.c||[]).some(function(r){ return r.trv!=null&&r.trv!==''; });
       delete s.ev; /* คิดเสร็จแล้ว ไม่เก็บข้อมูลดิบไว้กินหน่วยความจำ */ }
@@ -3820,9 +3888,21 @@ function clsLoadStats(){
       grp.forEach(function(st3){ var s3=stats[st3.id]; if(s3&&(!src||(s3.plays||0)>(src.plays||0))) src=s3; });
       if(!src) return;
       grp.forEach(function(st3){ if(!stats[st3.id]||!(stats[st3.id].plays>0)){ stats[st3.id]=Object.assign({},src,{shared:true}); } });
+      /* [V.7.99.1 ข้อ 2] เตือนครูเมื่อสมาชิกกลุ่มเดียวกัน "มีข้อมูลคนละชุด"
+         เกิดจากบั๊กเดิมที่เซฟถูกเขียนทับตอนจับคู่ (คนหนึ่ง 141 คะแนน อีกคน 10 คะแนน ทั้งที่จับคู่กัน)
+         ระบบไม่เดาให้ว่าชุดไหนถูก — บอกครูให้เข้ามาตรวจและตัดสินเอง */
+      var withData=grp.filter(function(st3){ var s3=stats[st3.id]; return s3&&!s3.shared&&(s3.plays>0); });
+      if(withData.length>1){
+        var cols=withData.map(function(st3){ return Number((stats[st3.id]||{}).collected)||0; });
+        var mx=Math.max.apply(null,cols), mn=Math.min.apply(null,cols);
+        if(mx-mn>=20){ grp.forEach(function(st3){ if(stats[st3.id]) stats[st3.id].gmismatch=Math.round(mx-mn); }); }
+      }
     });
     cls.stats=stats; cls.statsReady=true; clsRender();
-  }).catch(function(e){ cls.statsReady=true; clsRender(); });
+  }).catch(function(e){
+    /* [V.7.99.1] เดิมกลืนความผิดพลาดเงียบ ๆ จนหาสาเหตุไม่เจอ — ตอนนี้พิมพ์ลง console ให้ตรวจสอบได้ (ครูยังไม่เห็นข้อความดิบ) */
+    console.error('[clsLoadStats] คำนวณคะแนนไม่สำเร็จ:', (e&&e.message)||e, e&&e.stack);
+    cls.statsReady=true; clsRender(); });
 }
 function clsStatOf(stu){
   var s=(cls.stats&&cls.stats[stu.id])||null;
@@ -3830,7 +3910,8 @@ function clsStatOf(stu){
   /* [ตรวจสอบข้อ 2] คะแนนสอบ: มีประวัติสอบใน events → ใช้ค่าตามกติกาครั้ง 1-2 (ตรงชีต Users เดิม) · ไม่มี → ใช้คะแนนสรุปที่ย้ายมา */
   var boss=(s&&s.bossN>0)?s.boss:(Number(stu.boss_score)||0);
   return { collected:col, boss:boss, cap:s?s.cap:0, plays:s?s.plays:0, last:s?s.last:0,
-    v2:(s&&s.v2)||null, c6:(s&&s.c6)||null, legacy:(s&&s.legacy)||null, shared:!!(s&&s.shared), gmem:(s&&s.gmem)||null, has:(s&&s.plays>0)||col>0||boss>0 };
+    v2:(s&&s.v2)||null, c6:(s&&s.c6)||null, legacy:(s&&s.legacy)||null, shared:!!(s&&s.shared), gmem:(s&&s.gmem)||null,
+    gmismatch:(s&&s.gmismatch)||0, has:(s&&s.plays>0)||col>0||boss>0 };
 }
 /* [ข้อ 5] ใครจับคู่กับใคร — จากบัญชีกลุ่มเดิม (group_ref เดียวกัน) หรือจากข้อมูลกลุ่มที่แนบมากับการเล่นรอบล่าสุด */
 function clsPartnersOf(s,t){
@@ -4215,15 +4296,20 @@ function clsCore6Cells(t, sid){
     var click=sid?(' onclick="event.stopPropagation();clsC6Pick(\''+esc(sid)+'\',\''+k+'\')"'):'';
     if(r&&r.st==='score'&&r.level!=null&&r.pct!=null){
       var clr=CLS_LV_CLR[r.level]||'#64748b';
+      /* [V.7.99.1 ข้อ 3] ระดับถูกจำกัดด้วยปริมาณหลักฐาน → ติดหมุด 🔒 ให้ครูเห็นว่าไม่ใช่ความสามารถของเด็กต่ำ แต่หลักฐานยังน้อย */
+      var capMark=r.capped?'<span style="font-size:9px;color:#b45309" title="'+esc(r.capNote||'')+'">🔒</span>':'';
       return '<td style="'+base+'"'+click+
-        ' title="'+esc(tip+' — ระดับ '+r.level+' '+(CORE6_LVNAME[r.level]||'')+' ('+r.pct+'%)\n'+(r.src||'')+'\n(กดเพื่อดูคะแนนรายด้านย่อย)')+'">'+
+        ' title="'+esc(tip+' — ระดับ '+r.level+' '+(CORE6_LVNAME[r.level]||'')+' ('+r.pct+'%)\n'+(r.src||'')+(r.capped?('\n'+r.capNote):'')+'\n(กดเพื่อดูคะแนนรายด้านย่อย)')+'">'+
         /* [V.7.77] ตัดบรรทัด "ระดับ X" ออก เหลือคะแนน % กับสีที่บอกระดับ (ระดับยังดูได้จาก tooltip และแถบสีด้านล่างตาราง) */
-        '<b style="display:inline-block;min-width:38px;background:'+clr+';color:#fff;border-radius:7px;padding:2px 9px;font-size:12.5px">'+r.pct+'%</b></td>';
+        '<b style="display:inline-block;min-width:38px;background:'+clr+';color:#fff;border-radius:7px;padding:2px 9px;font-size:12.5px">'+r.pct+'%</b>'+capMark+'</td>';
     }
     var isNone=(r&&r.st==='none');
-    var why=isNone?'ไม่มีหลักฐานด้านนี้'
+    /* [V.7.99.1 ข้อ 3 ตามคำสั่งครู] ด้านที่บทเรียนนี้ไม่ได้ออกแบบมาวัด ต้องขึ้นตรง ๆ ว่า "ไม่มีการประเมินในบทเรียนนี้"
+       ต่างจาก "ข้อมูลยังไม่พอ" ซึ่งแปลว่าเกมวัดได้ แต่นักเรียนยังเล่นไม่มากพอ */
+    var why=(r&&r.noAssess)?'ไม่มีการประเมินในบทเรียนนี้'
+          :isNone?'ไม่มีหลักฐานด้านนี้'
           :(r&&r.st==='pending')?'รอผู้ประเมิน'
-          :'ข้อมูลยังไม่พอ';
+          :'ข้อมูลยังไม่พอสรุป';
     return '<td style="'+base+'"'+click+' title="'+esc(tip+' — '+why+(r&&r.src?('\n'+r.src):'')+'\n(กดเพื่อดูรายละเอียด)')+'">'+
       '<span style="color:#cbd5e1;font-weight:800">'+(isNone?'—':'·')+'</span>'+
       '<div style="font-size:9.5px;color:#94a3b8">'+esc(why)+'</div></td>';
@@ -4559,13 +4645,55 @@ function clsCmpAgree(vals){ /* vals = รายการ % ที่มีจร
   var mx=Math.max.apply(null,vals), mn=Math.min.apply(null,vals);
   return (mx-mn<=25)?['✅ ใกล้เคียง','#15803d']:['⚠️ ต่างกัน — น่าคุยกับนักเรียน','#b45309'];
 }
+/* ============================================================================
+   [V.7.99.1 ข้อ 3+6 ตามที่ครูเลือก] เกณฑ์เทียบเคียง = "ต่างไม่เกิน 1 ระดับ" ตามไฟล์ CBE บ้านอูล่อง
+   (เดิมเทียบเป็นเปอร์เซ็นต์ ต่างไม่เกิน 25% ซึ่งสื่อสารกับนักเรียนยากกว่า)
+   ทุกแหล่งถูกแปลงเป็น "ระดับ 3-6" ด้วยมาตรเดียวกันก่อนเทียบ:
+     ชิ้นงาน(เกม) = ระดับที่ระบบสรุป · ครู 1-4 → %  · เพื่อน 0-4 → % · ตนเอง 1-5 → %  แล้วเข้าเกณฑ์ 80/65/50
+   สีตามรูบริก: 🟢 สอดคล้อง · 🟡 ต่างเล็กน้อย · 🟠 ควรทบทวน · 🔴 ขัดแย้งชัดเจน · 🔵 ครูยืนยันแล้ว
+   ============================================================================ */
+function clsCmpLvOf(pct){ return pct==null?null:(pct>=80?6:pct>=65?5:pct>=50?4:3); }
+function clsCmpSrcLv(kind,v){ return clsCmpLvOf(clsCmpNorm(kind,v)); }
+var CMP_STAT={
+  green :{ k:'green',  clr:'#15803d', bg:'#dcfce7', txt:'สอดคล้อง',        tip:'หลักฐานประกอบอย่างน้อย 2 ใน 3 แหล่ง ต่างจากผลของเกมไม่เกิน 1 ระดับ' },
+  yellow:{ k:'yellow', clr:'#a16207', bg:'#fef9c3', txt:'ต่างเล็กน้อย',    tip:'มีแหล่งที่ต่างจากผลของเกม 1 ระดับ แต่ยังไม่ถึงขั้นขัดแย้ง' },
+  orange:{ k:'orange', clr:'#c2410c', bg:'#ffedd5', txt:'ควรทบทวน',       tip:'มี 1 แหล่งที่ต่างจากผลของเกมตั้งแต่ 2 ระดับ — กดเข้าไปดูหลักฐาน' },
+  red   :{ k:'red',    clr:'#b91c1c', bg:'#fee2e2', txt:'ขัดแย้งชัดเจน',   tip:'มีตั้งแต่ 2 แหล่งขึ้นไปที่ต่างจากผลของเกมตั้งแต่ 2 ระดับ — ครูควรตัดสินเอง' },
+  blue  :{ k:'blue',   clr:'#1d4ed8', bg:'#dbeafe', txt:'ครูยืนยันแล้ว',   tip:'ครูตัดสินระดับนี้ด้วยตนเอง — ระบบไม่คำนวณทับ' },
+  solo  :{ k:'solo',   clr:'#64748b', bg:'#f1f5f9', txt:'มีแหล่งเดียว',     tip:'ยังไม่มีหลักฐานประกอบมาเทียบ — ให้ครู/เพื่อน/ตนเองประเมินเพิ่ม' },
+  na    :{ k:'na',     clr:'#94a3b8', bg:'#f8fafc', txt:'ไม่มีการประเมิน',  tip:'บทเรียนนี้ไม่ได้เก็บหลักฐานหลักของด้านนี้ — ครูตัดสินระดับเองได้' },
+  thin  :{ k:'thin',   clr:'#94a3b8', bg:'#f8fafc', txt:'ข้อมูลไม่พอ',      tip:'หลักฐานยังไม่ถึง 4 ชิ้น จึงยังไม่สรุประดับ' }
+};
+/* คืนสถานะของ 1 ช่อง (นักเรียน 1 คน × สมรรถนะ 1 ตัว) */
+function clsCmpStat(d, comp, c6){
+  var cc=(d&&d.comp&&d.comp[comp])||{};
+  var r=(c6&&c6[comp])||{};
+  if(r.kruFinal!=null) return { s:CMP_STAT.blue, M:(r.kruFinal||null), diffs:clsCmpDiffs(cc,null) };
+  var M=(r.st==='score'&&r.level!=null)?r.level:null;
+  var diffs=clsCmpDiffs(cc,M);
+  if(M==null) return { s:(r.noAssess?CMP_STAT.na:CMP_STAT.thin), M:null, diffs:diffs };
+  var have=diffs.filter(function(x){ return x.lv!=null; });
+  if(!have.length) return { s:CMP_STAT.solo, M:M, diffs:diffs };
+  var far=have.filter(function(x){ return x.d>=2; }).length;
+  var near=have.filter(function(x){ return x.d<=1; }).length;
+  if(far>=2) return { s:CMP_STAT.red, M:M, diffs:diffs };
+  if(far===1) return { s:CMP_STAT.orange, M:M, diffs:diffs };
+  if(near>=2) return { s:CMP_STAT.green, M:M, diffs:diffs };
+  return { s:CMP_STAT.yellow, M:M, diffs:diffs };
+}
+function clsCmpDiffs(cc,M){
+  return [
+    { key:'kru',  icon:'🧑‍🏫', name:'ครูประเมิน',   raw:cc.kru,  lv:clsCmpSrcLv('kru', cc.kru),  scale:'/4' },
+    { key:'peer', icon:'🤝',   name:'เพื่อนประเมิน', raw:cc.peer, lv:clsCmpSrcLv('peer',cc.peer), scale:'/4' },
+    { key:'self', icon:'🧠',   name:'ประเมินตนเอง',  raw:cc.self, lv:clsCmpSrcLv('self',cc.self), scale:'/5' }
+  ].map(function(x){ x.d=(x.lv!=null&&M!=null)?Math.abs(x.lv-M):null; return x; });
+}
 function clsOpenCompare(){
   var old=document.getElementById('cls-cmp-modal'); if(old) old.remove();
   var wrap=document.createElement('div'); wrap.id='cls-cmp-modal';
   wrap.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:999;display:flex;align-items:flex-start;justify-content:center;padding:22px 12px;overflow:auto';
-  wrap.innerHTML='<div style="background:#fff;border-radius:14px;padding:16px 20px 20px;width:min(1100px,98vw);box-shadow:0 20px 50px rgba(0,0,0,.3)">'+
-    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-size:15.5px;flex:1">📊 เทียบผลการประเมินสมรรถนะ — ครู / นักเรียน / เพื่อน / ชิ้นงาน (ครบ 6 สมรรถนะ 19 ด้านย่อย)</b>'+
-    '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#6b21a8" title="ตารางสรุปแบบประเมินตนเองรายคน/รายด้านแบบเดิม" onclick="clsOpenSelfAssess()">🧠 สรุปประเมินตนเองฉบับเต็ม</button>'+
+  wrap.innerHTML='<div style="background:#fff;border-radius:14px;padding:16px 20px 20px;width:min(1500px,99vw);box-shadow:0 20px 50px rgba(0,0,0,.3)">'+
+    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-size:15.5px;flex:1">📊 เทียบผลการประเมินสมรรถนะทั้งห้อง — ชิ้นงาน(เกม) / ครู / เพื่อน / ตนเอง</b>'+
     '<button class="btn-ghost" style="padding:5px 14px" onclick="document.getElementById(\'cls-cmp-modal\').remove()">ปิด</button></div>'+
     '<div id="cls-cmp-body" class="muted" style="font-size:13px;margin-top:8px">กำลังโหลด...</div></div>';
   document.body.appendChild(wrap);
@@ -4577,10 +4705,10 @@ function clsOpenCompare(){
       var pl=r.payload||{};
       if(pl.subAns&&typeof pl.subAns==='object') selfBy[r.student_id]={ subs:pl.subAns };
     });
-    cls._cmp={ selfBy:selfBy, sel:'' };
+    cls._cmp={ selfBy:selfBy, sel:'', mode:'comp', open:null, draft:null, data:null };
     clsCmpRender();
   })
-  .catch(function(){ cls._cmp={ selfBy:{}, sel:'' }; clsCmpRender(); });
+  .catch(function(){ cls._cmp={ selfBy:{}, sel:'', mode:'comp', open:null, draft:null, data:null }; clsCmpRender(); });
 }
 function clsCmpStu(sid){
   /* รวมค่าราย "ด้านย่อย" (dim) และราย "สมรรถนะ" (comp) ของนักเรียน 1 คน แยก 4 แหล่ง — ไม่ปนกัน */
@@ -4625,85 +4753,182 @@ function clsCmpRender(){
   var b=document.getElementById('cls-cmp-body'); if(!b||!cls._cmp) return;
   if(!cls.statsReady){ b.innerHTML='กำลังคิดคะแนนจากข้อมูลการเล่น... เปิดใหม่อีกครั้งเมื่อหน้าห้องเรียนโหลดเสร็จ'; return; }
   var studs=(cls.students||[]).slice();
+  if(cls.sumFilter&&cls.sumFilter!=='__all__'&&String(cls.sumFilter).indexOf('__')!==0)
+    studs=studs.filter(function(x){ return x.classroom_id===cls.sumFilter; });
   studs.sort(function(a,c){ return (Number(String(a.student_number||'').replace(/\D/g,''))||999)-(Number(String(c.student_number||'').replace(/\D/g,''))||999); });
   if(!studs.length){ b.innerHTML='ยังไม่มีนักเรียน — สร้างห้องและให้นักเรียนเข้าห้องก่อน'; return; }
-  var sel=cls._cmp.sel||'';
-  /* เก็บข้อมูลรายคน (คิดครั้งเดียวต่อการเปิด) */
+  /* คิดข้อมูล 4 แหล่งของทุกคนครั้งเดียวต่อการเปิดหน้า */
   if(!cls._cmp.data){ cls._cmp.data={}; studs.forEach(function(st){ cls._cmp.data[st.id]=clsCmpStu(st.id); }); }
   var D=cls._cmp.data;
-  var f4=function(v){ return v==null?null:Math.round(v*100)/100; };
-  /* ค่าที่จะแสดง: รายคน หรือค่าเฉลี่ยห้อง */
-  function cellAgg(getter){
-    if(sel) return getter(D[sel]||{dim:{},comp:{}});
-    var s=0,n=0;
-    studs.forEach(function(st){ var v=getter(D[st.id]||{dim:{},comp:{}}); if(v!=null){ s+=v; n++; } });
-    return n?Math.round(s/n*100)/100:null;
-  }
-  var fmt=function(kind,v){
-    if(v==null) return '<span style="color:#cbd5e1">–</span>';
-    if(kind==='game') return '<b>'+(Math.round(v*10)/10)+'%</b>';
-    if(kind==='self') return '<b>'+v.toFixed(sel?0:2).replace(/\.00$/,'')+'</b><span class="muted" style="font-size:10px">/5</span>';
-    return '<b>'+(sel?v:v.toFixed(2)).toString().replace(/\.00$/,'')+'</b><span class="muted" style="font-size:10px">/4</span>';
-  };
-  var selHtml='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:9px">'+
-    '<label style="font-size:12.5px;font-weight:700">ดูของ:</label>'+
-    '<select onchange="clsCmpSel(this.value)" style="padding:5px 10px;border:1.5px solid #cbd5e1;border-radius:8px;font-family:inherit;font-size:12.5px">'+
-      '<option value=""'+(sel?'':' selected')+'>ค่าเฉลี่ยทั้งกลุ่ม (เฉพาะคนที่มีข้อมูลในช่องนั้น)</option>'+
-      studs.map(function(st){ var nm=((st.first_name||'')+' '+(st.last_name||'')).trim()||st.character_name||'?';
-        return '<option value="'+esc(st.id)+'"'+(sel===st.id?' selected':'')+'>'+esc((st.student_number?st.student_number+'. ':'')+nm)+'</option>'; }).join('')+
-    '</select>'+
-    '<span class="muted" style="font-size:11px">มาตราต่างกันตามแหล่ง (เกม % · ครู/เพื่อน /4 · ตนเอง /5) — ช่อง "สรุปเทียบ" แปลงเป็น % ก่อนเทียบ</span></div>';
-  var byComp={}; SELF_SUB_LABEL.forEach(function(r){ (byComp[r[2]]=byComp[r[2]]||[]).push(r); });
-  var CMP_HEAD='<tr><th style="min-width:210px">สมรรถนะ / ด้านย่อย</th>'+
-    '<th style="text-align:center">🎮 ชิ้นงาน (เกม)</th><th style="text-align:center">🧑‍🏫 ครูประเมิน</th>'+
-    '<th style="text-align:center">🤝 เพื่อนประเมิน</th><th style="text-align:center">🧠 ตนเอง</th>'+
-    '<th style="text-align:center;min-width:120px">สรุปเทียบ</th></tr>';
-  var agreeStat={};
-  var body=CMP_COMPS.map(function(comp){
-    var cName=(CORE6.filter(function(x){ return x[0]===comp; })[0]||[comp,comp])[1];
-    var cg=cellAgg(function(d){ return d.comp[comp]?d.comp[comp].game:null; });
-    var ck=cellAgg(function(d){ return d.comp[comp]?d.comp[comp].kru:null; });
-    var cp=cellAgg(function(d){ return d.comp[comp]?d.comp[comp].peer:null; });
-    var cs=cellAgg(function(d){ return d.comp[comp]?d.comp[comp].self:null; });
-    var norms=[]; if(cg!=null) norms.push(clsCmpNorm('game',cg)); if(ck!=null) norms.push(clsCmpNorm('kru',ck));
-    if(cp!=null) norms.push(clsCmpNorm('peer',cp)); if(cs!=null) norms.push(clsCmpNorm('self',cs));
-    var ag=clsCmpAgree(norms); agreeStat[comp]=ag[0];
-    var head='<tr style="background:#eef2f7"><td style="font-weight:800;color:'+(IND_COMP_CLR[comp]||'#1e3a5f')+'">'+esc(cName)+' <span class="muted" style="font-size:10px">(ระดับสมรรถนะ)</span></td>'+
-      '<td style="text-align:center">'+fmt('game',cg)+'</td><td style="text-align:center">'+fmt('kru',ck)+'</td>'+
-      '<td style="text-align:center">'+fmt('peer',cp)+'</td><td style="text-align:center">'+fmt('self',cs)+'</td>'+
-      '<td style="text-align:center;font-size:11px;font-weight:700;color:'+ag[1]+'">'+ag[0]+'</td></tr>';
-    var rows=(byComp[comp]||[]).map(function(r){
-      var code=r[0];
-      var dg=cellAgg(function(d){ return d.dim[code]?d.dim[code].game:null; });
-      var dk=cellAgg(function(d){ return d.dim[code]?d.dim[code].kru:null; });
-      var dp=cellAgg(function(d){ return d.dim[code]?d.dim[code].peer:null; });
-      var ds=cellAgg(function(d){ return d.dim[code]?d.dim[code].self:null; });
-      var nn=[]; if(dg!=null) nn.push(clsCmpNorm('game',dg)); if(dk!=null) nn.push(clsCmpNorm('kru',dk));
-      if(dp!=null) nn.push(clsCmpNorm('peer',dp)); if(ds!=null) nn.push(clsCmpNorm('self',ds));
-      var ag2=clsCmpAgree(nn);
-      return '<tr><td style="font-size:12px;padding-left:18px">'+esc(r[1])+' <span class="muted" style="font-size:10px">'+esc(code)+'</span></td>'+
-        '<td style="text-align:center">'+fmt('game',dg)+'</td><td style="text-align:center">'+fmt('kru',dk)+'</td>'+
-        '<td style="text-align:center">'+(dp!=null?fmt('peer',dp):'<span style="color:#cbd5e1" title="เพื่อนประเมินเป็นรายสมรรถนะ (ดูแถวหัวข้อ) ยกเว้นทีมที่มีรายด้าน">·</span>')+'</td>'+
-        '<td style="text-align:center">'+fmt('self',ds)+'</td>'+
-        '<td style="text-align:center;font-size:10.5px;color:'+ag2[1]+'">'+ag2[0]+'</td></tr>';
+  var mode=cls._cmp.mode||'comp';
+  var open=cls._cmp.open||null;   /* {sid, comp} ช่องที่ครูกดเปิดดู */
+
+  /* ---------- แถบหัว: โหมด + คำอธิบายสี ---------- */
+  var legend=['green','yellow','orange','red','blue','na'].map(function(k){ var S=CMP_STAT[k];
+    return '<span title="'+esc(S.tip)+'" style="display:inline-flex;align-items:center;gap:4px;background:'+S.bg+';color:'+S.clr+
+      ';border-radius:999px;padding:2px 10px;font-size:11.5px;font-weight:700">'+esc(S.txt)+'</span>'; }).join(' ');
+  var head='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">'+
+    '<b style="font-size:13px">มุมมอง:</b>'+
+    '<button class="btn-ghost" style="padding:3px 12px;font-size:12px;'+(mode==='comp'?'background:#eef2ff;color:#3730a3;font-weight:800':'')+'" onclick="clsCmpMode(\'comp\')">6 สมรรถนะ</button>'+
+    '<button class="btn-ghost" style="padding:3px 12px;font-size:12px;'+(mode==='dim'?'background:#eef2ff;color:#3730a3;font-weight:800':'')+'" onclick="clsCmpMode(\'dim\')">19 ด้านย่อย</button>'+
+    '<button class="btn-ghost" style="padding:3px 12px;font-size:12px;color:#6b21a8" onclick="clsOpenSelfAssess()">🧠 สรุปประเมินตนเองฉบับเต็ม</button>'+
+    '<span class="muted" style="font-size:11.5px;flex:1;min-width:200px">กดที่ช่องไหนก็ได้ เพื่อดูหลักฐาน 4 แหล่งและตัดสินระดับของนักเรียนคนนั้น</span></div>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px">'+legend+'</div>';
+
+  /* ---------- ตาราง: แถว = นักเรียนทุกคน · คอลัมน์ = สมรรถนะ ---------- */
+  var cols = (mode==='dim')
+    ? SELF_SUB_LABEL.map(function(r){ return { key:r[0], label:r[0], tip:r[1], comp:r[2], dim:true }; })
+    : CMP_COMPS.map(function(c){ var nm=(CORE6.filter(function(x){ return x[0]===c; })[0]||[c,c]);
+        return { key:c, label:(CORE6_SHORT[c]||c), tip:nm[1], comp:c, dim:false }; });
+
+  var th='<tr><th style="min-width:150px;position:sticky;left:0;background:#f8fafc;z-index:2">นักเรียน</th>'+
+    cols.map(function(c){ return '<th style="text-align:center;font-size:11.5px;white-space:nowrap" title="'+esc(c.tip)+'">'+esc(c.label)+'</th>'; }).join('')+'</tr>';
+
+  var cnt={green:0,yellow:0,orange:0,red:0,blue:0,solo:0,na:0,thin:0};
+  var rows=studs.map(function(st){
+    var d=D[st.id]||{dim:{},comp:{}};
+    var c6=((cls.stats&&cls.stats[st.id])||{}).c6||null;
+    var nm=((st.first_name||'')+' '+(st.last_name||'')).trim()||st.character_name||'?';
+    var tds=cols.map(function(c){
+      var info, lv, extra='';
+      if(c.dim){
+        var dd=d.dim[c.key]||{};
+        var mLv=clsCmpLvOf(dd.game);
+        var ds=[{lv:clsCmpSrcLv('kru',dd.kru)},{lv:clsCmpSrcLv('peer',dd.peer)},{lv:clsCmpSrcLv('self',dd.self)}]
+              .map(function(x){ x.d=(x.lv!=null&&mLv!=null)?Math.abs(x.lv-mLv):null; return x; });
+        var have=ds.filter(function(x){ return x.lv!=null; });
+        var far=have.filter(function(x){ return x.d>=2; }).length, near=have.filter(function(x){ return x.d<=1; }).length;
+        info={ s:(mLv==null?CMP_STAT.thin:(!have.length?CMP_STAT.solo:(far>=2?CMP_STAT.red:far===1?CMP_STAT.orange:near>=2?CMP_STAT.green:CMP_STAT.yellow))), M:mLv };
+      } else {
+        info=clsCmpStat(d,c.key,c6);
+        var rr=(c6&&c6[c.key])||{};
+        if(rr.capped) extra='🔒';
+      }
+      lv=info.M;
+      cnt[info.s.k]=(cnt[info.s.k]||0)+1;
+      var sel=(open&&open.sid===st.id&&open.key===c.key);
+      return '<td style="text-align:center;padding:3px 2px;cursor:pointer;background:'+info.s.bg+
+        (sel?';outline:2px solid #4f46e5;outline-offset:-2px':'')+'" title="'+esc(nm+' · '+c.tip+' — '+info.s.txt+'\n'+info.s.tip)+'"'+
+        ' onclick="clsCmpOpen(\''+esc(st.id)+'\',\''+esc(c.key)+'\','+(c.dim?1:0)+')">'+
+        '<b style="color:'+info.s.clr+';font-size:12.5px">'+(lv!=null?lv:'–')+'</b>'+extra+'</td>';
     }).join('');
-    return head+rows;
+    var body='<tr'+((open&&open.sid===st.id)?' style="background:#fafaff"':'')+'>'+
+      '<td style="position:sticky;left:0;background:#fff;z-index:1"><b style="font-size:12.5px">'+esc((st.student_number?st.student_number+'. ':'')+nm)+'</b></td>'+tds+'</tr>';
+    if(open&&open.sid===st.id) body+='<tr><td colspan="'+(cols.length+1)+'" style="padding:0;background:#fafaff">'+clsCmpDetail(st,d,c6,open)+'</td></tr>';
+    return body;
   }).join('');
-  /* สรุปผลการเปรียบเทียบระดับกลุ่ม (เมื่อดูรายคน = ของคนนั้น) */
-  var nSelf=0,nKru=0,nPeer=0,nGame=0;
-  studs.forEach(function(st){ var d=D[st.id]; if(!d) return;
-    var anyG=false,anyK=false,anyP=false,anyS=false;
-    CMP_COMPS.forEach(function(c2){ var cc=d.comp[c2]||{}; if(cc.game!=null) anyG=true; if(cc.kru!=null) anyK=true; if(cc.peer!=null) anyP=true; if(cc.self!=null) anyS=true; });
-    if(anyG) nGame++; if(anyK) nKru++; if(anyP) nPeer++; if(anyS) nSelf++;
+
+  var sum='<div style="background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:10px 14px;margin-top:12px;font-size:12.3px;line-height:1.75">'+
+    '<b>สรุปความสอดคล้องของทั้งกลุ่ม (ตามหลัก CBE Thailand)</b><br>'+
+    '🟢 สอดคล้อง <b>'+cnt.green+'</b> ช่อง · 🟡 ต่างเล็กน้อย <b>'+cnt.yellow+'</b> · 🟠 ควรทบทวน <b>'+cnt.orange+'</b> · 🔴 ขัดแย้งชัดเจน <b>'+cnt.red+'</b> · 🔵 ครูยืนยันแล้ว <b>'+cnt.blue+'</b> · ⚪ ยังไม่มีหลักฐานพอ <b>'+((cnt.na||0)+(cnt.thin||0)+(cnt.solo||0))+'</b><br>'+
+    '<span class="muted">เกณฑ์: ถือว่า "สอดคล้อง" เมื่อหลักฐานประกอบต่างจากผลของชิ้นงาน (เกม) ไม่เกิน 1 ระดับ และมีอย่างน้อย 2 ใน 3 แหล่งที่สอดคล้อง · '+
+    'คะแนนสมรรถนะคิดจาก<b>หลักฐานในเกมเท่านั้น</b> — ครู เพื่อน และตนเองเป็นหลักฐานประกอบไว้เทียบเคียง ไม่ถูกนำมาเฉลี่ยรวมเป็นคะแนน · '+
+    '🔒 = ระดับถูกจำกัดเพราะหลักฐานยังน้อย (เกณฑ์ 4/8/15 ชิ้น) · ระดับที่ครูกดตัดสินจะทับผลคำนวณถาวร</span></div>';
+
+  b.innerHTML=head+'<div style="overflow:auto;max-height:62vh"><table class="cls-tbl" style="font-size:12px">'+th+rows+'</table></div>'+sum;
+}
+function clsCmpMode(m){ if(cls._cmp){ cls._cmp.mode=m; cls._cmp.open=null; clsCmpRender(); } }
+function clsCmpOpen(sid,key,isDim){
+  if(!cls._cmp) return;
+  var o=cls._cmp.open;
+  cls._cmp.open=(o&&o.sid===sid&&o.key===key)?null:{ sid:sid, key:key, dim:!!isDim };
+  cls._cmp.draft=null;
+  clsCmpRender();
+}
+/* ---------- กล่องรายละเอียด: 4 แหล่ง + หลักฐาน + ปุ่มให้ครูตัดสินระดับ ---------- */
+function clsCmpDetail(st,d,c6,open){
+  var isDim=open.dim, key=open.key;
+  var nm=((st.first_name||'')+' '+(st.last_name||'')).trim()||st.character_name||'?';
+  var comp=isDim?((SELF_SUB_LABEL.filter(function(r){ return r[0]===key; })[0]||[])[2]||''):key;
+  var title=isDim?((SELF_SUB_LABEL.filter(function(r){ return r[0]===key; })[0]||[key,key])[1]+' ('+key+')')
+                 :((CORE6.filter(function(x){ return x[0]===key; })[0]||[key,key])[1]);
+  var rr=(c6&&c6[comp])||{};
+  var cc=isDim?(d.dim[key]||{}):(d.comp[key]||{});
+  var M=isDim?clsCmpLvOf(cc.game):((rr.st==='score'&&rr.level!=null)?rr.level:null);
+  var diffs=clsCmpDiffs(cc,M);
+  var srcRow=function(icon,name,val,scale,lv,dd){
+    return '<tr><td style="white-space:nowrap">'+icon+' '+esc(name)+'</td>'+
+      '<td style="text-align:center">'+(val==null?'<span style="color:#cbd5e1">ยังไม่มี</span>':('<b>'+(Math.round(val*100)/100)+'</b><span class="muted" style="font-size:10px">'+scale+'</span>'))+'</td>'+
+      '<td style="text-align:center">'+(lv==null?'–':('ระดับ '+lv))+'</td>'+
+      '<td style="text-align:center;font-size:11.5px;color:'+(dd==null?'#94a3b8':dd<=1?'#15803d':'#b91c1c')+'">'+
+        (dd==null?'เทียบไม่ได้':(dd===0?'ตรงกัน':('ต่าง '+dd+' ระดับ'+(dd<=1?' (สอดคล้อง)':' (ขัดแย้ง)'))))+'</td></tr>';
+  };
+  var gameVal=isDim?cc.game:(rr.pct!=null?rr.pct:null);
+  var cur=(cls._cmp.draft&&cls._cmp.draft.sid===st.id&&cls._cmp.draft.comp===comp)?cls._cmp.draft.lv
+        :((rr.kruFinal!=null)?rr.kruFinal:null);
+  var lvBtn=function(v,label,clr){
+    var on=(cur===v);
+    return '<button type="button" onclick="clsCmpDraft(\''+esc(st.id)+'\',\''+esc(comp)+'\','+v+')" '+
+      'style="padding:5px 13px;border-radius:9px;cursor:pointer;font-family:inherit;font-weight:800;font-size:12.5px;'+
+      'border:2px solid '+(on?clr:'#cbd5e1')+';background:'+(on?clr:'#fff')+';color:'+(on?'#fff':'#475569')+'">'+label+'</button>';
+  };
+  return '<div style="padding:12px 16px;border-top:2px solid #4f46e5">'+
+    '<div style="font-weight:800;font-size:13.5px;color:#312e81;margin-bottom:6px">🔍 '+esc(nm)+' · '+esc(title)+'</div>'+
+    '<table class="cls-tbl" style="font-size:12px;max-width:640px"><tr><th>แหล่งหลักฐาน</th><th style="text-align:center">คะแนน</th><th style="text-align:center">เทียบเป็นระดับ</th><th style="text-align:center">เทียบกับชิ้นงาน</th></tr>'+
+    '<tr style="background:#eef2f7"><td style="white-space:nowrap"><b>🎮 ชิ้นงาน (เกม) — หลักฐานหลัก</b></td>'+
+      '<td style="text-align:center">'+(gameVal==null?'<span style="color:#cbd5e1">ไม่มี</span>':('<b>'+(Math.round(gameVal*10)/10)+'</b><span class="muted" style="font-size:10px">%</span>'))+'</td>'+
+      '<td style="text-align:center"><b>'+(M==null?'–':('ระดับ '+M))+'</b></td><td style="text-align:center" class="muted">เกณฑ์อ้างอิง</td></tr>'+
+    diffs.map(function(x){ return srcRow(x.icon,x.name,x.raw,x.scale,x.lv,x.d); }).join('')+
+    '</table>'+
+    (rr.src?'<div class="muted" style="font-size:11.5px;margin-top:6px">📌 หลักฐานที่ใช้: '+esc(rr.src)+'</div>':'')+
+    (rr.capped&&rr.capNote?'<div style="font-size:11.5px;margin-top:4px;color:#b45309">🔒 '+esc(rr.capNote)+'</div>':'')+
+    (rr.noAssess?'<div style="font-size:11.5px;margin-top:4px;color:#64748b">— บทเรียนนี้ไม่มีการประเมินด้านนี้จากเกม ครูตัดสินระดับเองได้จากหลักฐานประกอบและการสังเกตในชั้นเรียน</div>':'')+
+    (rr.kruFinal!=null?'<div style="font-size:11.5px;margin-top:4px;color:#1d4ed8">🔵 ครูตัดสินไว้แล้วเป็น'+(rr.kruFinal===0?' "ไม่ประเมินด้านนี้"':(' ระดับ '+rr.kruFinal))+
+        (rr.sysLevel!=null?(' (ระบบคำนวณได้ระดับ '+rr.sysLevel+')'):'')+(rr.kruFinalAt?(' · '+esc(String(rr.kruFinalAt).slice(0,10))):'')+'</div>':'')+
+    '<div style="margin-top:10px;padding-top:9px;border-top:1px dashed var(--line)">'+
+      '<div style="font-size:12.5px;font-weight:800;color:#0f172a;margin-bottom:5px">🧑‍🏫 ครูตัดสินระดับของ '+esc(nm)+' ในด้าน '+esc(isDim?title:(CORE6_SHORT[comp]||comp))+'</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+
+        lvBtn(3,'3 เริ่มต้น',CLS_LV_CLR[3]||'#64748b')+lvBtn(4,'4 กำลังพัฒนา',CLS_LV_CLR[4]||'#f59e0b')+
+        lvBtn(5,'5 สามารถ',CLS_LV_CLR[5]||'#16a34a')+lvBtn(6,'6 เหนือความคาดหวัง',CLS_LV_CLR[6]||'#7c3aed')+
+        lvBtn(0,'ไม่ประเมินด้านนี้','#64748b')+
+        '<button class="btn-primary" style="padding:5px 16px;font-size:12.5px" onclick="clsCmpSaveFinal(\''+esc(st.id)+'\',\''+esc(comp)+'\')">💾 บันทึกผลตัดสิน</button>'+
+        (rr.kruFinal!=null?'<button class="btn-ghost" style="padding:5px 12px;font-size:12px;color:#b91c1c" onclick="clsCmpClearFinal(\''+esc(st.id)+'\',\''+esc(comp)+'\')">ยกเลิกผลตัดสิน</button>':'')+
+        '<span id="cmp-st-'+esc(st.id)+'" style="font-size:12px"></span>'+
+      '</div>'+
+      '<input id="cmp-note-'+esc(st.id)+'" class="fi" style="margin-top:7px;font-size:12.5px;max-width:640px" placeholder="เหตุผลสั้น ๆ (ไม่บังคับ) เช่น สังเกตเห็นการอธิบายให้เพื่อนฟังได้ดีในชั้นเรียน" value="'+esc(rr.kruFinalNote||'')+'">'+
+      '<div class="muted" style="font-size:11px;margin-top:4px">ระดับที่ครูกดจะทับผลคำนวณของระบบถาวร (แก้ไขหรือยกเลิกได้ทุกเมื่อ) · ระบบเก็บค่าที่คำนวณได้เดิมไว้เสมอเพื่อย้อนดู · '+
+        'ผลตัดสินบันทึกรายสมรรถนะ ไม่ใช่รายด้านย่อย</div>'+
+    '</div></div>';
+}
+function clsCmpDraft(sid,comp,lv){ cls._cmp.draft={ sid:sid, comp:comp, lv:lv }; clsCmpRender(); }
+function clsCmpSaveFinal(sid,comp){
+  var dr=cls._cmp&&cls._cmp.draft;
+  var stEl=document.getElementById('cmp-st-'+sid);
+  if(!dr||dr.sid!==sid||dr.comp!==comp){ if(stEl) stEl.innerHTML='<span style="color:#b45309">เลือกระดับก่อนกดบันทึกนะ</span>'; return; }
+  var noteEl=document.getElementById('cmp-note-'+sid);
+  var prev=(cls.kruFinal&&cls.kruFinal[sid])||{comp:{},note:{}};
+  var comps=Object.assign({},prev.comp||{}); comps[comp]=dr.lv;
+  var notes=Object.assign({},prev.note||{}); notes[comp]=(noteEl&&noteEl.value||'').trim().slice(0,300);
+  clsCmpWriteFinal(sid,comps,notes,stEl,'บันทึกผลตัดสินของครูแล้ว');
+}
+function clsCmpClearFinal(sid,comp){
+  var stEl=document.getElementById('cmp-st-'+sid);
+  var prev=(cls.kruFinal&&cls.kruFinal[sid])||{comp:{},note:{}};
+  var comps=Object.assign({},prev.comp||{}); delete comps[comp];
+  var notes=Object.assign({},prev.note||{}); delete notes[comp];
+  clsCmpWriteFinal(sid,comps,notes,stEl,'ยกเลิกผลตัดสินแล้ว — กลับไปใช้ผลคำนวณของระบบ');
+}
+function clsCmpWriteFinal(sid,comps,notes,stEl,okMsg){
+  if(stEl) stEl.innerHTML='<span class="loading" style="width:12px;height:12px;border-color:#4f46e5;border-top-color:transparent"></span> กำลังบันทึก...';
+  var payload={ comp:comps, note:notes, at:new Date().toISOString(),
+    by:(cls.teacher&&(cls.teacher.email||cls.teacher.display_name))||'ครู',
+    gameVersion:(typeof GAME_VERSION!=='undefined'?GAME_VERSION:'dashboard') };
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/rpc/rpc_kru_save',{method:'POST',
+      body:JSON.stringify({ p_student:sid, p_kind:'kru_final', p_payload:payload })}); })
+  .then(function(){
+    cls.kruFinal=cls.kruFinal||{}; cls.kruFinal[sid]={ comp:comps, note:notes, at:payload.at, by:payload.by };
+    if(stEl) stEl.innerHTML='<span style="color:#1d4ed8;font-weight:700">✅ '+esc(okMsg)+'</span>';
+    toast(okMsg);
+    cls._cmp.draft=null; cls._cmp.data=null;
+    clsLoadStats(); /* คิดใหม่ทั้งห้องให้ตารางคะแนนหลักเปลี่ยนตามผลตัดสินของครูด้วย */
+    setTimeout(function(){ if(cls._cmp){ cls._cmp.data=null; clsCmpRender(); } },1200);
+  })
+  .catch(function(e){
+    var m=String((e&&e.message)||'');
+    if(stEl) stEl.innerHTML='<span style="color:#b91c1c">'+(/does not exist|404|schema cache|PGRST202/i.test(m)
+      ?'ยังไม่ได้รัน supabase_patch_all_v7991.sql — รันก่อนแล้วบันทึกใหม่'
+      :('บันทึกไม่สำเร็จ: '+esc(m)))+'</span>';
   });
-  var sum='<div style="background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:10px 14px;margin-top:12px;font-size:12.3px;line-height:1.7">'+
-    '<b>สรุปผลการเปรียบเทียบ (ตามหลัก CBE Thailand)</b><br>'+
-    'ความครอบคลุมของแหล่งประเมินในกลุ่มนี้: 🎮 ชิ้นงานจากเกม <b>'+nGame+'</b> คน · 🧑‍🏫 ครูประเมิน <b>'+nKru+'</b> คน · 🤝 เพื่อนประเมิน <b>'+nPeer+'</b> คน · 🧠 ประเมินตนเอง <b>'+nSelf+'</b> คน (จากทั้งหมด '+studs.length+' คน)<br>'+
-    'ความสอดคล้องระดับสมรรถนะ'+(sel?' (ของนักเรียนคนนี้)':' (ค่าเฉลี่ยกลุ่ม)')+': '+CMP_COMPS.map(function(c2){ return esc(CORE6_SHORT[c2]||c2)+' '+esc(agreeStat[c2]||'–'); }).join(' · ')+'<br>'+
-    '<span class="muted">หลักการ: ประเมินตามสภาพจริงจากหลักฐานหลายแหล่ง + ผู้ประเมินหลายฝ่าย เพื่อยืนยันผลซึ่งกันและกัน (triangulation) · '+
-    'คะแนนสมรรถนะในตารางคะแนนรวมเฉพาะแหล่งพฤติกรรม (ชิ้นงาน/ครู/เพื่อน) ตามสูตร ทีม เพื่อน60:ครู40 · จัดการตนเอง เกม50:ครู50 · สื่อสาร เขียน70:ครูสังเกต30 · '+
-    '<b>ผลประเมินตนเองแยกเก็บและไม่รวมในคะแนน</b> — ช่องที่ "ต่างกัน" คือจุดที่ควรพูดคุยสะท้อนกับนักเรียน</span></div>';
-  b.innerHTML=selHtml+'<div style="overflow-x:auto"><table class="cls-tbl">'+CMP_HEAD+body+'</table></div>'+sum;
 }
 
 function clsHotsCriteriaHtml(){
@@ -4977,6 +5202,8 @@ function clsScoresHtml(r){
     /* [ข้อ 5] ป้ายกลุ่ม — ใครจับคู่กับใคร */
     var partners=clsPartnersOf(s,t);
     var grpChip=partners.length?'<div style="font-size:10.5px;color:#7c3aed;margin-top:1px" title="เล่นเครื่องเดียวกัน — คะแนน/ข้อมูลการเล่นลงให้ทุกคนในกลุ่ม">👥 คู่กับ '+esc(partners.join(', '))+(t.shared?' <span style="color:#b45309">(ใช้คะแนนร่วมกลุ่ม)</span>':'')+'</div>':'';
+    /* [V.7.99.1 ข้อ 2] กลุ่มที่ข้อมูลไม่ตรงกัน — เตือนตรง ๆ พร้อมทางแก้ ไม่เดาคะแนนให้ */
+    if(t.gmismatch) grpChip+='<div style="font-size:10.5px;color:#b45309;margin-top:1px" title="สมาชิกกลุ่มนี้มีข้อมูลการเล่นคนละชุด — เกิดจากการจับคู่ในรุ่นก่อน V.7.99.1 ที่เซฟถูกเขียนทับ">⚠️ ข้อมูลกลุ่มไม่ตรงกัน (ต่างกัน '+t.gmismatch+' คะแนน) — ตรวจสอบการจับคู่ หรือกด 🔀 แยกกลุ่มเป็นรายคน</div>';
     var zebra=idx%2?'background:#fbfdff;':'';
     var main='<tr id="cv2r-'+esc(s.id)+'" class="cls-stu-row" style="cursor:pointer;'+zebra+'" onclick="clsV2Toggle(\''+esc(s.id)+'\')" title="คลิกเพื่อดูรายละเอียดสมรรถนะ">'+
       '<td>'+esc(s.student_number||'')+'</td>'+
@@ -5714,13 +5941,16 @@ var CORE6=[
 ];
 /* สถานะการประเมินของแต่ละสมรรถนะในบทเรียนชุดนี้:
    'score' = ประเมินเป็นคะแนน · 'observe' = มีในกิจกรรมแต่ยังไม่ให้คะแนน · 'none' = ไม่มีการประเมิน */
+/* [V.7.99.1 ข้อ 3] สรุปว่าแต่ละสมรรถนะ "ประเมินจากอะไร" และ "ได้ถึงระดับไหน" ตามที่ครูเลือกไว้
+   หลักการที่ใช้ทั้งชุด: คะแนนมาจากหลักฐานในเกมเท่านั้น · ครู/เพื่อน/ตนเอง = หลักฐานประกอบไว้เทียบเคียง
+   เพดานระดับผูกกับปริมาณหลักฐาน 4/8/15 ชิ้น (ต่ำกว่า 4 ชิ้น = ยังไม่สรุประดับ) */
 var CORE6_STATUS={
-  HT:{st:'score', note:'ประเมินเต็มรูปแบบ: หลักฐาน 4 แหล่ง A20·B30·C25·D25 → 4 ด้านการคิด (CTC/STM/CRT/PRB) → ระดับ 3-6 (เกณฑ์เดิม ไม่เปลี่ยนแปลง)'},
-  NS:{st:'score', note:'ข้อสอบ/ภารกิจด่านทรัพยากร-สิ่งแวดล้อม (ด่านที่ 3·7·8·9·10) + เกณฑ์ EE·ST ของด่านที่ 13 กาญจนบุรี 2050'},
-  CZ:{st:'score', note:'ข้อสอบ/ภารกิจด่านมรดก-ส่วนรวม (ด่านที่ 2·3·5·11) + เกณฑ์ SD·PA ของด่านที่ 13 กาญจนบุรี 2050'},
-  CM:{st:'score', note:'ครูให้คะแนน "การสื่อสาร" ของคำตอบเขียน 3 ข้อในด่านที่ 13 แยกช่องจากคะแนน "การคิด" (ข้อละ 0-4 รวม 12)'},
-  TW:{st:'score', note:'เพื่อนร่วมทีมประเมินกันเองในเกม 3 ข้อตามองค์ประกอบของ CBE (ข้อละ 0-4 รวม 12) — เฉพาะนักเรียนที่เล่นเป็นกลุ่ม'},
-  SM:{st:'score', note:'ดัชนีพฤติกรรมการเรียนรู้ที่ระบบบันทึกเอง: ความครบของด่านที่ทำสำเร็จ 50% + พัฒนาการจากการกลับมาเล่นซ้ำ 50%'}
+  HT:{st:'score', note:'ประเมินเต็มรูปแบบ: หลักฐาน 4 แหล่ง A20·B30·C25·D25 → 4 ด้านการคิด (CTC/STM/CRT/PRB) → ระดับ 3-6 (เกณฑ์เดิม ไม่เปลี่ยนแปลงตามคำสั่งครู) · หลักฐานรวมกว่า 90 ชิ้น จึงเปิดถึงระดับ 6 ได้ตามปกติ'},
+  NS:{st:'score', note:'ข้อสอบ/ภารกิจด่านทรัพยากร-สิ่งแวดล้อม (ด่านที่ 3·7·8·9·10) + เกณฑ์ EE·ST ของด่านที่ 13 กาญจนบุรี 2050 · เล่นครบได้หลักฐาน ~30 ชิ้น เปิดถึงระดับ 6'},
+  CZ:{st:'score', note:'ข้อสอบ/ภารกิจด่านมรดก-ส่วนรวม (ด่านที่ 2·3·5·11) + เกณฑ์ SD·PA ของด่านที่ 13 กาญจนบุรี 2050 · เล่นครบได้หลักฐาน ~25 ชิ้น เปิดถึงระดับ 6'},
+  CM:{st:'capped', note:'คำตอบเขียน 3 ข้อในด่านที่ 13 (ข้อละ 0-4 รวม 12) — บทเรียนนี้วัดการสื่อสารผ่านการเขียนเท่านั้น หลักฐานเพียง 3 ชิ้น จึงสรุปได้สูงสุดระดับ 4 · ครูปรับขึ้นเองได้ที่หน้าเทียบผล'},
+  TW:{st:'none', note:'บทเรียนนี้ไม่มีการประเมิน — เกมภาค 1 ไม่ได้เก็บหลักฐานการทำงานร่วมกันเป็นข้อมูล มีเพียงเพื่อนประเมินกับครูสังเกตซึ่งเป็นหลักฐานประกอบ (หลัก CBE ห้ามตัดสินระดับจากหลักฐานประกอบอย่างเดียว) · ครูตัดสินระดับเองได้ที่หน้าเทียบผล'},
+  SM:{st:'score', note:'ดัชนีพฤติกรรมจากการเล่น: ความครบของด่านที่ทำสำเร็จ 50% + พัฒนาการจากการกลับมาเล่นซ้ำ 50% · หลักฐาน 1 ชิ้น = 1 ด่านที่ทำสำเร็จ (เล่นครบ 12 ด่าน → เปิดได้ถึงระดับ 5)'}
 };
 
 /* ══════════════════════════════════════════════════════════════════════════
