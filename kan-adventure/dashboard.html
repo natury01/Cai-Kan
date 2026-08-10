@@ -5298,6 +5298,7 @@ function clsScoresHtml(r){
     det+='<div style="margin-top:10px;padding-top:8px;border-top:2px solid #e2e8f0;display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
       '<span style="font-size:11px;font-weight:800;color:#64748b">⚙️ จัดการข้อมูลนักเรียน</span>'+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#1d4ed8" onclick="clsEditStudent(\''+esc(s.id)+'\')">✏️ แก้ไขข้อมูลนักเรียน</button>'+
+      (s.external_ref?'<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#b45309" title="สมาชิกที่เข้าด้วยชื่อผู้ใช้/รหัสผ่าน — ลืมรหัสให้ตั้งใหม่ตรงนี้ (มติครู: ทางกู้รหัสทางเดียว)" onclick="clsResetPass(\''+esc(s.id)+'\',\''+esc(s.external_ref)+'\')">🔑 ตั้งรหัสผ่านใหม่</button>':'')+
       (s.group_ref?'<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#7c3aed" onclick="clsSplitGroup(\''+esc(s.group_ref)+'\')">🔀 แยกกลุ่มนี้เป็นรายคน</button>':'')+
       '<button class="btn-ghost" style="padding:4px 12px;font-size:12px;color:#b91c1c" onclick="clsDeleteStudent(\''+esc(s.id)+'\',\''+esc((s.first_name||'')+' '+(s.last_name||''))+'\')">🗑 ลบนักเรียนคนนี้</button></div>';
     det+='</td></tr>';
@@ -5700,6 +5701,23 @@ function clsDeleteStudent(id,name){
 }
 /* [ตามคำขอครู] แยกบัญชีกลุ่มเดิมเป็นรายคน — คัดลอกประวัติ/คะแนนเดิมให้สมาชิกทุกคน แล้วเลิกผูกกลุ่ม
    หลังแยก: ป้าย "👥 คู่กับ / ใช้คะแนนร่วมกลุ่ม" หายไป แต่ละคนถือคะแนน-ประวัติของตัวเอง เดินหน้าต่ออิสระ */
+/* [V.7.99.5 มติครู] admin/เจ้าของห้อง ตั้งรหัสผ่านใหม่ให้สมาชิกที่ลืม (ไม่มีอีเมลให้กู้เอง)
+   ตรวจกติกาเดียวกับตอนสมัคร (8-12 ตัว มีทั้งอังกฤษและตัวเลข) — ฐานข้อมูลตรวจซ้ำอีกชั้น */
+function clsResetPass(sid, uname){
+  var pw=prompt('ตั้งรหัสผ่านใหม่ให้บัญชี "'+uname+'"\n(อังกฤษ+ตัวเลข 8-12 ตัว เช่น kan2569a)');
+  if(pw==null) return;
+  pw=String(pw).trim();
+  if(!/^[A-Za-z0-9]{8,12}$/.test(pw)||!/[A-Za-z]/.test(pw)||!/[0-9]/.test(pw)){
+    toast('รหัสผ่านต้องยาว 8-12 ตัว และมีทั้งภาษาอังกฤษและตัวเลข'); return;
+  }
+  sbEnsure().then(function(){ return sbFetch('/rest/v1/rpc/rpc_public_reset',{method:'POST',
+      body:JSON.stringify({ p_student:sid, p_password:pw })}); })
+  .then(function(){ toast('ตั้งรหัสผ่านใหม่ให้ "'+uname+'" แล้ว — แจ้งรหัสใหม่ให้ผู้เล่นได้เลย'); })
+  .catch(function(e){ var m=String((e&&e.message)||'');
+    toast(/does not exist|404|PGRST202|schema cache/i.test(m)
+      ?'ยังไม่ได้รัน supabase_patch_all_v7993.sql — รันก่อนแล้วลองใหม่'
+      :'ตั้งรหัสไม่สำเร็จ ลองใหม่อีกครั้ง'); });
+}
 function clsSplitGroup(gref){
   var members=(cls.students||[]).filter(function(x){ return x.group_ref===gref; })
     .map(function(x){ return ((x.first_name||'')+' '+(x.last_name||'')).trim(); }).filter(Boolean);
