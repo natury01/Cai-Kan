@@ -3687,7 +3687,8 @@ function clsFillKru(){
   var ids=studs.map(function(x){ return x.id; });
   sbEnsure().then(function(){ return sbFetchAll('/rest/v1/surveys?kind=eq.kru_assess&select=student_id,payload,created_at&order=created_at.desc&student_id=in.('+ids.join(',')+')'); })
   .then(function(rows){
-    var by={}; (rows||[]).forEach(function(r){ if(!by[r.student_id]) by[r.student_id]={ dims:((r.payload||{}).dims)||{}, at:r.created_at }; });
+    /* [V.7.99.3] ตัดผลประเมินที่บันทึกจากหน้าครูของภาค 2 (payload.gameVersion มี -p2-) */
+    var by={}; (rows||[]).filter(function(r){ return !clsIsP2Survey(r); }).forEach(function(r){ if(!by[r.student_id]) by[r.student_id]={ dims:((r.payload||{}).dims)||{}, at:r.created_at }; });
     cls._kru={ studs:studs, by:by, sel:null, form:{} };
     clsKruRenderList();
   })
@@ -3805,6 +3806,18 @@ function clsApplyKruFinal(c6, fin){
     r.kruFinalAt=fin.at||''; r.kruFinalNote=(fin.note&&fin.note[k])||'';
   });
 }
+/* ============================================================================
+   [V.7.99.3 ตามผลตรวจครู 10 ส.ค. 2569] ตัวกรองข้อมูลสองภาค — ฝั่งอ่านของภาค 1
+   ภาค 2 ใช้ game_code เดียวกัน แยกด้วยป้าย -p2- ใน attempts.game_version
+   · แหล่ง events: ใช้ view v_events_p1 (SQL v7992) ซึ่ง left join แล้วตัดแถว -p2-
+     — ต้อง left join เพราะแถวเก่า 78,908 แถวไม่มี attempt (ย้ายจาก Sheets) ถือเป็นภาค 1
+     ยังไม่ได้รัน SQL → ถอยไปอ่านตาราง events ตรงเหมือนเดิม (พฤติกรรมไม่แย่กว่ารุ่นก่อน)
+   · แบบประเมิน (surveys): กรองฝั่งนี้ด้วย payload.gameVersion (แถวน้อย ไม่ต้องมี view)
+   ============================================================================ */
+function clsEvSrc(){ return cls._noP1View ? '/rest/v1/events?' : '/rest/v1/v_events_p1?'; }
+function clsIsP2Survey(r){
+  try { return String(((r||{}).payload||{}).gameVersion||'').indexOf('-p2-')>=0; } catch(e){ return false; }
+}
 /* [รวม Dashboard] โหลดข้อมูลการเล่นของนักเรียนทุกห้อง → สรุปคะแนนรายคน (คะแนนเก็บ/สอบ/กาญ 2050) */
 function clsLoadStats(){
   cls.stats=cls.stats||{}; cls.statsReady=false;
@@ -3820,9 +3833,18 @@ function clsLoadStats(){
   var p=Promise.resolve();
   chunks.forEach(function(ch){
     p=p.then(function(){ return sbEnsure(); }).then(function(){
+      /* [V.7.99.3] ครั้งแรกของแต่ละรอบโหลด: เช็คว่ามี view ภาค 1 ไหม (แถวเดียว เร็วมาก)
+         ไม่มี = SQL v7992 ยังไม่ถูกรัน → ใช้ตาราง events ตรงทั้งรอบ และเตือนใน console */
+      if(cls._noP1View===undefined){
+        return sbFetch('/rest/v1/v_events_p1?select=id&limit=1')
+          .then(function(){ cls._noP1View=false; })
+          .catch(function(){ cls._noP1View=true;
+            console.warn('[ภาค 1] ยังไม่ได้รัน supabase_patch_all_v7992.sql — Dashboard ยังไม่กรองข้อมูลภาค 2'); });
+      }
+    }).then(function(){
       return Promise.all([
-        sbFetchAll('/rest/v1/events?kind=eq.question&select='+SEL_Q+'&student_id=in.('+ch.join(',')+')'),
-        sbFetchAll('/rest/v1/events?kind=in.(progress,boss,capstone,pilok,peer)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')'),
+        sbFetchAll(clsEvSrc()+'kind=eq.question&select='+SEL_Q+'&student_id=in.('+ch.join(',')+')'),
+        sbFetchAll(clsEvSrc()+'kind=in.(progress,boss,capstone,pilok,peer)&select='+SEL_O+'&student_id=in.('+ch.join(',')+')'),
         /* [V.7.80] ครูประเมินสมรรถนะจากการสังเกต (surveys.kind=kru_assess) — โหลดไม่ได้ = ข้าม ไม่ให้ทั้งหน้าล้ม */
         sbFetchAll('/rest/v1/surveys?kind=eq.kru_assess&select=student_id,payload,created_at&student_id=in.('+ch.join(',')+')').catch(function(){ return []; }),
         /* [V.7.99.1 ข้อ 6] ระดับที่ครูตัดสินขั้นสุดท้าย (surveys.kind=kru_final) — ทับผลคำนวณถาวรตามที่ครูเลือก */
@@ -3860,13 +3882,13 @@ function clsLoadStats(){
           else s.ev.pr.push({by:pk,p1:e.p1,p2:e.p2,p3:e.p3,p4:e.p4,p5:e.p5,p6:e.p6,p7:e.p7,p8:e.p8,t:t}); }
         else if(e.kind==='pilok'){ s.ev.k.push({w5:(e.w5!=null&&e.w5!=='')?e.w5:((e.w5C!=null&&e.w5C!=='')?e.w5C:(sc>0?sc:null)),att:att,grid:e.grid,en:e.en,dc:e.dc,t:t}); }
       });
-      (rr[2]||[]).forEach(function(e){
+      (rr[2]||[]).filter(function(e){ return !clsIsP2Survey(e); }).forEach(function(e){
         var s=S(e.student_id), t=Date.parse(e.created_at)||0;
         var pl=e.payload||{};
         s.ev.kru.push({ dims:(pl.dims&&typeof pl.dims==='object')?pl.dims:null, t:t });
       });
       /* [V.7.99.1 ข้อ 6] ระดับที่ครูตัดสิน — ทับผลคำนวณเสมอ (ครูคือผู้ตัดสินขั้นสุดท้ายตามหลัก CBE) */
-      (rr[3]||[]).forEach(function(e){
+      (rr[3]||[]).filter(function(e){ return !clsIsP2Survey(e); }).forEach(function(e){
         var pl=e.payload||{};
         cls.kruFinal[e.student_id]={ comp:(pl.comp&&typeof pl.comp==='object')?pl.comp:{},
           note:(pl.note&&typeof pl.note==='object')?pl.note:{}, at:e.created_at, by:pl.by||'' };
@@ -4548,7 +4570,7 @@ function clsOpenSelfAssess(){
   sbEnsure().then(function(){ return sbFetchAll('/rest/v1/surveys?kind=eq.self_assessment&select=id,student_id,payload,overall,created_at&order=created_at.desc'); })
   .then(function(rows){
     var b=document.getElementById('csa-body'); if(!b) return;
-    rows=rows||[];
+    rows=(rows||[]).filter(function(r){ return !clsIsP2Survey(r); }); /* [V.7.99.3] ตัดแบบประเมินของภาค 2 */
     if(!rows.length){ b.innerHTML='<div class="muted">ยังไม่มีนักเรียนทำแบบประเมินตนเอง<br><span style="font-size:12px">นักเรียนกดปุ่ม 🧠 มุมขวาล่างของหน้าแผนที่ในเกม</span></div>'; return; }
     var byStu={}; (cls.students||[]).forEach(function(x){ byStu[x.id]=x; });
     /* คนเดิมทำซ้ำได้ — ใช้ครั้งล่าสุด (เรียง created_at.desc มาแล้ว) */
@@ -4719,7 +4741,7 @@ function clsOpenCompare(){
   sbEnsure().then(function(){ return sbFetchAll('/rest/v1/surveys?kind=eq.self_assessment&select=student_id,payload,created_at&order=created_at.desc'); })
   .then(function(rows){
     var selfBy={};
-    (rows||[]).forEach(function(r){
+    (rows||[]).filter(function(r){ return !clsIsP2Survey(r); }).forEach(function(r){
       if(!r.student_id||selfBy[r.student_id]) return;
       var pl=r.payload||{};
       if(pl.subAns&&typeof pl.subAns==='object') selfBy[r.student_id]={ subs:pl.subAns };
