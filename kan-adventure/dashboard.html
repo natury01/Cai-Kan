@@ -3940,6 +3940,9 @@ function clsLoadStats(){
       }
     });
     cls.stats=stats; cls.statsReady=true; clsRender();
+    /* [V.7.99.12 · เอกสาร 44] ส่ง "ใบรายงานผล" ให้ Dashboard กลาง — เฉพาะจุดนี้จุดเดียว
+       (อีกสองจุดที่คำนวณสถิติเหมือนกันคือ "ดูห้องครูท่านอื่น" แบบอ่านอย่างเดียว ห้ามส่งเด็ดขาด) */
+    try{ gpSendReports(); }catch(e){}
   }).catch(function(e){
     /* [V.7.99.1] เดิมกลืนความผิดพลาดเงียบ ๆ จนหาสาเหตุไม่เจอ — ตอนนี้พิมพ์ลง console ให้ตรวจสอบได้ (ครูยังไม่เห็นข้อความดิบ) */
     console.error('[clsLoadStats] คำนวณคะแนนไม่สำเร็จ:', (e&&e.message)||e, e&&e.stack);
@@ -3953,6 +3956,114 @@ function clsStatOf(stu){
   return { collected:col, boss:boss, cap:s?s.cap:0, plays:s?s.plays:0, last:s?s.last:0,
     v2:(s&&s.v2)||null, c6:(s&&s.c6)||null, legacy:(s&&s.legacy)||null, shared:!!(s&&s.shared), gmem:(s&&s.gmem)||null,
     gmismatch:(s&&s.gmismatch)||0, has:(s&&s.plays>0)||col>0||boss>0 };
+}
+/* ============================================================================
+   [V.7.99.12 · ตามเอกสาร 44 จากเว็บกลาง] ส่ง "ใบรายงานผล" ให้ Dashboard กลาง
+   หลักการ: เกมยังเป็นเจ้าของการคิดคะแนนทุกอย่างเหมือนเดิม ตรงนี้แค่ "รายงานผลที่คิดเสร็จแล้ว"
+   ไม่มีการคิดใหม่ ไม่มีการเดา ไม่แตะสูตรใด ๆ
+
+   ชื่อฟิลด์ทุกตัวด้านล่างเปิดจากโค้ดจริงแล้ว ไม่ได้ใช้ชื่อที่เว็บกลางเดาไว้ในเอกสาร 44:
+     · คะแนนรายด่าน  = s.pb  (object: รหัสด่าน → คะแนนดีที่สุด, ปิดเพดาน 10 · ด่าน '8' เพดาน 30)
+     · สมรรถนะ       = s.c6[k] มีจริงคือ .st .pct .level .rawLevel .evN .cap .n .src
+                        .dims (เป็น "อาเรย์" ไม่ใช่ object .sub) · .capped/.capNote
+                        และเมื่อครูตัดสินทับ: .kruFinal .sysLevel .sysSt (จาก clsApplyKruFinal)
+       ไม่มีจริง: .score .levelName .sub .evidence .sysScore  ⇒ ห้ามใช้ตามเอกสาร
+     · ระดับผลสัมฤทธิ์ = clsAchLevel() คืน "object" {pct,lv} ไม่ใช่ตัวเลข ⇒ ต้องหยิบ .lv
+   ============================================================================ */
+var GP_SENT={};            /* ลายเซ็นใบล่าสุดของแต่ละคน — กันยิงซ้ำเมื่อค่าไม่เปลี่ยน (ข้อ 3 ของเอกสาร) */
+function gpVersion(){
+  /* กติกาโครงการ: หน้าครูต้องอ้างรุ่นเกมผ่าน typeof guard เท่านั้น (ตอนแยกเป็นไฟล์เดี่ยวจะไม่มีตัวแปรนี้)
+     และเว็บกลางปฏิเสธใบที่ไม่มีรุ่น ⇒ อ่านไม่ได้ = ไม่ส่งเลย ดีกว่าส่งไปเข้าแถวผิดภาค */
+  var v=(typeof GAME_VERSION!=='undefined')?GAME_VERSION:'';
+  return String(v||'').trim();
+}
+function gpUnitScores(s){
+  var u={};
+  if(!s||!s.pb) return u;
+  IND_ORDER.forEach(function(k,i){
+    if(!(k in s.pb)) return;                       /* ยังไม่เล่นด่านนี้ = ไม่มีคะแนนจริง ห้ามส่ง 0 */
+    u['ด่านที่ '+(i+1)+' '+(IND_STAGE_NAME[k]||k)+(k==='8'?' (เต็ม 30)':' (เต็ม 10)')]=s.pb[k];
+  });
+  if(s.boss!=null&&s.bossN>0) u['คะแนนสอบด่านบอส (เต็ม 30 — รวมอยู่ในคะแนนเก็บแล้ว ห้ามบวกซ้ำ)']=s.boss;
+  return u;
+}
+function gpComp(code,r){
+  if(!r) return null;
+  if(r.st!=='score'||r.level==null) return null;   /* partial/none/ยังไม่พอสรุป = ไม่ส่งแถว (ห้ามส่งระดับเดา) */
+  /* ครู "ตัดสินระดับเอง" นับเฉพาะตอนที่ระดับต่างจากที่เอนจินคิด — ถ้าครูแค่ยืนยันของเดิมให้เป็น 'game'
+     (ข้อกำชับเพิ่มเติม 11 ส.ค. ของเว็บกลาง ที่ภาค 2 เจอเคสจริง) */
+  var hasKru=(r.kruFinal!=null);
+  var sysLv=(r.sysLevel!=null)?r.sysLevel:null;
+  var byTeacher=!!(hasKru && (sysLv==null || Number(sysLv)!==Number(r.level)));
+  /* system_score ส่งได้เฉพาะตอนที่เอนจินคิดคะแนนไว้จริง — ถ้าเดิมไม่มีคะแนน clsApplyKruFinal
+     จะเติม pct ประมาณการให้เพื่อแสดงผลบนหน้าจอ ค่านั้นไม่ใช่ผลวัด ห้ามส่งออกไปเด็ดขาด */
+  var sysScore=(byTeacher && r.sysSt==='score' && r.pct!=null)?r.pct:null;
+  var subs=null;
+  if(Array.isArray(r.dims)){
+    r.dims.forEach(function(d){
+      if(!d||d.pct==null) return;                  /* ด้านย่อยที่ไม่มีหลักฐาน = ไม่ใส่คีย์ (ไม่ส่ง 0) */
+      (subs=subs||{})[d.code||d.label]=d.pct;
+    });
+  }
+  return { code:code, score:(r.pct!=null?r.pct:null), level:r.level,
+    level_label:(CORE6_LVNAME[r.level]||null), sub_scores:subs, evidence:'scored',
+    decided_by:byTeacher?'teacher':'game',
+    system_level:byTeacher?sysLv:null, system_score:sysScore };
+}
+function gpBuildReport(stu,s){
+  var ver=gpVersion(); if(!ver) return null;
+  var col=Number(s.collected)||0;
+  var ach=clsAchLevel(col,CLS_MAX_COLLECTED,CLS_COLLECTED_CUTS);   /* คืน {pct,lv} */
+  var done=0; IND_ORDER.forEach(function(k){ if(s.pb&&(k in s.pb)) done++; });
+  var comps=[];
+  ['SM','HT','CM','CZ','NS'].forEach(function(k){
+    var row=gpComp(k,s.c6&&s.c6[k]); if(row) comps.push(row);
+  });
+  /* TW ยังไม่ส่ง — ด่านประเมินการทำงานเป็นทีมกำลังสร้าง (ระยะ 1 เล่นได้แล้ว ยังไม่เก็บหลักฐาน) */
+  return {
+    p_game_code:GAME_CODE, p_game_version:ver, p_student:stu.id, p_run_id:'live',
+    p_achievement:{
+      score:col, max_score:CLS_MAX_COLLECTED,
+      grade_label:(ach&&ach.lv)?('ระดับ '+ach.lv+' '+(CORE6_LVNAME[ach.lv]||'')):null,
+      progress_percent:Math.round(done/IND_ORDER.length*100),
+      unit_scores:gpUnitScores(s),
+      criteria_note:'คะแนนเก็บ '+IND_ORDER.length+' ด่าน เต็ม '+CLS_MAX_COLLECTED+
+        ' (คะแนนสอบด่านบอสรวมอยู่ในคะแนนเก็บแล้ว ห้ามบวกซ้ำ) · จุดตัดระดับเป็นคะแนนดิบ '+
+        CLS_COLLECTED_CUTS[6]+'/'+CLS_COLLECTED_CUTS[5]+'/'+CLS_COLLECTED_CUTS[4]+'/'+CLS_COLLECTED_CUTS[3]+
+        ' · HOTS เกณฑ์ V.2 (A20·B30·C25·D25) · เพดานหลักฐาน 4/8/15 ชิ้น · CM เพดานระดับ 4 · '+
+        'แบบประเมินตนเอง/เพื่อน/ครูสังเกต เป็นหลักฐานประกอบ ไม่รวมในคะแนน'
+    },
+    p_competencies:comps
+  };
+}
+function gpSendReports(){
+  /* ส่งเฉพาะ "ห้องของครูคนนี้เอง" — โหมดดูห้องครูท่านอื่นเป็นข้อมูลปิดชื่อและอ่านอย่างเดียว */
+  try{ if(clsIsPublicScope()||clsIsPublicRoom()||cls.roRoom||cls.pubSel&&clsPubActive()) return; }catch(e){ return; }
+  if(!gpVersion()) return;
+  var list=(cls.students||[]).filter(function(stu){
+    var s=cls.stats&&cls.stats[stu.id];
+    return !!(s&&((s.plays>0)||(s.collected>0)));
+  });
+  var q=[];
+  list.forEach(function(stu){
+    var body=gpBuildReport(stu,cls.stats[stu.id]); if(!body) return;
+    var sig=JSON.stringify([body.p_achievement.score,body.p_achievement.grade_label,
+      body.p_achievement.progress_percent,body.p_competencies,body.p_game_version]);
+    if(GP_SENT[stu.id]===sig) return;              /* ค่าไม่เปลี่ยนจากครั้งก่อน = ไม่ต้องยิงซ้ำ */
+    q.push({id:stu.id,body:body,sig:sig});
+  });
+  if(!q.length) return;
+  /* ยิงทีละใบต่อคิว เว้นจังหวะสั้น ๆ — ห้อง 40 คนก็ไม่ถล่มเซิร์ฟเวอร์และไม่หน่วงหน้าครู */
+  var i=0;
+  (function step(){
+    if(i>=q.length) return;
+    var it=q[i++];
+    sbFetch('/rest/v1/rpc/rpc_submit_report',{method:'POST',body:JSON.stringify(it.body)})
+      .then(function(){ GP_SENT[it.id]=it.sig; })
+      .catch(function(e){ if(!gpSendReports._warned){ gpSendReports._warned=true;
+        console.warn('[ใบรายงานผล] ส่งไม่สำเร็จ (ครูไม่เห็นข้อความนี้ ระบบจะลองใหม่รอบหน้า):',(e&&e.message)||e); } })
+      .then(function(){ setTimeout(step,120); });
+  })();
 }
 /* [ข้อ 5] ใครจับคู่กับใคร — จากบัญชีกลุ่มเดิม (group_ref เดียวกัน) หรือจากข้อมูลกลุ่มที่แนบมากับการเล่นรอบล่าสุด */
 function clsPartnersOf(s,t){
@@ -5969,7 +6080,7 @@ function clsExportCsv(){
 var IND_ORDER=['1','2','6','3','hellfire','mg1','4','5','pilok','mg2','7','mg3','balance2050','8'];
 var IND_STAGE_NAME={
   '1':'สะพานข้ามแม่น้ำแคว', '2':'สุสานทหารสัมพันธมิตร', '6':'ต้นจามจุรียักษ์', '3':'ถ้ำกระแซ',
-  'hellfire':'ช่องเขาขาด', 'mg1':'มินิเกม เรียงเหตุการณ์ประวัติศาสตร์',
+  'hellfire':'ช่องเขาขาด', 'mg1':'หอจดหมายเหตุแห่งกาลเวลา (เรียงเหตุการณ์)',
   '4':'น้ำตกเอราวัณ & เขื่อนศรีนครินทร์', '5':'เขื่อนวชิราลงกรณ & น้ำพุร้อนหินดาด',
   'pilok':'เหมืองปิล๊อก-อีต่อง', 'mg2':'มินิเกม จัดการน้ำในเขื่อน',
   '7':'สะพานมอญ & เมืองบาดาล & เจดีย์สามองค์', 'mg3':'มินิเกม จัดวางแผนที่กาญจนบุรี',
