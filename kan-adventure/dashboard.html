@@ -4224,7 +4224,7 @@ function clsPublicScoresHtml(){
   if(!rows.length) return '<div class="card" style="margin-top:9px;padding:11px 14px"><span class="muted">ยังไม่มีข้อมูลผู้เรียนในขอบเขตนี้</span></div>';
   var mine=rows.filter(function(r){ return r.is_mine; }).length;
   var body=rows.slice(0,400).map(function(r,i){
-    var a1=clsAchLevel(r.collected, CLS_MAX_COLLECTED), a2=clsAchLevel(r.boss, CLS_MAX_BOSS);
+    var a1=clsAchLevel(r.collected, CLS_MAX_COLLECTED, CLS_COLLECTED_CUTS), a2=clsAchLevel(r.boss, CLS_MAX_BOSS);
     var pill=function(a,v){ if(!a) return '<span class="muted">–</span>';
       var c=a.lv?CLS_LV_CLR[a.lv]:'#94a3b8';
       return '<b style="display:inline-block;background:'+c+';color:#fff;border-radius:7px;padding:1px 7px;font-size:12px">'+(Math.round(Number(v)*10)/10)+'</b>'+
@@ -4309,14 +4309,18 @@ function clsLevelChart(lvC,total){
 /* [V.7.71 ข้อ 11 ตามที่ครูขอ] คะแนนเก็บ/คะแนนสอบ ใช้สีกำกับ 4 ระดับเหมือนสมรรถนะ
    เกณฑ์ที่ครูกำหนด: ≥80% = ระดับ 6 · ≥70% = 5 · ≥60% = 4 · ≥50% = 3 · ต่ำกว่า 50% = ยังไม่ถึงเกณฑ์ (เทา)
    ใช้จานสีชุดเดียวกับระดับสมรรถนะ (CLS_LV_CLR) เพื่อให้อ่านเทียบกันได้ทันทีทั้งตาราง */
-function clsAchLevel(score, full){
+function clsAchLevel(score, full, cuts){
   var v=Number(score)||0, f=Number(full)||0;
   if(!f||v<=0) return null;
   var pct=v/f*100;
+  /* [V.7.99.8] cuts = จุดตัดเป็น "คะแนนดิบ" (ใช้กับคะแนนเก็บ ตามมติครูเรื่องตัวหาร 150→160)
+     ไม่ส่ง cuts มา = คิดจากเปอร์เซ็นต์แบบเดิมทุกประการ (คะแนนสอบด่านบอสยังใช้แบบเดิม ตัวหารไม่ได้เปลี่ยน) */
+  if(cuts) return { pct:Math.round(pct*10)/10,
+    lv: v>=cuts[6]?6 : v>=cuts[5]?5 : v>=cuts[4]?4 : v>=cuts[3]?3 : 0 };
   return { pct:Math.round(pct*10)/10, lv: pct>=80?6 : pct>=70?5 : pct>=60?4 : pct>=50?3 : 0 };
 }
-function clsAchCell(score, full, bg, extra){
-  var a=clsAchLevel(score, full);
+function clsAchCell(score, full, bg, extra, cuts){
+  var a=clsAchLevel(score, full, cuts);
   var base='text-align:center;background:'+bg+';'+(extra||'');
   if(!a) return '<td style="'+base+'"><span class="muted">–</span></td>';
   var clr=a.lv?CLS_LV_CLR[a.lv]:'#94a3b8';
@@ -5225,7 +5229,16 @@ var CLS_LV_CLR={6:'#7c3aed',5:'#16a34a',4:'#d97706',3:'#64748b'};
 /* [ตามคำขอครู V.7.68 ข้อ 6] คะแนนเต็มของ "เก็บ" และ "สอบ"
    เก็บ = ผลรวมคะแนนดีที่สุดของทุกด่านสะสม (12 ด่าน/ภารกิจ × 10) = 120 + ด่านบอส 30 = 150
    สอบ = ด่านบอส (ปีศาจข้อสอบ) เต็ม 30 */
-var CLS_MAX_COLLECTED=150, CLS_MAX_BOSS=30;
+/* [V.7.99.8 มติครู 10 ส.ค. 2569 · ตามที่เว็บกลางขอในเอกสาร 42/44]
+   คะแนนเก็บเต็มจริง = 13 ด่าน × 10 + ด่านบอส × 30 = 160 (หน้าครูปัดเพดานรายด่านเองอยู่แล้ว
+   ที่ clsLoadStats: cap = ด่าน '8' ? 30 : 10) — ตัวเลข 150 เดิมเป็นค่าตกทอดจากยุคที่เกมยังมี 12 ด่าน
+   ทำให้เด็กที่เก็บครบขึ้น 160/150 = 106.7% ซึ่งเกิน 100% ไปแล้วบนหน้าจอวันนี้
+   ⚠️ ผลข้างเคียงที่ครูตัดสินแล้ว: ถ้าคิดระดับคุณภาพจาก "เปอร์เซ็นต์" เหมือนเดิม เด็กที่ได้ 120-127
+   จะตกจากระดับ 6 เป็น 5 ทันทีทั้งที่ไม่ได้ทำอะไรผิด (และเอกสารที่ครูพิมพ์ไปแล้วกลางภาคจะไม่ตรง)
+   ⇒ มติครู: แก้ตัวหารเป็น 160 แต่ "ล็อกจุดตัดระดับเป็นคะแนนดิบชุดเดิม" 120/105/90/75
+   ⇒ ไม่มีเด็กคนไหนระดับขยับเลย และบั๊กคะแนนเกิน 100% หายไปพร้อมกัน */
+var CLS_MAX_COLLECTED=160, CLS_MAX_BOSS=30;
+var CLS_COLLECTED_CUTS={6:120, 5:105, 4:90, 3:75};
 function clsScoresHtml(r){
   var studs=(cls.students||[]).filter(function(s){return s.classroom_id===r.id;})
     .sort(function(a,b){ return (Number(a.student_number)||999)-(Number(b.student_number)||999); });
@@ -5249,7 +5262,7 @@ function clsScoresHtml(r){
     var main='<tr id="cv2r-'+esc(s.id)+'" class="cls-stu-row" style="cursor:pointer;'+zebra+'" onclick="clsV2Toggle(\''+esc(s.id)+'\')" title="คลิกเพื่อดูรายละเอียดสมรรถนะ">'+
       '<td>'+esc(s.student_number||'')+'</td>'+
       '<td><b>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</b>'+(s.character_name?' <span style="font-size:10.5px;color:#7c3aed">🎮 '+esc(s.character_name)+'</span>':'')+grpChip+'</td>'+
-      clsAchCell(t.collected, CLS_MAX_COLLECTED, ACH_BG)+
+      clsAchCell(t.collected, CLS_MAX_COLLECTED, ACH_BG, '', CLS_COLLECTED_CUTS)+
       clsAchCell(t.boss, CLS_MAX_BOSS, ACH_BG, 'border-right:2px solid #fde68a;')+
       /* [V.7.71 ข้อ 10] สมรรถนะหลัก 6 ด้าน — คอลัมน์ละด้าน แสดง % + สีตามระดับ · [V.7.77] กดที่ช่องไหน = เห็นคะแนนรายด้านย่อยของด้านนั้น */
       clsCore6Cells(t, s.id)+
