@@ -2901,7 +2901,10 @@ function clsLoadCounts(){
   var ids=cls.rooms.map(function(r){return r.id;}).join(',');
   var base='id,classroom_id,student_number,first_name,last_name,collected_score,boss_score';
   /* group_ref/external_ref = ข้อมูลกลุ่มบัญชีเดิม — ถ้าฐานข้อมูลยังไม่รันแพตช์ล่าสุด (ไม่มีคอลัมน์) ให้ถอยไปแบบเดิม */
-  return sbFetchAll('/rest/v1/students?select='+base+',external_ref,group_ref,character_name&classroom_id=in.('+ids+')')
+  /* [เอกสาร 47/48] is_active = "ปิดการใช้งาน" (ไม่ใช่ลบ) — ฐานที่ยังไม่รัน SQL ใหม่จะไม่มีคอลัมน์นี้
+     จึงไล่ถอยทีละขั้น และทุกจุดที่อ่านค่าใช้กติกา "!== false" ⇒ ไม่มีคอลัมน์ = ใช้งานปกติทุกคน */
+  return sbFetchAll('/rest/v1/students?select='+base+',external_ref,group_ref,character_name,is_active&classroom_id=in.('+ids+')')
+    .catch(function(){ return sbFetchAll('/rest/v1/students?select='+base+',external_ref,group_ref,character_name&classroom_id=in.('+ids+')'); })
     .catch(function(){ return sbFetchAll('/rest/v1/students?select='+base+'&classroom_id=in.('+ids+')'); })
     .then(function(rows){
       cls.students=rows||[];
@@ -3948,6 +3951,11 @@ function clsLoadStats(){
     console.error('[clsLoadStats] คำนวณคะแนนไม่สำเร็จ:', (e&&e.message)||e, e&&e.stack);
     cls.statsReady=true; clsRender(); });
 }
+/* [เอกสาร 48 · กติกาตกลงร่วม] "ปิดการใช้งาน" = ไม่นับในภาพรวมของห้อง แต่ข้อมูลไม่หายและไม่ถูกซ่อน
+   ยอดรวม/ค่าเฉลี่ย/กระดานอันดับ → ไม่นับ · ตารางรายคน → แสดงครบ ติดป้ายให้รู้ว่าทำไมไม่อยู่ในยอดรวม
+   ท่อส่งข้อมูลวิจัย → ส่งตามปกติ (ข้อมูลต้องครบ) */
+function clsIsActive(stu){ return !stu || stu.is_active !== false; }
+function clsActiveStudents(list){ return (list||cls.students||[]).filter(clsIsActive); }
 function clsStatOf(stu){
   var s=(cls.stats&&cls.stats[stu.id])||null;
   var col=Math.max(s?s.collected:0, Number(stu.collected_score)||0);
@@ -3984,7 +3992,9 @@ function gpUnitScores(s){
     if(!(k in s.pb)) return;                       /* ยังไม่เล่นด่านนี้ = ไม่มีคะแนนจริง ห้ามส่ง 0 */
     u['ด่านที่ '+(i+1)+' '+(IND_STAGE_NAME[k]||k)+(k==='8'?' (เต็ม 30)':' (เต็ม 10)')]=s.pb[k];
   });
-  if(s.boss!=null&&s.bossN>0) u['คะแนนสอบด่านบอส (เต็ม 30 — รวมอยู่ในคะแนนเก็บแล้ว ห้ามบวกซ้ำ)']=s.boss;
+  /* [ตามภาคผนวกรอบ 2 ของเว็บกลาง] คีย์ที่ขึ้นต้นด้วย "_" = รายการประกอบ หน้าเว็บย้ายไปกลุ่ม
+     "ไม่รวมในคะแนนหลัก" ให้เองพร้อมชื่อไทย ⇒ ไม่ไปปนกับรายด่าน (ทรงเดียวกับภาค 2) */
+  if(s.boss!=null&&s.bossN>0) u['_boss']=s.boss;
   return u;
 }
 function gpComp(code,r){
@@ -5165,6 +5175,11 @@ function clsSummaryHtml(){
   if(cls.sumFilter&&cls.sumFilter!=='__all__'){ students=students.filter(function(x){ return x.classroom_id===cls.sumFilter; }); nRooms=1; }
   /* [V.7.77] กำลังดูห้องของครูท่านอื่นตามตัวกรอง → จำนวนห้องคิดจากห้องที่ตรงตัวกรอง */
   if(typeof clsPubActive==='function' && clsPubActive()) nRooms=Object.keys(cls.counts||{}).length||clsPubMatch().length;
+  /* [เอกสาร 48] ยอดรวมและค่าเฉลี่ยของห้อง = ภาพของ "ห้องตอนนี้" ⇒ ไม่นับคนที่ครูปิดการใช้งาน
+     (คนที่ย้ายออกไปแล้วไม่ควรถ่วงค่าเฉลี่ยของเพื่อนที่ยังเรียนอยู่) — ตรงกับที่เว็บกลางคิด เลขสองหน้าจึงตรงกัน
+     ข้อมูลรายคนยังแสดงครบในตารางด้านล่าง พร้อมป้าย "ปิดใช้งาน" */
+  var nOff=students.filter(function(x){ return !clsIsActive(x); }).length;
+  students=students.filter(clsIsActive);
   var n=students.length;
   var played=0, colS=0, colN=0, bossS=0, bossN=0, capN=0;
   var v2S=0, v2N=0, lv5=0, lv6strict=0, lvC={3:0,4:0,5:0,6:0}, srcS={A:0,B:0,C:0,D:0}, srcN={A:0,B:0,C:0,D:0};
@@ -5270,7 +5285,7 @@ function clsSummaryHtml(){
       }).join('')):'')+
     '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin-top:7px">'+
       grp('👨‍🏫','ข้อมูลทั่วไป',
-        mini(nRooms,'ห้องเรียน','#fff')+mini(n,'นักเรียน','#fff')+mini(played,'มีข้อมูลเล่น','#fff'),
+        mini(nRooms,'ห้องเรียน','#fff')+mini(n,'นักเรียน'+(nOff?' (ปิด '+nOff+')':''),'#fff')+mini(played,'มีข้อมูลเล่น','#fff'),
         '#f8fafc','#64748b','#334155')+
       grp('🏆','ผลสัมฤทธิ์การเรียน (คะแนนเกม)',
         mini(avg(colS,colN),'เก็บเฉลี่ย (เต็ม '+CLS_MAX_COLLECTED+')','#fff')+mini(avg(bossS,bossN),'สอบเฉลี่ย (เต็ม '+CLS_MAX_BOSS+')','#fff')+mini(bossN,'สอบแล้ว (คน)','#fff'),
@@ -5290,22 +5305,13 @@ function clsSummaryHtml(){
   '</div>';
 }
 /* [ตรวจสอบข้อ 2] เทียบคะแนนจากประวัติการเล่น (events) กับคะแนนสรุปที่ย้ายจากชีต Users เดิม — ต่างเกิน 1 = ย้ายไม่ครบ/บัญชีซ้ำ */
-function clsDiagHtml(){
-  if(!cls.statsReady) return '';
-  var mism=[];
-  (cls.students||[]).forEach(function(stu){
-    var s=cls.stats&&cls.stats[stu.id]; if(!s||!(s.plays>0)||s.shared) return;
-    var nm=((stu.first_name||'')+' '+(stu.last_name||'')).trim()||('เลขที่ '+(stu.student_number||'?'));
-    var colC=Number(stu.collected_score)||0, colB=Number(stu.boss_score)||0;
-    if(colC>0&&Math.abs((s.collected||0)-colC)>1) mism.push(nm+' (เก็บ: ประวัติ '+s.collected+' / สรุปเดิม '+colC+')');
-    else if(colB>0&&s.bossN>0&&Math.abs((s.boss||0)-colB)>1) mism.push(nm+' (สอบ: ประวัติ '+s.boss+' / สรุปเดิม '+colB+')');
-    else if(s.legacy&&s.legacy.total!=null&&s.v2&&s.v2.dataStatus!=='NO_DATA'&&Math.abs(s.v2.total-Number(s.legacy.total))>2) mism.push(nm+' (สมรรถนะ: ใหม่ '+s.v2.total+' / เดิม '+(Math.round(Number(s.legacy.total)*10)/10)+')');
-  });
-  if(!mism.length) return '';
-  return '<div style="margin-top:10px;padding:9px 12px;background:#fffbeb;border:1px solid #fcd34d;border-radius:9px;font-size:12px;color:#92400e">'+
-    '⚠️ <b>คะแนนจากประวัติการเล่นไม่ตรงกับคะแนนสรุปที่ย้ายมา '+mism.length+' คน</b>: '+esc(mism.slice(0,4).join(' · '))+(mism.length>4?' · ...':'')+
-    '<br>สาเหตุที่พบบ่อย: รัน migrateToSupabase ยังไม่จบทุกเฟส (ต้องขึ้น 🎉) ทำให้บางชีต (Progress/BossResults/QuestionLog) ยังไม่ถูกย้าย · หรือบัญชีเดิมซ้ำหลายบัญชี — ระหว่างนี้ตารางแสดงค่าที่สูงกว่าไว้ก่อน</div>';
-}
+/* [V.7.99.16 ตามคำสั่งครู "ข้อมูลตรงแล้ว เอาข้อความออก"]
+   แถบเตือน "คะแนนจากประวัติการเล่นไม่ตรงกับคะแนนสรุปที่ย้ายมา" ถูกถอดออก
+   ที่มา: เตือนไว้ตอนย้ายข้อมูลจาก Google Sheets มา Supabase เพื่อจับแถวที่ย้ายไม่ครบ
+   ตอนนี้ครูตรวจแล้วว่าข้อมูลตรง งานย้ายจบแล้ว แถบนี้จึงกลายเป็นเสียงรบกวนบนหน้าครูทุกครั้งที่เปิด
+   หมายเหตุ: ถอดเฉพาะ "การแสดงผล" ตัวเลขทุกตัวยังคิดเหมือนเดิมทุกประการ
+   ถ้าวันหลังต้องย้ายข้อมูลอีกรอบแล้วอยากได้แถบนี้คืน บอกได้ ใส่กลับจุดเดียว */
+function clsDiagHtml(){ return ''; }
 function clsOpenScores(id){ cls.openScores=(cls.openScores===id)?null:id; if(cls.openScores){ cls.open=null; cls.openReview=null; cls.openKru=null; } clsRender(); }
 /* [เฟส 3d] เซลล์คะแนนแหล่ง A/B/C/D — มีจุด • เมื่อข้อมูลยังไม่ครบตามเกณฑ์ (ชี้เพื่อดูสาเหตุ) */
 function clsV2Cell(v,st,name,bg){
@@ -5372,7 +5378,9 @@ function clsScoresHtml(r){
     var zebra=idx%2?'background:#fbfdff;':'';
     var main='<tr id="cv2r-'+esc(s.id)+'" class="cls-stu-row" style="cursor:pointer;'+zebra+'" onclick="clsV2Toggle(\''+esc(s.id)+'\')" title="คลิกเพื่อดูรายละเอียดสมรรถนะ">'+
       '<td>'+esc(s.student_number||'')+'</td>'+
-      '<td><b>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</b>'+(s.character_name?' <span style="font-size:10.5px;color:#7c3aed">🎮 '+esc(s.character_name)+'</span>':'')+grpChip+'</td>'+
+      /* [เอกสาร 48] ปิดการใช้งาน = ยังแสดงครบ ไม่ซ่อน ไม่ลบ — ติดป้ายให้ครูรู้ว่าทำไมไม่อยู่ในยอดรวม */
+      '<td><b>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</b>'+(s.character_name?' <span style="font-size:10.5px;color:#7c3aed">🎮 '+esc(s.character_name)+'</span>':'')+grpChip+
+        (clsIsActive(s)?'':' <span title="ครูปิดการใช้งานไว้ — ข้อมูลอยู่ครบ แต่ไม่ถูกนับในยอดรวม/ค่าเฉลี่ย/กระดานอันดับ เปิดกลับได้ที่หน้าจัดการห้อง" style="font-size:10.5px;background:#fee2e2;color:#b91c1c;border-radius:6px;padding:1px 6px">⏸ ปิดใช้งาน</span>')+'</td>'+
       clsAchCell(t.collected, CLS_MAX_COLLECTED, ACH_BG, '', CLS_COLLECTED_CUTS)+
       clsAchCell(t.boss, CLS_MAX_BOSS, ACH_BG, 'border-right:2px solid #fde68a;')+
       /* [V.7.71 ข้อ 10] สมรรถนะหลัก 6 ด้าน — คอลัมน์ละด้าน แสดง % + สีตามระดับ · [V.7.77] กดที่ช่องไหน = เห็นคะแนนรายด้านย่อยของด้านนั้น */
