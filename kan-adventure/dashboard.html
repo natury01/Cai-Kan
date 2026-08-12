@@ -323,6 +323,9 @@
         <button class="btn-ghost" id="cls-back" style="background:#fff;display:none">← กลับ</button><!-- [V.7.67] ตัด Dashboard V.2 ออก จึงไม่มีหน้าให้กลับไป -->
       </div>
       <div id="cls-status"></div>
+      <!-- [เอกสาร 54] แผงเตือนเรื่องผังตัวชี้วัดที่ส่งขึ้นทะเบียนกลาง — แยกกล่องจาก cls-status/cls-main
+           เพราะสองกล่องนั้นถูกเขียนทับทุกครั้งที่วาดหน้าใหม่ ข้อความเตือนจะหายไปโดยครูไม่ทันเห็น -->
+      <div id="gp-std-warn"></div>
       <div id="cls-main"></div>
     </div>
 
@@ -3479,7 +3482,10 @@ var CORE6ENG = (function(){
     if(kdd){ out.kruDims=kdd; out.kruAt=kd?kd.t:null; }
     return out;
   }
-  return { compute:compute, MIN_ITEMS:MIN_ITEMS };
+  /* [เอกสาร 54] เปิดผังด่านของสองด้านนี้ให้ข้างนอกอ่านได้ — ท่อส่งผังขึ้นทะเบียนกลางต้องบอกได้ว่า
+     "วัดที่ด่านไหน" จากแผนผังจริงของเครื่องคิดคะแนน ไม่ใช่จากตารางเนื้อหาที่บอกแค่ว่าด่านไหนเกี่ยวข้อง */
+  return { compute:compute, MIN_ITEMS:MIN_ITEMS, NS_STAGES:NS_STAGES, CZ_STAGES:CZ_STAGES,
+           EV_L4:EV_L4, EV_L5:EV_L5, EV_L6:EV_L6 };
 })();
 
 /* ===== [เฟส 3f] ตัวตรวจคำตอบเขียน กาญ 2050 แบบเกณฑ์คำสำคัญ (heuristic-v1 — พอร์ตตรงจาก .gs รอบ 63)
@@ -3946,6 +3952,9 @@ function clsLoadStats(){
     /* [V.7.99.12 · เอกสาร 44] ส่ง "ใบรายงานผล" ให้ Dashboard กลาง — เฉพาะจุดนี้จุดเดียว
        (อีกสองจุดที่คำนวณสถิติเหมือนกันคือ "ดูห้องครูท่านอื่น" แบบอ่านอย่างเดียว ห้ามส่งเด็ดขาด) */
     try{ gpSendReports(); }catch(e){}
+    /* [V.7.99.26 · เอกสาร 54] ส่งผังตัวชี้วัด/สมรรถนะขึ้นทะเบียนกลาง — จุดนี้จุดเดียวเช่นกัน
+       (ผังไม่เปลี่ยน = ไม่ยิงซ้ำ · ด่านกันทั้งหมดอยู่ในตัวฟังก์ชัน) */
+    try{ gpStdPublish(); }catch(e){}
   }).catch(function(e){
     /* [V.7.99.1] เดิมกลืนความผิดพลาดเงียบ ๆ จนหาสาเหตุไม่เจอ — ตอนนี้พิมพ์ลง console ให้ตรวจสอบได้ (ครูยังไม่เห็นข้อความดิบ) */
     console.error('[clsLoadStats] คำนวณคะแนนไม่สำเร็จ:', (e&&e.message)||e, e&&e.stack);
@@ -4074,6 +4083,187 @@ function gpSendReports(){
         console.warn('[ใบรายงานผล] ส่งไม่สำเร็จ (ครูไม่เห็นข้อความนี้ ระบบจะลองใหม่รอบหน้า):',(e&&e.message)||e); } })
       .then(function(){ setTimeout(step,120); });
   })();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   [V.7.99.26 · เอกสาร 54] ส่ง "ผังมาตรฐาน/ตัวชี้วัด/สมรรถนะ" ขึ้นทะเบียนกลางเอง
+   เดิมเว็บกลางนั่งพิมพ์ผังของแต่ละเกมด้วยมือ (ไฟล์ 51 คือตัวอย่าง) — เกมแก้ผังเมื่อไหร่
+   เว็บกลางไม่รู้ · ตรงนี้ทำให้ผังบนเว็บกลางเป็นของที่เกมประกาศเองเสมอ
+
+   ⚠️ กติกาของ rpc_publish_standards ที่ต้องจำให้ขึ้นใจ: "ส่งอะไรมา = ผังปัจจุบันคือชุดนั้น"
+      ส่งอาเรย์ว่างไป = เว็บกลาง "ถอดผังของเกมนี้ทิ้งทั้งชุด" (ฝั่งฐานไม่ได้กันไว้ให้ โดยตั้งใจ)
+      ⇒ ด่านกันทั้ง 5 ชั้นใน gpStdPublish() ห้ามถอดออกเด็ดขาด
+
+   หลักที่ยึดในการเลือกข้อมูล: ทุกช่องต้องมาจากผังจริงในเกม (IND_DEFAULTS · IND_CODE_TEXT ·
+   CV2 · QDIM_MAP · CORE6ENG · CORE6_RUBRIC) ห้ามเขียนคำบรรยายขึ้นเองแล้วส่งเป็นข้อมูลราชการ
+   ══════════════════════════════════════════════════════════════════════════════ */
+var GP_STD_SENT='';        /* ลายเซ็นผังชุดล่าสุดที่ "ส่งสำเร็จ" — กันยิงซ้ำเมื่อผังไม่เปลี่ยน (ท่าเดียวกับ GP_SENT) */
+
+/* ข้อความต้นทางบางก้อน (เช่น CORE6_RUBRIC) เขียนไว้สำหรับแสดงเป็น HTML จึงมี &amp; ปนอยู่
+   ทะเบียนกลางเก็บเป็น "ข้อความล้วน" — ส่ง &amp; ไปตรง ๆ ครูจะเห็น "&amp;" บนหน้าเว็บ
+   จึงคลายเอนทิตีและตัดแท็กทิ้งก่อนส่ง (ใช้ตารางตายตัว ไม่ผ่าน innerHTML เพื่อไม่ให้มาร์กอัปแปลกปลอมเล็ดลอด) */
+var GP_STD_ENT={'&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&#39;':"'",'&#039;':"'",'&nbsp;':' '};
+function gpStdPlain(s){
+  return String(s==null?'':s).replace(/<[^>]*>/g,'')
+    .replace(/&(amp|lt|gt|quot|nbsp|#0?39);/g, function(m){ return GP_STD_ENT[m]!=null?GP_STD_ENT[m]:m; });
+}
+/* ตัดข้อความให้พอดีเพดานของฝั่งฐาน — ฐานตัดให้เองด้วย left() แต่ตัดตรงนี้จะได้ "…" บอกว่าถูกตัด */
+function gpStdClip(s,max){ s=gpStdPlain(s).trim(); return s.length<=max?s:(s.slice(0,max-1).trim()+'…'); }
+/* ลำดับแสดงผลจากรหัสตัวชี้วัด: 'ส 5.1 ป.4/1' → 511 (รูปเดียวกับที่เอกสาร 54 ยกตัวอย่างไว้) */
+function gpStdSort(code){
+  var d=String(code).match(/\d+/g)||[];
+  if(d.length<3) return 0;
+  return Number(d[0])*100+Number(d[1])*10+Math.min(Number(d[d.length-1]),9);
+}
+/* ป้ายแหล่งหลักฐาน 4 แหล่งของเครื่องคิดคะแนน (A/B/C/D) — จำนวนนับมาจาก CV2 ทั้งหมด */
+var GP_STD_EVLBL=[['A','คำตอบข้อวิเคราะห์ระหว่างด่าน','ข้อ'],
+                  ['B','ผลภารกิจ/มินิเกม','รายการ'],
+                  ['C','ข้อสอบหลังเรียน (ด่านปีศาจข้อสอบ)','ข้อ'],
+                  ['D','เกณฑ์ผลงานด่านกาญจนบุรี 2050','เกณฑ์']];
+/* เกณฑ์การตัดสินระดับผลสัมฤทธิ์ — ผูกกับค่าคงที่จริง จะได้ไม่เพี้ยนเมื่อวันหนึ่งตัวหารเปลี่ยน */
+function gpStdIndCrit(){
+  return 'ตัดสินจากคะแนนของด่านที่วัดตัวชี้วัดนี้ (ด่านทั่วไปเต็ม 10 · ด่านปีศาจข้อสอบเต็ม 30) '+
+    'ซึ่งรวมอยู่ในคะแนนเก็บเต็ม '+CLS_MAX_COLLECTED+' ของทั้งบทเรียน · จุดตัดระดับคุณภาพเป็นคะแนนดิบ '+
+    CLS_COLLECTED_CUTS[6]+'/'+CLS_COLLECTED_CUTS[5]+'/'+CLS_COLLECTED_CUTS[4]+'/'+CLS_COLLECTED_CUTS[3]+
+    ' = ระดับ 6/5/4/3 · เกณฑ์ผ่านของด่านคำถามคือตอบถูกอย่างน้อย 60% ของด่านนั้น (ด่านที่ 1 ไม่มีเกณฑ์ผ่าน) '+
+    '· ด่านมินิเกมตัดสินจากผลการปฏิบัติในด่าน';
+}
+/* "วัดที่ด่านไหน" ของสมรรถนะ — เฉพาะด่านที่ "ใช้ตัดสินระดับ" จริงตามเครื่องคิดคะแนน
+   (IND_DEFAULTS บอกแค่ว่าด่านไหนเกี่ยวข้องกับเนื้อหา · ที่นี่ต้องเป็นแหล่งที่คิดเป็นคะแนนของด้านนั้น)
+   คืน null = วัดจากทั้งบทเรียน ไม่ต้องไล่รายด่าน (HT ใช้หลักฐาน 4 แหล่งทั้งบทเรียน · SM ใช้ร่องรอยการเล่นทุกด่าน) */
+function gpStdCompStages(k){
+  if(k==='HT'||k==='SM') return null;
+  var set={};
+  var dom=(k==='NS')?(CORE6ENG.NS_STAGES||{}):(k==='CZ')?(CORE6ENG.CZ_STAGES||{}):null;
+  if(dom) Object.keys(dom).forEach(function(s){ set[s]=1; });
+  if(k==='CM'||k==='NS'||k==='CZ') set['balance2050']=1;   /* คำตอบเขียน 3 ข้อ / เกณฑ์ EE·ST / เกณฑ์ SD·PA ของด่านกาญ 2050 */
+  return IND_ORDER.filter(function(s){ return set[s]; });
+}
+/* ด่านที่มี "ข้อสอบติดป้ายด้านย่อย" (QDIM_MAP) ของด้านนี้ — เป็นหลักฐานประกอบรายด้านย่อย
+   แสดงแยกในหน้าเทียบผล แต่ไม่ได้เข้าสูตรตัดสินระดับของด้าน จึงต้องเขียนแยกให้ชัด ไม่ปนกับ "วัดที่ไหน" */
+function gpStdQdimStages(k){
+  var set={};
+  Object.keys(QDIM_MAP).forEach(function(q){
+    var hit=false; (QDIM_MAP[q]||[]).forEach(function(c){ if(String(c).indexOf(k+'-')===0) hit=true; });
+    if(hit) set[indStageOf(q)]=1;
+  });
+  return IND_ORDER.filter(function(s){ return set[s]; });
+}
+/* เพดานระดับของแต่ละด้าน — ยกมาจากพฤติกรรมจริงของเครื่องคิดคะแนน ไม่ใช่ที่เอกสารเดาไว้:
+   HT ยกเว้นเพดาน (capExempt เพราะหลักฐานรวมกว่า 90 ชิ้น) · CM เพดานคงที่ระดับ 4 (หลักฐาน 3 ชิ้น)
+   SM/NS/CZ ใช้เพดานตามปริมาณหลักฐาน EV_L4/EV_L5/EV_L6 ผ่าน pack() */
+var GP_STD_CAPMODE={HT:'exempt',CM:'fixed4',SM:'evn',NS:'evn',CZ:'evn'};
+/* สร้างรายการทั้งชุดที่จะส่ง — ฟังก์ชันบริสุทธิ์ ไม่ยิงเน็ต เทสต์เรียกตรงได้ */
+function gpStdItems(){
+  var items=[], byCode={}, by=indBuild();
+  var keys=IND_ORDER.concat(Object.keys(IND_DEFAULTS).filter(function(k){ return IND_ORDER.indexOf(k)<0; }));
+  /* อ่านผังแบบเดียวกับที่หน้า "ตัวชี้วัด" ของครูแสดง — ของที่ผู้ดูแลแก้ไว้ทับค่าตั้งต้นเสมอ
+     ถ้าสองที่นี้อ่านคนละทาง ครูจะเห็นบนเว็บกลางไม่ตรงกับที่เห็นในเกม */
+  keys.forEach(function(k){
+    var dflt=indDefaultOf(k), saved=indData.ind[k];
+    var indTxt=(saved&&saved.indicator)?saved.indicator:dflt.indicator;
+    String(indTxt||'').split('·').forEach(function(c){ c=c.trim(); if(!c) return; (byCode[c]||(byCode[c]=[])).push(k); });
+  });
+
+  /* ── 1) ตัวชี้วัดตามหลักสูตรแกนกลาง 2551 (ฉบับปรับปรุง 2560) ── */
+  Object.keys(byCode).forEach(function(code){
+    var st=byCode[code], ev={A:0,B:0,C:0,D:0};
+    st.forEach(function(k){ var b=by[k]; if(!b) return; ev.A+=b.A; ev.B+=b.B; ev.C+=b.C; ev.D+=b.D; });
+    var evTxt=GP_STD_EVLBL.filter(function(x){ return ev[x[0]]>0; })
+      .map(function(x){ return x[1]+' '+ev[x[0]]+' '+x[2]; }).join(' · ');
+    items.push({
+      code:gpStdClip(code,60),
+      /* ไม่มีข้อความตัวชี้วัดในเกม (ผู้ดูแลพิมพ์รหัสใหม่เข้ามา) = ส่งรหัสไปเป็นชื่อ
+         ห้ามแต่งคำอธิบายตัวชี้วัดขึ้นเอง — เป็นข้อความตามหลักสูตร ไม่ใช่ของที่เดาได้ */
+      name:gpStdClip(IND_CODE_TEXT[code]||code,400),
+      subject:'SO',
+      note:gpStdClip('วัดที่ '+st.map(indStageLabel).join(' · '),400),
+      evidence:gpStdClip(evTxt?('หลักฐานที่เกมบันทึกอัตโนมัติทุกครั้งที่เล่น: '+evTxt+
+        ' (ดูรายข้อได้ที่หน้า “ตัวชี้วัด” ในหน้าครูของเกม)')
+        :'คะแนนรายด่านที่ระบบบันทึกอัตโนมัติทุกครั้งที่เล่น',600),
+      criteria:gpStdClip(gpStdIndCrit(),600),
+      sort:gpStdSort(code)
+    });
+  });
+
+  /* ── 2) สมรรถนะหลักที่เกมนี้ "ให้คะแนนจริง" ──
+     ส่งเฉพาะด้านที่เกมเก็บหลักฐานเองและสรุประดับได้ (CORE6_STATUS.st ไม่ใช่ 'none')
+     ⇒ ภาค 1 ส่ง 5 ด้าน: SM · HT · CM · CZ · NS (ชุดเดียวกับที่ใบรายงานผลส่งอยู่แล้ว)
+     TW ไม่ส่ง — ด่านทีมระยะ 1 เล่นได้แล้วแต่ยังไม่เก็บหลักฐาน การขึ้นทะเบียนว่า "วัด"
+     ทั้งที่ยังไม่วัด คือการเดาแทนหลักฐาน ผิดกติกาถาวรของโครงการ (ทำระยะ 2-4 เสร็จค่อยเพิ่ม) */
+  CORE6.forEach(function(c,i){
+    var k=c[0], stt=CORE6_STATUS[k]||{}, R=CORE6_RUBRIC[k]||{};
+    if(!stt.st||stt.st==='none') return;
+    var st=gpStdCompStages(k), lv=R.lv||{}, cap=GP_STD_CAPMODE[k]||'evn';
+    var crit=[3,4,5,6].filter(function(n){ return lv[n]; })
+      .map(function(n){ return 'ระดับ '+n+' '+(CORE6_LVNAME[n]||'')+' = '+lv[n]; }).join(' · ');
+    if(crit) crit='ช่วงชั้น ป.4-6 ใช้ระดับ 3-6 · '+crit;
+    /* เขียนเพดานตามของจริงรายด้าน — เขียนเป็นประโยคเดียวกันหมดจะกลายเป็นข้อมูลผิดสำหรับ HT และ CM */
+    if(cap==='fixed4') crit+=' · หลักฐานด้านนี้ในบทเรียนมีเพียง 3 ชิ้น (คำตอบเขียน) ระบบจึงสรุปได้สูงสุดระดับ 4 — ครูปรับขึ้นเองได้ที่หน้าเทียบผล';
+    else if(cap==='exempt') crit+=' · หลักฐานของด้านนี้รวมกว่า 90 ชิ้น จึงไม่ติดเพดานปริมาณหลักฐาน';
+    else crit+=' · เพดานระดับตามปริมาณหลักฐาน '+CORE6ENG.EV_L4+'/'+CORE6ENG.EV_L5+'/'+CORE6ENG.EV_L6+
+               ' ชิ้น (ต่ำกว่า '+CORE6ENG.EV_L4+' ชิ้น = ยังไม่ตัดสินระดับ ไม่เดาให้)';
+    if(R.scale) crit+=' · '+R.scale;
+    var qs=gpStdQdimStages(k);
+    var evd=(R.ev||stt.note||'')+(R.who?(' · ผู้ประเมิน: '+R.who):'');
+    if(qs.length) evd+=' · หลักฐานประกอบรายด้านย่อย: ข้อสอบที่ติดป้ายด้านย่อยไว้ในด่านที่ '+
+      qs.map(indStageNo).join('·')+' (แสดงแยกรายด้านย่อย ไม่ได้ใช้ตัดสินระดับของด้านนี้)';
+    items.push({
+      code:k, framework:'cbe-core', name:gpStdClip(c[1],400),
+      note:gpStdClip(st===null
+        ? ('วัดจากทั้งบทเรียนทุกด่าน ('+IND_ORDER.length+' ด่าน)'+(k==='HT'?' ผ่านหลักฐาน 4 แหล่ง A·B·C·D':' จากร่องรอยการเล่น'))
+        : ('วัดที่ '+st.map(indStageLabel).join(' · ')),400),
+      evidence:gpStdClip(evd,600),
+      criteria:gpStdClip(crit,600),
+      sort:900+i
+    });
+  });
+  return items;
+}
+/* แผงเตือนของท่อนี้โดยเฉพาะ — ส่งสตริงว่างเพื่อล้าง */
+function gpStdWarn(html){
+  var el=$('gp-std-warn'); if(!el) return;
+  el.innerHTML=html?('<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;'+
+    'padding:10px 12px;margin:0 0 10px;font-size:12.5px;line-height:1.6;color:#92400e">'+html+'</div>'):'';
+}
+function gpStdPublish(){
+  /* ด่าน 1 — ส่งเฉพาะ "ห้องของครูคนนี้เอง" (โหมดดูห้องครูท่านอื่นอ่านอย่างเดียว ห้ามส่ง) */
+  try{ if(clsIsPublicScope()||clsIsPublicRoom()||cls.roRoom||cls.pubSel&&clsPubActive()) return; }catch(e){ return; }
+  /* ด่าน 2 — อ่านเลขรุ่นไม่ได้ = ไม่รู้ว่าจะขึ้นทะเบียนให้ภาคไหน ⇒ ไม่ส่ง */
+  var ver=gpVersion(); if(!ver) return;
+  indLoad().then(function(known){
+    /* ด่าน 3 — ยังอ่าน "ของที่ผู้ดูแลแก้ไว้" ไม่ได้ = ยังไม่รู้ผังจริง
+       ห้ามเอาค่าตั้งต้นไปทับทะเบียนกลาง (จะลบตัวชี้วัดที่ผู้ดูแลเพิ่มไว้ทิ้ง) — รอบหน้าค่อยลองใหม่ */
+    if(!known) return;
+    var items; try{ items=gpStdItems(); }
+    catch(e){ console.warn('[ผังมาตรฐาน] สร้างรายการไม่สำเร็จ:',(e&&e.message)||e); return; }
+    var nInd=0,nComp=0;
+    items.forEach(function(it){ if(it.framework==='cbe-core') nComp++; else nInd++; });
+    /* ด่าน 4 — ⚠️ ห้ามถอดออก: ส่งว่าง = เว็บกลางถอดผังของเกมนี้ทิ้งทั้งชุด
+       และผังที่ขาดข้างใดข้างหนึ่ง แปลว่าตารางต้นทางพัง ไม่ใช่ "เกมเลิกวัดแล้ว" */
+    if(!items.length||!nInd||!nComp){
+      console.warn('[ผังมาตรฐาน] ผังไม่ครบ (ตัวชี้วัด '+nInd+' · สมรรถนะ '+nComp+') — ไม่ส่ง เพราะส่งชุดว่างเท่ากับถอดผังทิ้งทั้งชุด');
+      return;
+    }
+    /* ด่าน 5 — เกิน 200 รายการฝั่งฐานจะ raise ทั้งชุด ⇒ ไม่ยิง และบอกไว้ใน console ว่าตกหล่นเพราะอะไร */
+    if(items.length>200){ console.warn('[ผังมาตรฐาน] '+items.length+' รายการ เกินเพดาน 200 ต่อครั้ง — ไม่ส่ง'); return; }
+    var sig=JSON.stringify([ver,items]);
+    if(GP_STD_SENT===sig) return;                  /* ผังไม่เปลี่ยนจากครั้งก่อน = ไม่ต้องยิงซ้ำ */
+    sbFetch('/rest/v1/rpc/rpc_publish_standards',{method:'POST',
+      body:JSON.stringify({p_game_code:GAME_CODE,p_game_version:ver,p_items:items})})
+      .then(function(r){
+        GP_STD_SENT=sig;
+        var acc=(r&&r.accepted!=null)?Number(r.accepted):null;
+        var sent=(r&&r.sent!=null)?Number(r.sent):items.length;
+        if(acc==null||acc===sent){ gpStdWarn(''); return; }
+        /* เว็บกลางขอไว้ในเอกสาร 54: ถ้าไม่เท่ากันต้องขึ้นเตือนในหน้าครู ไม่งั้นครูไม่มีทางรู้ว่าตกหล่น */
+        gpStdWarn('⚠️ <b>ผังตัวชี้วัดขึ้นทะเบียนกลางไม่ครบ</b> — ส่งไป '+sent+' รายการ แต่รับไว้ '+acc+
+          ' รายการ (ตกหล่น '+(sent-acc)+' รายการ)<br>สาเหตุที่พบบ่อยคือรหัสสมรรถนะยังไม่มีในกรอบกลาง '+
+          'หรือรหัสตัวชี้วัดว่าง · แจ้งผู้ดูแลเว็บกลางให้ตรวจได้เลย คะแนนของนักเรียนไม่ได้รับผลกระทบ');
+      })
+      .catch(function(e){ if(!gpStdPublish._warned){ gpStdPublish._warned=true;
+        console.warn('[ผังมาตรฐาน] ส่งไม่สำเร็จ (ครูไม่เห็นข้อความนี้ ระบบจะลองใหม่รอบหน้า):',(e&&e.message)||e); } });
+  });
 }
 /* [ข้อ 5] ใครจับคู่กับใคร — จากบัญชีกลุ่มเดิม (group_ref เดียวกัน) หรือจากข้อมูลกลุ่มที่แนบมากับการเล่นรอบล่าสุด */
 function clsPartnersOf(s,t){
@@ -6226,10 +6416,26 @@ function openIndicatorsPage(){
   var rb=document.querySelector('.ro-banner'); if(rb)rb.style.display='none';
   var p=$('page-ind'); if(p)p.classList.remove('hidden');
   if(indData.loaded){ indRender(); return; }
-  sbFetch('/rest/v1/rpc/rpc_get_indicators',{method:'POST',body:'{}'})
-    .then(function(rows){ (rows||[]).forEach(function(r){ indData.ind[String(r.stage_key)]={indicator:r.indicator||'',note:r.note||''}; }); })
-    .catch(function(){})
-    .then(function(){ indData.loaded=true; indRender(); });
+  indLoad().then(function(){ indRender(); });   /* โหลดไม่สำเร็จก็ยังวาดหน้าด้วยค่าตั้งต้นเหมือนเดิม */
+}
+/* [เอกสาร 54] โหลด "ตัวชี้วัด/สมรรถนะที่ผู้ดูแลแก้ไว้" ครั้งเดียวแล้วใช้ร่วมกันทั้งไฟล์
+   หน้าตัวชี้วัดกับท่อส่งผังขึ้นทะเบียนกลางต้องเห็นผังชุดเดียวกันเสมอ ไม่งั้นครูจะเห็นบนเว็บกลาง
+   ไม่ตรงกับที่เห็นในเกม แล้วไม่มีใครรู้ว่าอันไหนถูก
+   คืน true  = รู้ผังจริงแล้ว (โหลดสำเร็จ หรือฐานยังไม่มีฟังก์ชันนี้ = ยังไม่มีใครแก้อะไรไว้)
+   คืน false = อ่านไม่ได้ชั่วคราว (เน็ตสะดุด/สิทธิ์) ⇒ ผู้เรียกที่จะ "เขียน" ต้องไม่เขียน */
+function indLoad(){
+  if(indData.loaded) return Promise.resolve(true);
+  return sbFetch('/rest/v1/rpc/rpc_get_indicators',{method:'POST',body:'{}'})
+    .then(function(rows){
+      (rows||[]).forEach(function(r){ indData.ind[String(r.stage_key)]={indicator:r.indicator||'',note:r.note||''}; });
+      indData.loaded=true; return true;
+    })
+    .catch(function(e){
+      var st=(e&&e.status)||0, cd=String((e&&e.code)||'');
+      /* ฐานยังไม่มีฟังก์ชันนี้ (ยังไม่ได้รัน SQL) = ไม่มีของที่ผู้ดูแลแก้ไว้ให้เสียหาย → ใช้ค่าตั้งต้นได้ */
+      if(st===404||cd==='PGRST202'||cd==='42883'){ indData.loaded=true; return true; }
+      return false;
+    });
 }
 /* รวมข้อมูลจากแผนผังจริงของเครื่องคิดคะแนน (CV2) → ตารางว่าแต่ละด่านวัดอะไร ผ่านหลักฐานแหล่งไหน กี่ชิ้น */
 function indBuild(){
