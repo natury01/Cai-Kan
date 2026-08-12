@@ -3955,6 +3955,8 @@ function clsLoadStats(){
     /* [V.7.99.26 · เอกสาร 54] ส่งผังตัวชี้วัด/สมรรถนะขึ้นทะเบียนกลาง — จุดนี้จุดเดียวเช่นกัน
        (ผังไม่เปลี่ยน = ไม่ยิงซ้ำ · ด่านกันทั้งหมดอยู่ในตัวฟังก์ชัน) */
     try{ gpStdPublish(); }catch(e){}
+    /* [V.7.99.28 · เอกสาร 58] ส่งรายการภาพรายด่านให้เว็บกลางทำสไลด์ — จุดนี้จุดเดียวเช่นกัน */
+    try{ gpPublishMedia(); }catch(e){}
   }).catch(function(e){
     /* [V.7.99.1] เดิมกลืนความผิดพลาดเงียบ ๆ จนหาสาเหตุไม่เจอ — ตอนนี้พิมพ์ลง console ให้ตรวจสอบได้ (ครูยังไม่เห็นข้อความดิบ) */
     console.error('[clsLoadStats] คำนวณคะแนนไม่สำเร็จ:', (e&&e.message)||e, e&&e.stack);
@@ -4220,12 +4222,19 @@ function gpStdItems(){
   });
   return items;
 }
-/* แผงเตือนของท่อนี้โดยเฉพาะ — ส่งสตริงว่างเพื่อล้าง */
-function gpStdWarn(html){
+/* แผงเตือนของท่อส่งข้อมูลขึ้นเว็บกลาง — มีหลายท่อ (ผังมาตรฐาน · ภาพรายด่าน)
+   จึงเก็บเป็นรายการตามหัวข้อ ไม่ให้ท่อหลังเขียนทับข้อความของท่อก่อนจนครูไม่เห็น
+   ส่งสตริงว่างเพื่อล้างเฉพาะหัวข้อนั้น */
+var GP_WARNS={};
+function gpWarnRender(){
   var el=$('gp-std-warn'); if(!el) return;
-  el.innerHTML=html?('<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;'+
-    'padding:10px 12px;margin:0 0 10px;font-size:12.5px;line-height:1.6;color:#92400e">'+html+'</div>'):'';
+  el.innerHTML=['std','media'].filter(function(k){ return GP_WARNS[k]; })
+    .map(function(k){ return '<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;'+
+      'padding:10px 12px;margin:0 0 10px;font-size:12.5px;line-height:1.6;color:#92400e">'+GP_WARNS[k]+'</div>'; })
+    .join('');
 }
+function gpStdWarn(html){ GP_WARNS.std=html||''; gpWarnRender(); }
+function gpMediaWarn(html){ GP_WARNS.media=html||''; gpWarnRender(); }
 function gpStdPublish(){
   /* ด่าน 1 — ส่งเฉพาะ "ห้องของครูคนนี้เอง" (โหมดดูห้องครูท่านอื่นอ่านอย่างเดียว ห้ามส่ง) */
   try{ if(clsIsPublicScope()||clsIsPublicRoom()||cls.roRoom||cls.pubSel&&clsPubActive()) return; }catch(e){ return; }
@@ -4263,6 +4272,92 @@ function gpStdPublish(){
       })
       .catch(function(e){ if(!gpStdPublish._warned){ gpStdPublish._warned=true;
         console.warn('[ผังมาตรฐาน] ส่งไม่สำเร็จ (ครูไม่เห็นข้อความนี้ ระบบจะลองใหม่รอบหน้า):',(e&&e.message)||e); } });
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   [V.7.99.28 · เอกสาร 58] ส่ง "รายการภาพรายด่าน" ให้เว็บกลางทำการ์ดเกมเป็นสไลด์
+   เดิมการ์ดเกมบนหน้าแรกเป็นภาพปกนิ่งใบเดียว เด็กไม่รู้ว่าเข้าไปแล้วเจออะไร
+
+   ภาพเป็น "ภาพหน้าจอจริงจากในเกม" ด่านละใบ (16:9 · 1200×675) เก็บไว้ในโฟลเดอร์ img/
+   ของไซต์เกมเอง — เว็บกลางเก็บแค่ที่อยู่ภาพ ไม่ได้เก็บไฟล์ ⇒ เปลี่ยนภาพเมื่อไหร่
+   หน้าเว็บเปลี่ยนตามทันที และไม่มีวันมีภาพเก่าค้างเพราะลืมอัปโหลดทับ
+
+   ⚠️ กติกาเดียวกับ rpc_publish_standards: ส่งอาเรย์ว่าง = ถอดสไลด์ของเกมนี้ออกหมด
+   ⚠️ กติกา PDPA ของโครงการ: ภาพทั้งชุดถ่ายในโหมดผู้ทดสอบ ไม่มีชื่อจริง/ชื่อโรงเรียน/หน้าเด็ก
+      ถ้าวันหนึ่งเปลี่ยนภาพ ต้องตรวจข้อนี้ก่อนเสมอ — การ์ดนี้อยู่หน้าแรกที่ใครก็เปิดดูได้
+   ══════════════════════════════════════════════════════════════════════════════ */
+var GP_MEDIA_SENT='';
+var GP_MEDIA_DIR='img/';   /* ต้องตรงกับโฟลเดอร์ที่ build_repo.py ใส่ภาพให้ (ยาม build ตรวจให้แล้ว) */
+
+/* รายการภาพ — ฟังก์ชันบริสุทธิ์ ไม่ยิงเน็ต เทสต์เรียกตรงได้
+   ที่อยู่ภาพคิดจาก "ที่อยู่จริงของหน้าที่เปิดอยู่" ไม่ฝังโดเมนไว้ในโค้ด
+   ⇒ ย้ายเว็บไปโดเมนใหม่ ลิงก์เปลี่ยนตามเอง ไม่ต้องแก้โค้ดและไม่มีวันชี้ผิดที่ */
+function gpMediaItems(){
+  var base;
+  try{ base=new URL(GP_MEDIA_DIR, location.href).href; }catch(e){ return []; }
+  if(base.indexOf('https://')!==0) return [];      /* เว็บกลางรับเฉพาะ https (เบราว์เซอร์บล็อกอย่างอื่นอยู่แล้ว) */
+  return IND_ORDER.map(function(k,i){
+    var name=indStageLabel(k);
+    return { url: base+'stage_'+k+'.jpg',
+             caption: gpStdClip(name,120),
+             alt: gpStdClip('ภาพหน้าจอจริงจาก'+name+' ในเกมผจญภัยกาญจนบุรี',300),
+             sort: i+1 };
+  });
+}
+/* เปิดภาพจริงดูก่อนว่ามีอยู่ไหม — กันกรณีครูอัปแต่ index.html แล้วลืมโฟลเดอร์ img/
+   ถ้าไม่เช็ก เว็บกลางจะได้ลิงก์ 404 ทั้งชุด แล้วต้องไปพึ่งภาพสำรองของเขาแทน */
+function gpProbeImage(url){
+  return new Promise(function(res){
+    var done=false, im=new Image();
+    var t=setTimeout(function(){ if(!done){ done=true; res(false); } },8000);
+    im.onload=function(){ if(!done){ done=true; clearTimeout(t); res(im.naturalWidth>0); } };
+    im.onerror=function(){ if(!done){ done=true; clearTimeout(t); res(false); } };
+    im.src=url;
+  });
+}
+function gpPublishMedia(){
+  /* ด่าน 1 — ส่งเฉพาะห้องของครูคนนี้เอง (โหมดดูห้องครูท่านอื่นอ่านอย่างเดียว) */
+  try{ if(clsIsPublicScope()||clsIsPublicRoom()||cls.roRoom||cls.pubSel&&clsPubActive()) return; }catch(e){ return; }
+  /* ด่าน 2 — อ่านเลขรุ่นไม่ได้ = ไม่รู้ว่าจะขึ้นทะเบียนให้ภาคไหน */
+  var ver=gpVersion(); if(!ver) return;
+  var items=gpMediaItems();
+  /* ด่าน 3 — ⚠️ ห้ามถอด: ส่งว่าง = เว็บกลางถอดสไลด์ของเกมนี้ออกหมด
+     (รายการว่างที่นี่แปลว่าเปิดจาก file:// หรือ http ซึ่งไม่ใช่ "เกมนี้ไม่มีภาพแล้ว") */
+  if(!items.length) return;
+  /* ด่าน 4 — จำนวนต้องเท่ากับผังด่านจริง ถ้าไม่เท่าแปลว่าตารางต้นทางพัง ไม่ใช่ภาพหาย */
+  if(items.length!==IND_ORDER.length){
+    console.warn('[ภาพรายด่าน] จำนวนภาพ '+items.length+' ไม่เท่าจำนวนด่าน '+IND_ORDER.length+' — ไม่ส่ง'); return; }
+  /* ด่าน 5 — เพดานของเว็บกลาง 60 ภาพต่อเกม */
+  if(items.length>60){ console.warn('[ภาพรายด่าน] เกิน 60 ภาพ — ไม่ส่ง'); return; }
+  var sig=JSON.stringify([ver,items]);
+  if(GP_MEDIA_SENT===sig) return;                  /* รายการไม่เปลี่ยน = ไม่ยิงซ้ำ */
+  /* ด่าน 6 — ภาพแรกต้องเปิดได้จริงก่อน ถึงจะยอมประกาศทั้งชุด */
+  gpProbeImage(items[0].url).then(function(ok){
+    if(!ok){
+      gpMediaWarn('⚠️ <b>ยังไม่ได้อัปโหลดโฟลเดอร์ภาพ <code>'+esc(GP_MEDIA_DIR)+'</code></b> ขึ้นเว็บของเกม '+
+        'ระบบจึงยังไม่ส่งรายการภาพให้เว็บกลาง (การ์ดเกมจะใช้ภาพปกเดิมไปก่อน)<br>'+
+        'วิธีแก้: อัปโหลดโฟลเดอร์ <code>'+esc(GP_MEDIA_DIR)+'</code> ที่มากับไฟล์ชุดอัปโหลด ไปไว้ข้าง ๆ '+
+        '<code>index.html</code> แล้วเปิดหน้านี้ใหม่อีกครั้ง');
+      return;
+    }
+    sbFetch('/rest/v1/rpc/rpc_publish_media',{method:'POST',
+      body:JSON.stringify({p_game_code:GAME_CODE,p_game_version:ver,p_items:items})})
+      .then(function(r){
+        GP_MEDIA_SENT=sig;
+        var acc=(r&&r.accepted!=null)?Number(r.accepted):null;
+        var sent=(r&&r.sent!=null)?Number(r.sent):items.length;
+        var skip=(r&&r.skipped&&r.skipped.length)?r.skipped:[];
+        if(acc==null||acc===sent){ gpMediaWarn(''); return; }
+        /* เอกสาร 58 คืน skipped มาพร้อมเหตุผล — บอกครูตรง ๆ ได้ว่าใบไหนตกและเพราะอะไร */
+        gpMediaWarn('⚠️ <b>ภาพรายด่านขึ้นเว็บกลางไม่ครบ</b> — ส่งไป '+sent+' ภาพ รับไว้ '+acc+' ภาพ'+
+          (skip.length?('<br>ที่ตกหล่น: '+skip.slice(0,5).map(function(x){
+            return esc(String(x.url||'').split('/').pop())+' ('+esc(String(x.reason||'ไม่ระบุเหตุผล'))+')'; }).join(' · ')
+            +(skip.length>5?(' และอีก '+(skip.length-5)+' ภาพ'):'')):'')+
+          '<br>คะแนนของนักเรียนไม่ได้รับผลกระทบ');
+      })
+      .catch(function(e){ if(!gpPublishMedia._warned){ gpPublishMedia._warned=true;
+        console.warn('[ภาพรายด่าน] ส่งไม่สำเร็จ (ครูไม่เห็นข้อความนี้ ระบบจะลองใหม่รอบหน้า):',(e&&e.message)||e); } });
   });
 }
 /* [ข้อ 5] ใครจับคู่กับใคร — จากบัญชีกลุ่มเดิม (group_ref เดียวกัน) หรือจากข้อมูลกลุ่มที่แนบมากับการเล่นรอบล่าสุด */
