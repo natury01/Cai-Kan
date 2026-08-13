@@ -4080,22 +4080,35 @@ function gpSendReports(){
      ครูไม่มีทางรู้ว่าใบของเด็กคนไหนไม่ขึ้นเว็บกลาง ซึ่งเป็นบั๊กตระกูล "ของหายเงียบ ๆ"
      ที่โครงการนี้เจอซ้ำมาหลายรอบ · ท่อนี้ยิง "ทีละคน" ⇒ ต้องสะสมผลเองแล้วสรุปตอนวนครบห้อง
      (ตรงกับรูปที่เว็บกลางล็อกไว้ในแผนไฟล์ 64: ฐานคืนสถานะของใบนั้นใบเดียว ไม่ยัดยอดรวมกลับมา) */
-  var i=0, okN=0, bad=[];
+  var i=0, okN=0, bad=[], part=[];
   var nameOf=function(id){
     var st=(cls.students||[]).filter(function(x){ return x.id===id; })[0];
     return st?(((st.first_name||'')+' '+(st.last_name||'')).trim()||id):id;
   };
   (function step(){
-    if(i>=q.length){ gpRepDone(q.length,okN,bad); return; }
+    if(i>=q.length){ gpRepDone(q.length,okN,bad,part); return; }
     var it=q[i++];
     sbFetch('/rest/v1/rpc/rpc_submit_report',{method:'POST',body:JSON.stringify(it.body)})
       .then(function(r){
-        /* เผื่อวันที่ไฟล์ 64 ลง: ฐานจะบอกได้ว่า "ใบนี้ตกเพราะอะไร" ต่อหนึ่งคำขอ
-           อ่านแบบระวัง — ถือว่าตกเฉพาะตอนฐานบอกชัดเจน ไม่งั้นรุ่นฐานปัจจุบันจะถูกนับผิดทั้งห้อง */
-        var why=(r&&r.ok===false)?(r.reason||r.error||'ฐานปฏิเสธใบนี้')
-               :(r&&r.skipped&&r.skipped.reason)?r.skipped.reason:null;
-        if(why){ bad.push({id:it.id,why:String(why)}); return; }
+        /* [V.7.99.31 · เอกสาร 65 ข้อ 2 — แก้กติกาที่เขียนไว้ผิดใน V.7.99.30]
+           กติกาที่ถูกมีสองบรรทัดเท่านั้น:
+             คำขอสำเร็จ = ใบของเด็กคนนี้ขึ้นเว็บกลางแล้ว  ⇒ นับสำเร็จเสมอ
+             คำขอล้ม (error) = ใบนี้ไม่ขึ้นเลย            ⇒ เข้า .catch ข้างล่าง
+           ⚠️ ห้ามใช้ "มี reason = ใบนี้ตก" — `skipped` โผล่ในกรณีที่สำเร็จด้วย (partial)
+              ถ้านับแบบนั้น ห้องที่ทุกใบขึ้นครบแต่มีคนตกไปด้านเดียว จะถูกรายงานผิดว่าใบไม่ขึ้น
+           ⚠️ `ok:false` ไม่มีวันเกิดโดยตั้งใจ (เว็บกลางล็อกเป็นกติกาถาวรของฟังก์ชันนี้) —
+              เก็บไม่ได้เลย = โยน error เสมอ เพราะถ้าตอบ 200 พร้อม ok:false เกมที่ดักแต่ .catch
+              จะนึกว่าสำเร็จแล้วจำลายเซ็น ⇒ ข้อมูลเด็กหายเงียบ ๆ จึงไม่ต้องมีสาขานั้นในโค้ดนี้ */
         GP_SENT[it.id]=it.sig; okN++;
+        /* ใบขึ้นแล้วแต่ตกไปบางด้าน — คนละเรื่องกับ "ใบไม่ขึ้น" ต้องแยกให้ครูเห็นคนละแบบ */
+        var sk=(r&&r.skipped&&r.skipped.length)?r.skipped:[];
+        var skN=(r&&r.skipped_total!=null)?Number(r.skipped_total):sk.length;
+        if((r&&r.partial===true)||skN>0){
+          /* ใช้ reason เท่านั้น — `detail` เป็นข้อความดิบของฐาน มีไว้ให้คนทำระบบอ่าน
+             เว็บกลางกำชับไว้ในเอกสาร 65 ว่าห้ามเอาขึ้นจอครู */
+          part.push({id:it.id,n:skN||sk.length,
+                     why:(sk[0]&&sk[0].reason)?String(sk[0].reason):'ฐานไม่ได้บอกเหตุผล'});
+        }
       })
       .catch(function(e){
         bad.push({id:it.id,why:(e&&e.message)||'ส่งไม่สำเร็จ'});
@@ -4105,13 +4118,26 @@ function gpSendReports(){
       .then(function(){ setTimeout(step,120); });
   })();
   /* สรุปให้ครูเห็นตอนวนครบห้องแล้วเท่านั้น — ไม่ขึ้นทีละใบ ไม่งั้นจอกระพริบทั้งรอบ */
-  function gpRepDone(total,ok,fail){
-    if(!fail.length){ gpRepWarn(''); return; }
-    gpRepWarn('⚠️ <b>ใบรายงานผลขึ้นเว็บกลางไม่ครบ</b> — ส่ง '+total+' ใบ สำเร็จ '+ok+' ใบ ไม่สำเร็จ '+fail.length+' ใบ'+
-      '<br>ที่ไม่สำเร็จ: '+fail.slice(0,5).map(function(x){
-        return '<b>'+esc(nameOf(x.id))+'</b> ('+esc(x.why)+')'; }).join(' · ')+
-      (fail.length>5?(' และอีก '+(fail.length-5)+' คน'):'')+
-      '<br>คะแนนในเกมไม่ได้หายไปไหน ระบบจะลองส่งใหม่เองทุกครั้งที่เปิดหน้านี้');
+  function gpRepDone(total,ok,fail,partial){
+    if(!fail.length&&!partial.length){ gpRepWarn(''); return; }
+    var who=function(list){ return list.slice(0,5).map(function(x){
+      return '<b>'+esc(nameOf(x.id))+'</b> ('+esc(x.why)+')'; }).join(' · ')
+      +(list.length>5?(' และอีก '+(list.length-5)+' คน'):''); };
+    var msg='';
+    if(fail.length){
+      msg+='⚠️ <b>ใบรายงานผลขึ้นเว็บกลางไม่ครบ</b> — ส่ง '+total+' ใบ สำเร็จ '+ok+' ใบ ไม่สำเร็จ '+fail.length+' ใบ'+
+           '<br>ที่ไม่สำเร็จ: '+who(fail)+
+           '<br>คะแนนในเกมไม่ได้หายไปไหน ระบบจะลองส่งใหม่เองทุกครั้งที่เปิดหน้านี้';
+    }
+    if(partial.length){
+      /* ใบขึ้นแล้ว จึงไม่ใช้คำว่า "ไม่สำเร็จ" — ครูเห็นคำนั้นแล้วจะคิดว่าคะแนนเด็กหาย */
+      var dims=0; partial.forEach(function(x){ dims+=(x.n||1); });
+      msg+=(msg?'<br><br>':'')+
+        'ℹ️ <b>ใบขึ้นเว็บกลางแล้ว แต่มีบางด้านที่เว็บกลางเก็บไม่ได้</b> — '+partial.length+
+        ' คน รวม '+dims+' ด้าน<br>'+who(partial)+
+        '<br>คะแนนรวมของเด็กขึ้นครบแล้ว ขาดเฉพาะด้านที่ระบุ · แจ้งผู้ดูแลเว็บกลางได้เลย';
+    }
+    gpRepWarn(msg);
   }
 }
 
@@ -4293,23 +4319,47 @@ function gpStdPublish(){
         GP_STD_SENT=sig;
         var acc=(r&&r.accepted!=null)?Number(r.accepted):null;
         var sent=(r&&r.sent!=null)?Number(r.sent):items.length;
-        if(acc==null||acc===sent){ gpStdWarn(''); return; }
-        /* เว็บกลางขอไว้ในเอกสาร 54: ถ้าไม่เท่ากันต้องขึ้นเตือนในหน้าครู ไม่งั้นครูจะไม่มีทางรู้ว่าตกหล่น
+        var msg='';
+        /* ── ก้อน (ก) "ไม่ได้ขึ้นทะเบียน" ────────────────────────────────────────
+           เว็บกลางขอไว้ในเอกสาร 54: accepted != sent ต้องขึ้นเตือนในหน้าครู ไม่งั้นครูไม่มีทางรู้ว่าตกหล่น
            [V.7.99.29 · เอกสาร 62] เว็บกลางเติม skipped:[{code,reason}] + skipped_total มาให้แล้ว (ไฟล์ 61)
            ⇒ บอกครูได้ถึงระดับ "รายการไหนตกและเพราะอะไร" ไม่ใช่แค่จำนวน
            ฐานที่ยังไม่ได้รันไฟล์ 61 จะไม่มีสองช่องนี้ ข้อความจึงถอยกลับไปแบบเดิมเองโดยไม่พัง
            ใช้ skipped_total ตอนบอก "และอีก N รายการ" เพราะอาเรย์ถูกตัดที่ 25 รายการแรก */
-        var sk=(r&&r.skipped&&r.skipped.length)?r.skipped:[];
-        var skN=(r&&r.skipped_total!=null)?Number(r.skipped_total):(sent-acc);
-        var shown=Math.min(sk.length,5);
-        gpStdWarn('⚠️ <b>ผังตัวชี้วัดขึ้นทะเบียนกลางไม่ครบ</b> — ส่งไป '+sent+' รายการ แต่รับไว้ '+acc+
-          ' รายการ (ตกหล่น '+(sent-acc)+' รายการ)'+
-          (sk.length
-            ? ('<br>ที่ตกหล่น:<br>'+sk.slice(0,5).map(function(x){
-                 return '• <b>'+esc(String(x.code||'(ไม่มีรหัส)'))+'</b> — '+esc(String(x.reason||'ไม่ระบุเหตุผล')); }).join('<br>')
-               +((skN>shown)?('<br>และอีก '+(skN-shown)+' รายการ'):''))
-            : '<br>สาเหตุที่พบบ่อยคือรหัสสมรรถนะยังไม่มีในกรอบกลาง หรือรหัสตัวชี้วัดว่าง · แจ้งผู้ดูแลเว็บกลางให้ตรวจได้เลย')+
-          '<br>คะแนนของนักเรียนไม่ได้รับผลกระทบ');
+        if(acc!=null&&acc!==sent){
+          var sk=(r&&r.skipped&&r.skipped.length)?r.skipped:[];
+          var skN=(r&&r.skipped_total!=null)?Number(r.skipped_total):(sent-acc);
+          var shown=Math.min(sk.length,5);
+          msg='⚠️ <b>ผังตัวชี้วัดขึ้นทะเบียนกลางไม่ครบ</b> — ส่งไป '+sent+' รายการ แต่รับไว้ '+acc+
+            ' รายการ (ตกหล่น '+(sent-acc)+' รายการ)'+
+            (sk.length
+              ? ('<br>ที่ตกหล่น:<br>'+sk.slice(0,5).map(function(x){
+                   return '• <b>'+esc(String(x.code||'(ไม่มีรหัส)'))+'</b> — '+esc(String(x.reason||'ไม่ระบุเหตุผล')); }).join('<br>')
+                 +((skN>shown)?('<br>และอีก '+(skN-shown)+' รายการ'):''))
+              : '<br>สาเหตุที่พบบ่อยคือรหัสสมรรถนะยังไม่มีในกรอบกลาง หรือรหัสตัวชี้วัดว่าง · แจ้งผู้ดูแลเว็บกลางให้ตรวจได้เลย')+
+            '<br>คะแนนของนักเรียนไม่ได้รับผลกระทบ';
+        }
+        /* ── ก้อน (ข) [V.7.99.32 · ไฟล์ 66] "รับไว้แล้ว แต่ใช้คำที่ผู้ดูแลเว็บกลางแก้ไว้" ──
+           ⚠️⚠️ kept_manual **ไม่ใช่ของตก** — ฐานนับรวมใน accepted ไปแล้ว และ skipped_total เป็น 0
+           ⇒ ห้ามเอามารวมกับก้อน (ก) หรือบวกเข้ากับตัวเลข "ตกหล่น" เด็ดขาด
+              ครูจะตกใจว่าผังไม่ขึ้น ทั้งที่ขึ้นครบทุกรายการ (เว็บกลางเตือนกับดักข้อนี้ไว้เองในเอกสาร 66)
+           ⇒ ถ้อยคำจึงใช้คนละชุดกันโดยตั้งใจ: ก้อนนี้ห้ามมีคำว่า "ไม่ครบ" · "ตกหล่น" · "ไม่สำเร็จ"
+              (มีเทสต์คุมข้อนี้ตรง ๆ ใน t_std54.mjs — ท่าเดียวกับข้อความ partial ของใบรายงานผล)
+           ฐานที่ยังไม่ได้รันไฟล์ 66 ไม่มีสองช่องนี้ ⇒ เงียบสนิท ซึ่งถูกต้อง */
+        var km=(r&&r.kept_manual&&r.kept_manual.length)?r.kept_manual:[];
+        var kmN=(r&&r.kept_manual_total!=null)?Number(r.kept_manual_total):km.length;
+        if(kmN>0){
+          var kmShown=Math.min(km.length,5);
+          msg+=(msg?'<br><br>':'')+
+            'ℹ️ <b>ผังขึ้นทะเบียนกลางเรียบร้อยแล้ว — แต่คำอธิบาย '+kmN+' รายการใช้ข้อความของผู้ดูแลเว็บกลาง</b>'+
+            (km.length
+              ? ('<br>'+km.slice(0,5).map(function(x){
+                   return '• <b>'+esc(String(x.code||'(ไม่มีรหัส)'))+'</b> — '+esc(String(x.reason||'ผู้ดูแลเว็บกลางแก้ข้อความไว้')); }).join('<br>')
+                 +((kmN>kmShown)?('<br>และอีก '+(kmN-kmShown)+' รายการ'):''))
+              : '')+
+            '<br>ทุกรายการขึ้นทะเบียนแล้ว ต่างกันแค่คำอธิบายที่ครูอ่าน · ถ้าต้องการให้ใช้คำในเกม ให้ผู้ดูแลเว็บกลางลบข้อความในช่องนั้นบนหน้า Admin';
+        }
+        gpStdWarn(msg);
       })
       .catch(function(e){ if(!gpStdPublish._warned){ gpStdPublish._warned=true;
         console.warn('[ผังมาตรฐาน] ส่งไม่สำเร็จ (ครูไม่เห็นข้อความนี้ ระบบจะลองใหม่รอบหน้า):',(e&&e.message)||e); } });
