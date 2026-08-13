@@ -4073,18 +4073,46 @@ function gpSendReports(){
     if(GP_SENT[stu.id]===sig) return;              /* ค่าไม่เปลี่ยนจากครั้งก่อน = ไม่ต้องยิงซ้ำ */
     q.push({id:stu.id,body:body,sig:sig});
   });
-  if(!q.length) return;
-  /* ยิงทีละใบต่อคิว เว้นจังหวะสั้น ๆ — ห้อง 40 คนก็ไม่ถล่มเซิร์ฟเวอร์และไม่หน่วงหน้าครู */
-  var i=0;
+  if(!q.length){ gpRepWarn(''); return; }
+  /* ยิงทีละใบต่อคิว เว้นจังหวะสั้น ๆ — ห้อง 40 คนก็ไม่ถล่มเซิร์ฟเวอร์และไม่หน่วงหน้าครู
+
+     [V.7.99.30 · เอกสาร 64 ข้อ 3] เดิมใบที่ส่งไม่สำเร็จเงียบสนิท — ลง console ครั้งเดียวแล้วจบ
+     ครูไม่มีทางรู้ว่าใบของเด็กคนไหนไม่ขึ้นเว็บกลาง ซึ่งเป็นบั๊กตระกูล "ของหายเงียบ ๆ"
+     ที่โครงการนี้เจอซ้ำมาหลายรอบ · ท่อนี้ยิง "ทีละคน" ⇒ ต้องสะสมผลเองแล้วสรุปตอนวนครบห้อง
+     (ตรงกับรูปที่เว็บกลางล็อกไว้ในแผนไฟล์ 64: ฐานคืนสถานะของใบนั้นใบเดียว ไม่ยัดยอดรวมกลับมา) */
+  var i=0, okN=0, bad=[];
+  var nameOf=function(id){
+    var st=(cls.students||[]).filter(function(x){ return x.id===id; })[0];
+    return st?(((st.first_name||'')+' '+(st.last_name||'')).trim()||id):id;
+  };
   (function step(){
-    if(i>=q.length) return;
+    if(i>=q.length){ gpRepDone(q.length,okN,bad); return; }
     var it=q[i++];
     sbFetch('/rest/v1/rpc/rpc_submit_report',{method:'POST',body:JSON.stringify(it.body)})
-      .then(function(){ GP_SENT[it.id]=it.sig; })
-      .catch(function(e){ if(!gpSendReports._warned){ gpSendReports._warned=true;
-        console.warn('[ใบรายงานผล] ส่งไม่สำเร็จ (ครูไม่เห็นข้อความนี้ ระบบจะลองใหม่รอบหน้า):',(e&&e.message)||e); } })
+      .then(function(r){
+        /* เผื่อวันที่ไฟล์ 64 ลง: ฐานจะบอกได้ว่า "ใบนี้ตกเพราะอะไร" ต่อหนึ่งคำขอ
+           อ่านแบบระวัง — ถือว่าตกเฉพาะตอนฐานบอกชัดเจน ไม่งั้นรุ่นฐานปัจจุบันจะถูกนับผิดทั้งห้อง */
+        var why=(r&&r.ok===false)?(r.reason||r.error||'ฐานปฏิเสธใบนี้')
+               :(r&&r.skipped&&r.skipped.reason)?r.skipped.reason:null;
+        if(why){ bad.push({id:it.id,why:String(why)}); return; }
+        GP_SENT[it.id]=it.sig; okN++;
+      })
+      .catch(function(e){
+        bad.push({id:it.id,why:(e&&e.message)||'ส่งไม่สำเร็จ'});
+        if(!gpSendReports._warned){ gpSendReports._warned=true;
+          console.warn('[ใบรายงานผล] ส่งไม่สำเร็จ:',(e&&e.message)||e); }
+      })
       .then(function(){ setTimeout(step,120); });
   })();
+  /* สรุปให้ครูเห็นตอนวนครบห้องแล้วเท่านั้น — ไม่ขึ้นทีละใบ ไม่งั้นจอกระพริบทั้งรอบ */
+  function gpRepDone(total,ok,fail){
+    if(!fail.length){ gpRepWarn(''); return; }
+    gpRepWarn('⚠️ <b>ใบรายงานผลขึ้นเว็บกลางไม่ครบ</b> — ส่ง '+total+' ใบ สำเร็จ '+ok+' ใบ ไม่สำเร็จ '+fail.length+' ใบ'+
+      '<br>ที่ไม่สำเร็จ: '+fail.slice(0,5).map(function(x){
+        return '<b>'+esc(nameOf(x.id))+'</b> ('+esc(x.why)+')'; }).join(' · ')+
+      (fail.length>5?(' และอีก '+(fail.length-5)+' คน'):'')+
+      '<br>คะแนนในเกมไม่ได้หายไปไหน ระบบจะลองส่งใหม่เองทุกครั้งที่เปิดหน้านี้');
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -4228,12 +4256,13 @@ function gpStdItems(){
 var GP_WARNS={};
 function gpWarnRender(){
   var el=$('gp-std-warn'); if(!el) return;
-  el.innerHTML=['std','media'].filter(function(k){ return GP_WARNS[k]; })
+  el.innerHTML=['rep','std','media'].filter(function(k){ return GP_WARNS[k]; })
     .map(function(k){ return '<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;'+
       'padding:10px 12px;margin:0 0 10px;font-size:12.5px;line-height:1.6;color:#92400e">'+GP_WARNS[k]+'</div>'; })
     .join('');
 }
 function gpStdWarn(html){ GP_WARNS.std=html||''; gpWarnRender(); }
+function gpRepWarn(html){ GP_WARNS.rep=html||''; gpWarnRender(); }
 function gpMediaWarn(html){ GP_WARNS.media=html||''; gpWarnRender(); }
 function gpStdPublish(){
   /* ด่าน 1 — ส่งเฉพาะ "ห้องของครูคนนี้เอง" (โหมดดูห้องครูท่านอื่นอ่านอย่างเดียว ห้ามส่ง) */
